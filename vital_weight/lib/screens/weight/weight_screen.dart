@@ -17,7 +17,8 @@ class CurrentWeightScreen extends StatefulWidget {
   State<CurrentWeightScreen> createState() => _CurrentWeightScreenState();
 }
 
-class _CurrentWeightScreenState extends State<CurrentWeightScreen> {
+class _CurrentWeightScreenState extends State<CurrentWeightScreen>
+    with SingleTickerProviderStateMixin {
   // Weight is always stored internally in kg.
   double _weightKg = 60;
   WeightUnit _unit = WeightUnit.kg;
@@ -62,19 +63,43 @@ class _CurrentWeightScreenState extends State<CurrentWeightScreen> {
                     child: Column(
                       children: [
                         const SizedBox(height: 10),
-                        const _StepPill(),
+                        const _Entrance(
+                          delay: Duration(milliseconds: 80),
+                          child: _StepPill(),
+                        ),
                         const SizedBox(height: 20),
-                        const WeightBadge(),
+                        const _Entrance(
+                          delay: Duration(milliseconds: 160),
+                          child: WeightBadge(),
+                        ),
                         const SizedBox(height: 24),
-                        const _Title(),
+                        const _Entrance(
+                          delay: Duration(milliseconds: 240),
+                          child: _Title(),
+                        ),
                         const SizedBox(height: 22),
-                        UnitToggle(unit: _unit, onChanged: _switchUnit),
+                        _Entrance(
+                          delay: const Duration(milliseconds: 320),
+                          child: UnitToggle(
+                            unit: _unit,
+                            onChanged: _switchUnit,
+                          ),
+                        ),
                         const SizedBox(height: 18),
-                        WeightBox(value: _displayValue, unit: _unit),
+                        _Entrance(
+                          delay: const Duration(milliseconds: 400),
+                          child: WeightBox(
+                            value: _displayValue,
+                            unit: _unit,
+                          ),
+                        ),
                         const SizedBox(height: 8),
-                        const CustomPaint(
-                          size: Size(18, 12),
-                          painter: TrianglePainter(),
+                        const _Entrance(
+                          delay: Duration(milliseconds: 460),
+                          child: CustomPaint(
+                            size: Size(18, 12),
+                            painter: TrianglePainter(),
+                          ),
                         ),
                         const SizedBox(height: 20),
                       ],
@@ -99,6 +124,35 @@ class _CurrentWeightScreenState extends State<CurrentWeightScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Staggered fade + slide entrance for a polished onboarding feel.
+class _Entrance extends StatelessWidget {
+  final Widget child;
+  final Duration delay;
+  const _Entrance({required this.child, this.delay = Duration.zero});
+
+  @override
+  Widget build(BuildContext context) {
+    final offset = 0.16;
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 480),
+      curve: Curves.easeOutCubic,
+      builder: (context, v, childWidget) {
+        final delayed = v * (1 - offset) + (delay.inMilliseconds / 600) * offset;
+        final t = (delayed).clamp(0.0, 1.0);
+        return Opacity(
+          opacity: t,
+          child: Transform.translate(
+            offset: Offset(0, 24 * (1 - t)),
+            child: childWidget,
+          ),
+        );
+      },
+      child: child,
     );
   }
 }
@@ -184,23 +238,19 @@ class _StepPill extends StatelessWidget {
           ),
         ],
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             Icons.fitness_center,
             size: 13,
             color: AppColors.primaryGreen,
           ),
-          SizedBox(width: 6),
+          const SizedBox(width: 6),
           Text(
             'STEP 2 OF 5',
-            style: TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.1,
-              color: AppColors.softGrey,
-            ),
+            style: AppType.body(size: 10.5, weight: FontWeight.w700)
+                .copyWith(letterSpacing: 1.1),
           ),
         ],
       ),
@@ -214,29 +264,20 @@ class _Title extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
         Text(
           'Your Current Weight',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
-            color: AppColors.ink,
-            letterSpacing: -0.4,
-          ),
+          style: AppType.display(size: 24),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 44),
+          padding: const EdgeInsets.symmetric(horizontal: 44),
           child: Text(
             'Set your baseline so we can tailor goals and track your progress over time.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 13.5,
-              height: 1.5,
-              color: AppColors.softGrey,
-            ),
+            style: AppType.body(),
           ),
         ),
       ],

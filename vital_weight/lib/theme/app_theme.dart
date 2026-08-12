@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// Central palette for the VitalWeight app.
 class AppColors {
@@ -32,10 +33,48 @@ class AppColors {
   );
 }
 
-/// App-wide typography helpers.
+/// App-wide typography helpers built on Poppins.
 class AppType {
   AppType._();
 
-  static const String display =
-      'Poppins'; // falls back gracefully when unavailable
+  static TextTheme textTheme() {
+    final base = GoogleFonts.poppinsTextTheme();
+    return base.copyWith(
+      displaySmall: base.displaySmall?.copyWith(
+        fontWeight: FontWeight.w800,
+        letterSpacing: -0.5,
+      ),
+      titleLarge: base.titleLarge?.copyWith(
+        fontWeight: FontWeight.w800,
+        letterSpacing: -0.4,
+      ),
+      bodyMedium: base.bodyMedium?.copyWith(height: 1.5),
+    );
+  }
+
+  static TextStyle display({
+    double size = 24,
+    FontWeight weight = FontWeight.w800,
+    Color color = AppColors.ink,
+  }) {
+    return GoogleFonts.poppins(
+      fontSize: size,
+      fontWeight: weight,
+      color: color,
+      letterSpacing: -0.4,
+    );
+  }
+
+  static TextStyle body({
+    double size = 13.5,
+    FontWeight weight = FontWeight.w500,
+    Color color = AppColors.softGrey,
+  }) {
+    return GoogleFonts.poppins(
+      fontSize: size,
+      fontWeight: weight,
+      color: color,
+      height: 1.5,
+    );
+  }
 }

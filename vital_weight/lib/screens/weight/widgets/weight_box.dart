@@ -34,22 +34,12 @@ class WeightBox extends StatelessWidget {
         children: [
           Text(
             value.round().toString(),
-            style: const TextStyle(
-              fontSize: 34,
-              height: 1,
-              fontWeight: FontWeight.w800,
-              color: AppColors.ink,
-              letterSpacing: -0.5,
-            ),
+            style: AppType.display(size: 34),
           ),
           const SizedBox(height: 4),
           Text(
             unit == WeightUnit.kg ? 'kilograms' : 'pounds',
-            style: const TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w600,
-              color: AppColors.softGrey,
-            ),
+            style: AppType.body(size: 10.5, weight: FontWeight.w600),
           ),
         ],
       ),

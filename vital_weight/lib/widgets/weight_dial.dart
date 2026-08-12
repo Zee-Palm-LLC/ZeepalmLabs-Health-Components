@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// Interactive semicircular gauge inside a glass panel. Drag anywhere to scrub
 /// the value; the needle, glowing progress arc and center readout follow
@@ -258,10 +259,10 @@ class _DialPainter extends CustomPainter {
         final tp = TextPainter(
           text: TextSpan(
             text: v.round().toString(),
-            style: const TextStyle(
+            style: GoogleFonts.poppins(
               fontSize: 12.5,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF6E7770),
+              color: const Color(0xFF6E7770),
             ),
           ),
           textDirection: TextDirection.ltr,
@@ -327,10 +328,10 @@ class _DialPainter extends CustomPainter {
     final valueText = TextPainter(
       text: TextSpan(
         text: value.round().toString(),
-        style: const TextStyle(
+        style: GoogleFonts.poppins(
           fontSize: 34,
           fontWeight: FontWeight.w800,
-          color: Color(0xFF1C1F1E),
+          color: const Color(0xFF1C1F1E),
           letterSpacing: -1,
         ),
       ),
@@ -339,10 +340,10 @@ class _DialPainter extends CustomPainter {
     final unitText = TextPainter(
       text: TextSpan(
         text: unitLabel,
-        style: const TextStyle(
+        style: GoogleFonts.poppins(
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF8A938D),
+          color: const Color(0xFF8A938D),
           letterSpacing: 0.4,
         ),
       ),

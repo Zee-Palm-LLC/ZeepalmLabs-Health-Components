@@ -57,9 +57,9 @@ class UnitToggle extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w700,
+          style: AppType.body(
+            size: 13.5,
+            weight: FontWeight.w700,
             color: active ? Colors.white : AppColors.softGrey,
           ),
         ),
