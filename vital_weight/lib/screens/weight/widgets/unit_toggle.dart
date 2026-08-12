@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vital_weight/screens/weight/weight_screen.dart';
+import 'package:vital_weight/theme/app_theme.dart';
 
+/// Segmented kg / lbs switcher with a smooth sliding highlight.
 class UnitToggle extends StatelessWidget {
   final WeightUnit unit;
   final ValueChanged<WeightUnit> onChanged;
@@ -9,15 +11,16 @@ class UnitToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
+        color: Colors.white.withValues(alpha: 0.85),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.9)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: const Color(0xFF1C1F1E).withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -36,18 +39,28 @@ class UnitToggle extends StatelessWidget {
     return GestureDetector(
       onTap: () => onChanged(value),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 8),
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 9),
         decoration: BoxDecoration(
-          color: active ? const Color(0xFFEEF1EE) : Colors.transparent,
+          color: active ? AppColors.primaryGreen : Colors.transparent,
           borderRadius: BorderRadius.circular(18),
+          boxShadow: active
+              ? [
+                  BoxShadow(
+                    color: AppColors.primaryGreen.withValues(alpha: 0.35),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 13.5,
-            fontWeight: FontWeight.w600,
-            color: active ? const Color(0xFF1C1F1E) : Colors.grey.shade500,
+            fontWeight: FontWeight.w700,
+            color: active ? Colors.white : AppColors.softGrey,
           ),
         ),
       ),
