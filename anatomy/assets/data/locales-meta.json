@@ -1,0 +1,86 @@
+[
+  {
+    "code": "en",
+    "nativeName": "English",
+    "englishName": "English",
+    "dir": "ltr",
+    "intl": "en_US"
+  },
+  {
+    "code": "es",
+    "nativeName": "Español",
+    "englishName": "Spanish",
+    "dir": "ltr",
+    "intl": "es_ES"
+  },
+  {
+    "code": "hi",
+    "nativeName": "हिन्दी",
+    "englishName": "Hindi",
+    "dir": "ltr",
+    "intl": "hi_IN"
+  },
+  {
+    "code": "zh",
+    "nativeName": "中文",
+    "englishName": "Chinese",
+    "dir": "ltr",
+    "intl": "zh_CN"
+  },
+  {
+    "code": "ar",
+    "nativeName": "العربية",
+    "englishName": "Arabic",
+    "dir": "rtl",
+    "intl": "ar_EG"
+  },
+  {
+    "code": "pt",
+    "nativeName": "Português",
+    "englishName": "Portuguese",
+    "dir": "ltr",
+    "intl": "pt_BR"
+  },
+  {
+    "code": "fr",
+    "nativeName": "Français",
+    "englishName": "French",
+    "dir": "ltr",
+    "intl": "fr_FR"
+  },
+  {
+    "code": "de",
+    "nativeName": "Deutsch",
+    "englishName": "German",
+    "dir": "ltr",
+    "intl": "de_DE"
+  },
+  {
+    "code": "ja",
+    "nativeName": "日本語",
+    "englishName": "Japanese",
+    "dir": "ltr",
+    "intl": "ja_JP"
+  },
+  {
+    "code": "ru",
+    "nativeName": "Русский",
+    "englishName": "Russian",
+    "dir": "ltr",
+    "intl": "ru_RU"
+  },
+  {
+    "code": "id",
+    "nativeName": "Indonesia",
+    "englishName": "Indonesian",
+    "dir": "ltr",
+    "intl": "id_ID"
+  },
+  {
+    "code": "ko",
+    "nativeName": "한국어",
+    "englishName": "Korean",
+    "dir": "ltr",
+    "intl": "ko_KR"
+  }
+]
