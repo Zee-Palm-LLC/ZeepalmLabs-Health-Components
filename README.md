@@ -8,3 +8,4 @@ A collection of Flutter projects, each in its own folder.
 - `vital_care` - Health dashboard and AI chat assistant for doctors, with vitals overview and patient management.
 - `vital_weight` - Interactive weight tracking dial with kg/lbs toggle for health baseline setup.
 - `anatomy` - Anatomy Atelier app with 3D organ models, localized content, and interactive organ exploration.
+- `safe_space` - Soft pastel onboarding screen with floating community cards and staggered entrance animations.

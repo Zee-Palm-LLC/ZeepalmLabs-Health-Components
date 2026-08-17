@@ -1,0 +1,289 @@
+import 'dart:async';
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../theme/app_colors.dart';
+import 'widgets/get_started_button.dart';
+import 'widgets/hero_cluster.dart';
+
+class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({super.key});
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen>
+    with TickerProviderStateMixin {
+  late final AnimationController _entrance;
+  late final AnimationController _gradient;
+  Timer? _startTimer;
+
+  late final Animation<double> _phoneOpacity;
+  late final Animation<Offset> _phoneOffset;
+  late final Animation<double> _primaryOpacity;
+  late final Animation<Offset> _primaryOffset;
+  late final Animation<double> _secondaryOpacity;
+  late final Animation<Offset> _secondaryOffset;
+  late final Animation<double> _orbsOpacity;
+  late final Animation<double> _copyOpacity;
+  late final Animation<Offset> _copyOffset;
+  late final Animation<double> _ctaOpacity;
+  late final Animation<Offset> _ctaOffset;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _entrance = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1600),
+    );
+
+    _gradient = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10),
+    )..repeat(reverse: true);
+
+    _phoneOpacity = _interval(0.0, 0.35, Curves.easeOut);
+    _phoneOffset = _slide(0.0, 0.4, const Offset(0, 0.08), Curves.easeOutCubic);
+
+    _secondaryOpacity = _interval(0.12, 0.48, Curves.easeOut);
+    _secondaryOffset =
+        _slide(0.12, 0.5, const Offset(0.18, 0.12), Curves.easeOutBack);
+
+    _primaryOpacity = _interval(0.2, 0.55, Curves.easeOut);
+    _primaryOffset =
+        _slide(0.2, 0.58, const Offset(-0.2, 0.1), Curves.easeOutBack);
+
+    _orbsOpacity = _interval(0.32, 0.65, Curves.easeOut);
+
+    _copyOpacity = _interval(0.4, 0.75, Curves.easeOut);
+    _copyOffset = _slide(0.4, 0.78, const Offset(0, 0.18), Curves.easeOutCubic);
+
+    _ctaOpacity = _interval(0.55, 0.9, Curves.easeOut);
+    _ctaOffset = _slide(0.55, 0.95, const Offset(0, 0.22), Curves.easeOutCubic);
+
+    _startTimer = Timer(const Duration(milliseconds: 80), () {
+      if (mounted) _entrance.forward();
+    });
+  }
+
+  Animation<double> _interval(double begin, double end, Curve curve) {
+    return CurvedAnimation(
+      parent: _entrance,
+      curve: Interval(begin, end, curve: curve),
+    );
+  }
+
+  Animation<Offset> _slide(
+    double begin,
+    double end,
+    Offset from,
+    Curve curve,
+  ) {
+    return Tween<Offset>(begin: from, end: Offset.zero).animate(
+      CurvedAnimation(
+        parent: _entrance,
+        curve: Interval(begin, end, curve: curve),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _startTimer?.cancel();
+    _entrance.dispose();
+    _gradient.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final top = media.padding.top;
+    final bottom = media.padding.bottom;
+    final height = media.size.height;
+
+    return Scaffold(
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
+      body: AnimatedBuilder(
+        animation: _gradient,
+        builder: (context, child) {
+          final t = Curves.easeInOut.transform(_gradient.value);
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                center: Alignment(-0.85 + t * 0.15, -0.95),
+                radius: 1.35,
+                colors: [
+                  Color.lerp(AppColors.peach, const Color(0xFFF8E8D4), t)!,
+                  Color.lerp(AppColors.background, AppColors.cream, t * 0.4)!,
+                ],
+                stops: const [0.0, 0.55],
+              ),
+            ),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: Alignment(0.9 - t * 0.1, -0.7),
+                        radius: 1.1,
+                        colors: [
+                          Color.lerp(
+                            AppColors.lavender.withValues(alpha: 0.55),
+                            AppColors.softLavender.withValues(alpha: 0.7),
+                            t,
+                          )!,
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.7],
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: const Alignment(0.6, 1.1),
+                        radius: 0.9,
+                        colors: [
+                          AppColors.lavender.withValues(alpha: 0.25 + t * 0.08),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                child!,
+              ],
+            ),
+          );
+        },
+        child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              28,
+              top + 4,
+              28,
+              math.max(bottom, 12) + 4,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  flex: height < 700 ? 10 : 11,
+                  child: HeroCluster(
+                    phoneOpacity: _phoneOpacity,
+                    phoneOffset: _phoneOffset,
+                    primaryOpacity: _primaryOpacity,
+                    primaryOffset: _primaryOffset,
+                    secondaryOpacity: _secondaryOpacity,
+                    secondaryOffset: _secondaryOffset,
+                    orbsOpacity: _orbsOpacity,
+                  ),
+                ),
+                Expanded(
+                  flex: height < 700 ? 10 : 9,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        physics: constraints.maxHeight < 280
+                            ? const BouncingScrollPhysics()
+                            : const NeverScrollableScrollPhysics(),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                          ),
+                          child: IntrinsicHeight(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                FadeTransition(
+                                  opacity: _copyOpacity,
+                                  child: SlideTransition(
+                                    position: _copyOffset,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Take a breath.\nYou're in a safe space",
+                                          style: GoogleFonts.libreBaskerville(
+                                            fontSize: height < 700 ? 28 : 30,
+                                            fontWeight: FontWeight.w700,
+                                            height: 1.2,
+                                            letterSpacing: -0.5,
+                                            color: AppColors.ink,
+                                          ),
+                                        ),
+                                        SizedBox(height: height < 700 ? 10 : 14),
+                                        Text(
+                                          'This app helps you understand your emotions, track patterns, and feel supported along the way.',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 15.2,
+                                            fontWeight: FontWeight.w400,
+                                            height: 1.55,
+                                            color: AppColors.body,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const Spacer(),
+                                const SizedBox(height: 20),
+                                FadeTransition(
+                                  opacity: _ctaOpacity,
+                                  child: SlideTransition(
+                                    position: _ctaOffset,
+                                    child: Column(
+                                      children: [
+                                        GetStartedButton(onPressed: () {}),
+                                        const SizedBox(height: 14),
+                                        TextButton(
+                                          onPressed: () {},
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: AppColors.skip,
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 8,
+                                            ),
+                                            minimumSize: Size.zero,
+                                            tapTargetSize:
+                                                MaterialTapTargetSize.shrinkWrap,
+                                          ),
+                                          child: Text(
+                                            'Skip',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.skip,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ),
+    );
+  }
+}
