@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// Glossy green circular badge icon.
 class WeightBadge extends StatelessWidget {
   const WeightBadge({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 78,
-      height: 78,
+      width: 72,
+      height: 72,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [
@@ -19,8 +18,16 @@ class WeightBadge extends StatelessWidget {
           ),
         ],
       ),
-      child: CustomPaint(
-        painter: _BadgePainter(),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          CustomPaint(size: const Size(72, 72), painter: _BadgePainter()),
+          const Icon(
+            Icons.monitor_weight_outlined,
+            size: 30,
+            color: Colors.white,
+          ),
+        ],
       ),
     );
   }
@@ -32,7 +39,6 @@ class _BadgePainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    // Single smooth sweep gradient disc.
     canvas.drawCircle(
       center,
       radius,
@@ -50,17 +56,7 @@ class _BadgePainter extends CustomPainter {
             Color(0xFF8FE8B4),
             Color(0xFFBDF0CF),
           ],
-          stops: [
-            0.0,
-            0.12,
-            0.25,
-            0.38,
-            0.5,
-            0.62,
-            0.75,
-            0.88,
-            1.0,
-          ],
+          stops: [0.0, 0.12, 0.25, 0.38, 0.5, 0.62, 0.75, 0.88, 1.0],
         ).createShader(Rect.fromCircle(center: center, radius: radius)),
     );
   }
