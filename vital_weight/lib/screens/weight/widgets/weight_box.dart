@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vital_weight/screens/weight/weight_screen.dart';
 import 'package:vital_weight/theme/app_theme.dart';
 
-/// Glass card that displays the currently selected weight value.
 class WeightBox extends StatelessWidget {
   final double value;
   final WeightUnit unit;
@@ -11,32 +10,47 @@ class WeightBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 116,
-      height: 84,
+      width: 132,
+      height: 88,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(
-          color: AppColors.primaryGreen.withValues(alpha: 0.55),
+          color: AppColors.primaryGreen.withValues(alpha: 0.45),
           width: 1.5,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryGreen.withValues(alpha: 0.18),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
+            color: AppColors.primaryGreen.withValues(alpha: 0.14),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            value.round().toString(),
-            style: AppType.display(size: 34),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 220),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            transitionBuilder: (child, animation) {
+              return FadeTransition(
+                opacity: animation,
+                child: ScaleTransition(
+                  scale: Tween<double>(begin: 0.92, end: 1).animate(animation),
+                  child: child,
+                ),
+              );
+            },
+            child: Text(
+              value.round().toString(),
+              key: ValueKey(value.round()),
+              style: AppType.display(size: 36),
+            ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             unit == WeightUnit.kg ? 'kilograms' : 'pounds',
             style: AppType.body(size: 10.5, weight: FontWeight.w600),
