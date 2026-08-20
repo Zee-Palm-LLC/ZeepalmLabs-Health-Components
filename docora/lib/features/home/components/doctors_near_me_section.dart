@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
+import '../../../core/constants/app_images.dart';
 import '../../../core/data/mock_data.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -385,42 +386,8 @@ class _DoctorPhoto extends StatelessWidget {
             child: SizedBox(
               width: 76.w,
               height: 76.w,
-              child: doctor.imageUrl == null
-                  ? ColoredBox(
-                      color: doctor.avatarColor,
-                      child: Center(
-                        child: Text(
-                          doctor.initials,
-                          style: GoogleFonts.poppins(
-                            fontSize: 22.sp,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.ink.withValues(alpha: 0.45),
-                          ),
-                        ),
-                      ),
-                    )
-                  : Image.network(
-                      doctor.imageUrl!,
-                      fit: BoxFit.cover,
-                      alignment: Alignment.topCenter,
-                      loadingBuilder: (context, child, progress) {
-                        if (progress == null) return child;
-                        return ColoredBox(
-                          color: doctor.avatarColor.withValues(alpha: 0.35),
-                          child: Center(
-                            child: SizedBox(
-                              width: 20.w,
-                              height: 20.w,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.primary.withValues(alpha: 0.7),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return ColoredBox(
+                  child: doctor.imageUrl == null
+                      ? ColoredBox(
                           color: doctor.avatarColor,
                           child: Center(
                             child: Text(
@@ -432,9 +399,12 @@ class _DoctorPhoto extends StatelessWidget {
                               ),
                             ),
                           ),
-                        );
-                      },
-                    ),
+                        )
+                      : AppImage(
+                          path: doctor.imageUrl!,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.topCenter,
+                        ),
             ),
           ),
         ),

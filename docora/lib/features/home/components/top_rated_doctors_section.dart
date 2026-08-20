@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
+import '../../../core/constants/app_images.dart';
 import '../../../core/data/mock_data.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -211,41 +211,10 @@ class _DoctorPhoto extends StatelessWidget {
                   ),
                 ),
               )
-            : Image.network(
-                doctor.imageUrl!,
+            : AppImage(
+                path: doctor.imageUrl!,
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
-                  return ColoredBox(
-                    color: doctor.avatarColor.withValues(alpha: 0.35),
-                    child: Center(
-                      child: SizedBox(
-                        width: 22.w,
-                        height: 22.w,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.primary.withValues(alpha: 0.7),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  return ColoredBox(
-                    color: doctor.avatarColor,
-                    child: Center(
-                      child: Text(
-                        doctor.initials,
-                        style: GoogleFonts.poppins(
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.ink.withValues(alpha: 0.45),
-                        ),
-                      ),
-                    ),
-                  );
-                },
               ),
       ),
     );

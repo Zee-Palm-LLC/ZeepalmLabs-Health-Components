@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -89,25 +87,23 @@ class _ShadeOrb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Soft radial glow without ImageFilter.blur — safer on Impeller/emulators
     return Positioned(
       left: left,
       right: right,
       top: top,
-      child: ImageFiltered(
-        imageFilter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                color.withValues(alpha: opacity),
-                color.withValues(alpha: opacity * 0.35),
-                Colors.transparent,
-              ],
-              stops: const [0.0, 0.45, 1.0],
-            ),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: [
+              color.withValues(alpha: opacity),
+              color.withValues(alpha: opacity * 0.35),
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.45, 1.0],
           ),
         ),
       ),

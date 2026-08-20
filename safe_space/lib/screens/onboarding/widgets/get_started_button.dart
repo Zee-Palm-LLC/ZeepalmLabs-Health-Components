@@ -5,9 +5,14 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../theme/app_colors.dart';
 
 class GetStartedButton extends StatefulWidget {
-  const GetStartedButton({super.key, this.onPressed});
+  const GetStartedButton({
+    super.key,
+    this.onPressed,
+    this.label = 'Get Started',
+  });
 
   final VoidCallback? onPressed;
+  final String label;
 
   @override
   State<GetStartedButton> createState() => _GetStartedButtonState();
@@ -66,7 +71,7 @@ class _GetStartedButtonState extends State<GetStartedButton>
             ],
           ),
           child: Text(
-            'Get Started',
+            widget.label,
             style: GoogleFonts.inter(
               fontSize: 16,
               fontWeight: FontWeight.w600,

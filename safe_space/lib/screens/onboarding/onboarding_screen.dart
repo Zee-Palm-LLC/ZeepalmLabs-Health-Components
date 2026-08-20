@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../theme/app_colors.dart';
+import 'pages/onboarding_patterns_page.dart';
+import 'pages/onboarding_support_page.dart';
 import 'widgets/get_started_button.dart';
 import 'widgets/hero_cluster.dart';
 
@@ -17,6 +19,9 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen>
     with TickerProviderStateMixin {
+  final PageController _pageController = PageController();
+  int _page = 0;
+
   late final AnimationController _entrance;
   late final AnimationController _gradient;
   Timer? _startTimer;
@@ -30,8 +35,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   late final Animation<double> _orbsOpacity;
   late final Animation<double> _copyOpacity;
   late final Animation<Offset> _copyOffset;
-  late final Animation<double> _ctaOpacity;
-  late final Animation<Offset> _ctaOffset;
 
   @override
   void initState() {
@@ -63,9 +66,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     _copyOpacity = _interval(0.4, 0.75, Curves.easeOut);
     _copyOffset = _slide(0.4, 0.78, const Offset(0, 0.18), Curves.easeOutCubic);
 
-    _ctaOpacity = _interval(0.55, 0.9, Curves.easeOut);
-    _ctaOffset = _slide(0.55, 0.95, const Offset(0, 0.22), Curves.easeOutCubic);
-
     _startTimer = Timer(const Duration(milliseconds: 80), () {
       if (mounted) _entrance.forward();
     });
@@ -95,9 +95,19 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   void dispose() {
     _startTimer?.cancel();
+    _pageController.dispose();
     _entrance.dispose();
     _gradient.dispose();
     super.dispose();
+  }
+
+  void _next() {
+    if (_page < 2) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutCubic,
+      );
+    }
   }
 
   @override
@@ -105,7 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final media = MediaQuery.of(context);
     final top = media.padding.top;
     final bottom = media.padding.bottom;
-    final height = media.size.height;
+    final isLast = _page == 2;
 
     return Scaffold(
       extendBody: true,
@@ -167,19 +177,52 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ),
           );
         },
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              28,
-              top + 4,
-              28,
-              math.max(bottom, 12) + 4,
+        child: Column(
+          children: [
+            SizedBox(height: top + 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  _PageDots(count: 3, index: _page),
+                  const Spacer(),
+                  if (!isLast)
+                    TextButton(
+                      onPressed: () {
+                        _pageController.animateToPage(
+                          2,
+                          duration: const Duration(milliseconds: 480),
+                          curve: Curves.easeOutCubic,
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.skip,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        'Skip',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.skip,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  flex: height < 700 ? 10 : 11,
-                  child: HeroCluster(
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (i) => setState(() => _page = i),
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  _WelcomePage(
                     phoneOpacity: _phoneOpacity,
                     phoneOffset: _phoneOffset,
                     primaryOpacity: _primaryOpacity,
@@ -187,102 +230,151 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     secondaryOpacity: _secondaryOpacity,
                     secondaryOffset: _secondaryOffset,
                     orbsOpacity: _orbsOpacity,
+                    copyOpacity: _copyOpacity,
+                    copyOffset: _copyOffset,
                   ),
-                ),
-                Expanded(
-                  flex: height < 700 ? 10 : 9,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return SingleChildScrollView(
-                        physics: constraints.maxHeight < 280
-                            ? const BouncingScrollPhysics()
-                            : const NeverScrollableScrollPhysics(),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minHeight: constraints.maxHeight,
-                          ),
-                          child: IntrinsicHeight(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                FadeTransition(
-                                  opacity: _copyOpacity,
-                                  child: SlideTransition(
-                                    position: _copyOffset,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Take a breath.\nYou're in a safe space",
-                                          style: GoogleFonts.libreBaskerville(
-                                            fontSize: height < 700 ? 28 : 30,
-                                            fontWeight: FontWeight.w700,
-                                            height: 1.2,
-                                            letterSpacing: -0.5,
-                                            color: AppColors.ink,
-                                          ),
-                                        ),
-                                        SizedBox(height: height < 700 ? 10 : 14),
-                                        Text(
-                                          'This app helps you understand your emotions, track patterns, and feel supported along the way.',
-                                          style: GoogleFonts.inter(
-                                            fontSize: 15.2,
-                                            fontWeight: FontWeight.w400,
-                                            height: 1.55,
-                                            color: AppColors.body,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const Spacer(),
-                                const SizedBox(height: 20),
-                                FadeTransition(
-                                  opacity: _ctaOpacity,
-                                  child: SlideTransition(
-                                    position: _ctaOffset,
-                                    child: Column(
-                                      children: [
-                                        GetStartedButton(onPressed: () {}),
-                                        const SizedBox(height: 14),
-                                        TextButton(
-                                          onPressed: () {},
-                                          style: TextButton.styleFrom(
-                                            foregroundColor: AppColors.skip,
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 8,
-                                            ),
-                                            minimumSize: Size.zero,
-                                            tapTargetSize:
-                                                MaterialTapTargetSize.shrinkWrap,
-                                          ),
-                                          child: Text(
-                                            'Skip',
-                                            style: GoogleFonts.inter(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w500,
-                                              color: AppColors.skip,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+                  OnboardingPatternsPage(visible: _page == 1),
+                  OnboardingSupportPage(visible: _page == 2),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                28,
+                8,
+                28,
+                math.max(bottom, 12) + 8,
+              ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 280),
+                child: isLast
+                    ? GetStartedButton(
+                        key: const ValueKey('start'),
+                        onPressed: () {},
+                      )
+                    : GetStartedButton(
+                        key: const ValueKey('next'),
+                        label: 'Continue',
+                        onPressed: _next,
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PageDots extends StatelessWidget {
+  const _PageDots({required this.count, required this.index});
+
+  final int count;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        for (var i = 0; i < count; i++) ...[
+          if (i > 0) const SizedBox(width: 6),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 280),
+            curve: Curves.easeOutCubic,
+            width: i == index ? 22 : 7,
+            height: 7,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: i == index
+                  ? AppColors.ink
+                  : AppColors.ink.withValues(alpha: 0.18),
             ),
           ),
+        ],
+      ],
+    );
+  }
+}
+
+class _WelcomePage extends StatelessWidget {
+  const _WelcomePage({
+    required this.phoneOpacity,
+    required this.phoneOffset,
+    required this.primaryOpacity,
+    required this.primaryOffset,
+    required this.secondaryOpacity,
+    required this.secondaryOffset,
+    required this.orbsOpacity,
+    required this.copyOpacity,
+    required this.copyOffset,
+  });
+
+  final Animation<double> phoneOpacity;
+  final Animation<Offset> phoneOffset;
+  final Animation<double> primaryOpacity;
+  final Animation<Offset> primaryOffset;
+  final Animation<double> secondaryOpacity;
+  final Animation<Offset> secondaryOffset;
+  final Animation<double> orbsOpacity;
+  final Animation<double> copyOpacity;
+  final Animation<Offset> copyOffset;
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.sizeOf(context).height;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: height < 700 ? 10 : 11,
+            child: HeroCluster(
+              phoneOpacity: phoneOpacity,
+              phoneOffset: phoneOffset,
+              primaryOpacity: primaryOpacity,
+              primaryOffset: primaryOffset,
+              secondaryOpacity: secondaryOpacity,
+              secondaryOffset: secondaryOffset,
+              orbsOpacity: orbsOpacity,
+            ),
+          ),
+          Expanded(
+            flex: height < 700 ? 9 : 8,
+            child: FadeTransition(
+              opacity: copyOpacity,
+              child: SlideTransition(
+                position: copyOffset,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Take a breath.\nYou're in a safe space",
+                      style: GoogleFonts.libreBaskerville(
+                        fontSize: height < 700 ? 28 : 30,
+                        fontWeight: FontWeight.w700,
+                        height: 1.2,
+                        letterSpacing: -0.5,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    SizedBox(height: height < 700 ? 10 : 14),
+                    Text(
+                      'This app helps you understand your emotions, track patterns, and feel supported along the way.',
+                      style: GoogleFonts.inter(
+                        fontSize: 15.2,
+                        fontWeight: FontWeight.w400,
+                        height: 1.55,
+                        color: AppColors.body,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

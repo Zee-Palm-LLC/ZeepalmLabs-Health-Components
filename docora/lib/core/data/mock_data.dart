@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_images.dart';
 import '../theme/app_colors.dart';
 
 class DoctorModel {
@@ -30,6 +31,7 @@ class DoctorModel {
   final String hospital;
   final Color avatarColor;
   final String initials;
+  /// Local asset path, e.g. `assets/images/doctors/doctor_esther.jpg`
   final String? imageUrl;
   final bool availableNow;
   final int successRate;
@@ -64,6 +66,7 @@ abstract final class MockData {
     hospital: 'City Heart Hospital',
     avatarColor: Color(0xFFB8D4F0),
     initials: 'EP',
+    imageUrl: AppImages.esther,
   );
 
   static const featured = DoctorModel(
@@ -79,6 +82,7 @@ abstract final class MockData {
     initials: 'BS',
     successRate: 80,
     patients: '10k+',
+    imageUrl: AppImages.brooklyn,
   );
 
   static const specialists = [
@@ -114,8 +118,7 @@ abstract final class MockData {
       hospital: 'City Heart Hospital',
       avatarColor: Color(0xFFE8C4A8),
       initials: 'EH',
-      imageUrl:
-          'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&auto=format&fit=crop&crop=faces',
+      imageUrl: AppImages.esther,
     ),
     DoctorModel(
       id: 'jacob',
@@ -128,8 +131,7 @@ abstract final class MockData {
       hospital: 'Brain Center',
       avatarColor: Color(0xFFD4B8E8),
       initials: 'JJ',
-      imageUrl:
-          'https://images.unsplash.com/photo-1612349317150-e413f4a5b16d?w=400&auto=format&fit=crop&crop=faces',
+      imageUrl: AppImages.jacob,
     ),
     DoctorModel(
       id: 'bessie',
@@ -142,8 +144,7 @@ abstract final class MockData {
       hospital: 'Vision Care Clinic',
       avatarColor: Color(0xFFB8CCE8),
       initials: 'BC',
-      imageUrl:
-          'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&auto=format&fit=crop&crop=faces',
+      imageUrl: AppImages.bessie,
     ),
   ];
 
@@ -160,8 +161,7 @@ abstract final class MockData {
       avatarColor: Color(0xFFE8D4C4),
       initials: 'DR',
       availableNow: true,
-      imageUrl:
-          'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&crop=faces',
+      imageUrl: AppImages.darlene,
     ),
     DoctorModel(
       id: 'brooklyn',
@@ -175,8 +175,7 @@ abstract final class MockData {
       avatarColor: Color(0xFFD4C4B0),
       initials: 'BS',
       availableNow: true,
-      imageUrl:
-          'https://images.unsplash.com/photo-1612349317150-e413f4a5b16d?w=400&auto=format&fit=crop&crop=faces',
+      imageUrl: AppImages.brooklyn,
     ),
     DoctorModel(
       id: 'courtney',
@@ -190,8 +189,7 @@ abstract final class MockData {
       avatarColor: Color(0xFFE8B8C4),
       initials: 'CH',
       availableNow: true,
-      imageUrl:
-          'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&auto=format&fit=crop&crop=faces',
+      imageUrl: AppImages.courtney,
     ),
   ];
 

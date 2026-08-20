@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
+import '../../../core/constants/app_images.dart';
 import '../../../core/theme/app_colors.dart';
 
 class AppointmentBannerData {
@@ -47,8 +48,7 @@ class CustomAppointmentBanner extends StatelessWidget {
     date: 'Sunday, 23 Oct',
     time: '11:30 - 12:00',
     rating: 4.9,
-    imageUrl:
-        'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=600&auto=format&fit=crop&crop=faces&h=500&q=80',
+    imageUrl: AppImages.bannerDoctor,
   );
 
   @override
@@ -241,34 +241,10 @@ class _DoctorHeroImage extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        Image.network(
-          imageUrl,
+        AppImage(
+          path: imageUrl,
           fit: BoxFit.cover,
           alignment: Alignment.topCenter,
-          loadingBuilder: (_, child, progress) {
-            if (progress == null) return child;
-            return ColoredBox(
-              color: Colors.white.withValues(alpha: 0.08),
-              child: Center(
-                child: SizedBox(
-                  width: 22.w,
-                  height: 22.w,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white.withValues(alpha: 0.7),
-                  ),
-                ),
-              ),
-            );
-          },
-          errorBuilder: (context, error, stackTrace) => ColoredBox(
-            color: Colors.white.withValues(alpha: 0.10),
-            child: Icon(
-              Iconsax.user,
-              size: 40.sp,
-              color: Colors.white.withValues(alpha: 0.5),
-            ),
-          ),
         ),
         Positioned.fill(
           child: DecoratedBox(

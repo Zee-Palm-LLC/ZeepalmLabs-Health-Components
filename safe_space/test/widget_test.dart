@@ -14,7 +14,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.textContaining('safe space'), findsOneWidget);
-    expect(find.text('Get Started'), findsOneWidget);
+    expect(find.text('Continue'), findsOneWidget);
     expect(find.text('Skip'), findsOneWidget);
 
     // Advance past delayed float timers so nothing is pending on dispose.

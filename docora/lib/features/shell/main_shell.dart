@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../booking/book_appointment_screen.dart';
 import '../home/home_screen.dart';
+import '../hospital/hospital_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -22,24 +25,39 @@ class _MainShellState extends State<MainShell> {
     return Scaffold(
       backgroundColor: AppColors.background,
       extendBody: true,
-      body: IndexedStack(
-        index: _index,
-        children: const [
-          HomeScreen(),
-          _PlaceholderTab(label: 'Hospital'),
-          SizedBox.shrink(),
-          _PlaceholderTab(label: 'Favorites'),
-          _PlaceholderTab(label: 'Profile'),
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: _index,
+            children: const [
+              HomeScreen(),
+              HospitalScreen(),
+              SizedBox.shrink(),
+              _PlaceholderTab(label: 'Favorites'),
+              _PlaceholderTab(label: 'Profile'),
+            ],
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _LuxuryFloatingNav(
+              currentIndex: _index,
+              onChanged: (i) {
+                if (i == 2) return;
+                setState(() => _index = i);
+              },
+              onBook: () {
+                Get.to(
+                  () => const BookAppointmentScreen(),
+                  transition: Transition.downToUp,
+                  duration: const Duration(milliseconds: 360),
+                  curve: Curves.easeOutCubic,
+                );
+              },
+            ),
+          ),
         ],
-      ),
-      bottomNavigationBar: _FloatingBottomNav(
-        currentIndex: _index,
-        onChanged: (i) {
-          if (i == 2) {
-            return;
-          }
-          setState(() => _index = i);
-        },
       ),
     );
   }
@@ -55,91 +73,103 @@ class _PlaceholderTab extends StatelessWidget {
   }
 }
 
-class _FloatingBottomNav extends StatelessWidget {
-  const _FloatingBottomNav({
+class _LuxuryFloatingNav extends StatelessWidget {
+  const _LuxuryFloatingNav({
     required this.currentIndex,
     required this.onChanged,
+    required this.onBook,
   });
 
   final int currentIndex;
   final ValueChanged<int> onChanged;
+  final VoidCallback onBook;
 
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.paddingOf(context).bottom;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(18.w, 0, 18.w, bottom + 14.h),
+      padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, bottom + 12.h),
       child: SizedBox(
-        height: 78.h,
+        height: 92.h,
         child: Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.bottomCenter,
           children: [
-            Container(
-              height: 64.h,
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(28.r),
-                border: Border.all(
-                  color: AppColors.border.withValues(alpha: 0.65),
-                  width: 0.6.w,
+            // Floating pill bar
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 68.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(32.r),
+                  color: Colors.white,
+                  border: Border.all(
+                    color: AppColors.border.withValues(alpha: 0.7),
+                    width: 0.8.w,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                      blurRadius: 28,
+                      offset: Offset(0, 12.h),
+                      spreadRadius: -2,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 20,
+                      offset: Offset(0, 6.h),
+                    ),
+                  ],
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.10),
-                    blurRadius: 24,
-                    offset: Offset(0, 10.h),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 16,
-                    offset: Offset(0, 4.h),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _NavItem(
-                      icon: Iconsax.home_2,
-                      label: 'Home',
-                      selected: currentIndex == 0,
-                      onTap: () => onChanged(0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _NavItem(
+                        icon: Iconsax.home_2,
+                        label: 'Home',
+                        selected: currentIndex == 0,
+                        onTap: () => onChanged(0),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: _NavItem(
-                      icon: Iconsax.hospital,
-                      label: 'Hospital',
-                      selected: currentIndex == 1,
-                      onTap: () => onChanged(1),
+                    Expanded(
+                      child: _NavItem(
+                        icon: Iconsax.hospital,
+                        label: 'Hospital',
+                        selected: currentIndex == 1,
+                        onTap: () => onChanged(1),
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 56.w),
-                  Expanded(
-                    child: _NavItem(
-                      icon: Iconsax.heart,
-                      label: 'Favorites',
-                      selected: currentIndex == 3,
-                      onTap: () => onChanged(3),
+                    SizedBox(width: 64.w),
+                    Expanded(
+                      child: _NavItem(
+                        icon: Iconsax.heart,
+                        label: 'Favorites',
+                        selected: currentIndex == 3,
+                        onTap: () => onChanged(3),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: _NavItem(
-                      icon: Iconsax.user,
-                      label: 'Profile',
-                      selected: currentIndex == 4,
-                      onTap: () => onChanged(4),
+                    Expanded(
+                      child: _NavItem(
+                        icon: Iconsax.user,
+                        label: 'Profile',
+                        selected: currentIndex == 4,
+                        onTap: () => onChanged(4),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
+
+            // Center book button
             Positioned(
               top: 0,
-              child: _SearchFab(onTap: () => onChanged(2)),
+              left: 0,
+              right: 0,
+              child: Center(
+                child: _CenterBookButton(onTap: onBook),
+              ),
             ),
           ],
         ),
@@ -163,47 +193,41 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? AppColors.primary : AppColors.muted;
-
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
-        padding: EdgeInsets.symmetric(vertical: 6.h),
+      child: SizedBox(
+        height: 68.h,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AnimatedContainer(
-              duration: const Duration(milliseconds: 220),
+              duration: const Duration(milliseconds: 280),
               curve: Curves.easeOutCubic,
-              width: selected ? 42.w : 36.w,
-              height: selected ? 30.h : 28.h,
-              decoration: BoxDecoration(
-                color: selected
-                    ? AppColors.primaryLight.withValues(alpha: 0.85)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(14.r),
+              padding: EdgeInsets.symmetric(
+                horizontal: selected ? 12.w : 8.w,
+                vertical: selected ? 6.h : 5.h,
               ),
-              alignment: Alignment.center,
-              child: AnimatedScale(
-                scale: selected ? 1.05 : 1,
-                duration: const Duration(milliseconds: 220),
-                curve: Curves.easeOutCubic,
-                child: Icon(icon, size: 20.sp, color: color),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.r),
+                color: selected
+                    ? AppColors.primaryLight.withValues(alpha: 0.9)
+                    : Colors.transparent,
+              ),
+              child: Icon(
+                icon,
+                size: 22.sp,
+                color: selected ? AppColors.primary : AppColors.muted,
               ),
             ),
-            SizedBox(height: 3.h),
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 220),
-              style: AppTextStyles.navLabel.copyWith(
-                color: color,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+            SizedBox(height: 4.h),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
                 fontSize: 10.sp,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                color: selected ? AppColors.primary : AppColors.muted,
               ),
-              child: Text(label),
             ),
           ],
         ),
@@ -212,15 +236,15 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-class _SearchFab extends StatefulWidget {
-  const _SearchFab({required this.onTap});
+class _CenterBookButton extends StatefulWidget {
+  const _CenterBookButton({required this.onTap});
   final VoidCallback onTap;
 
   @override
-  State<_SearchFab> createState() => _SearchFabState();
+  State<_CenterBookButton> createState() => _CenterBookButtonState();
 }
 
-class _SearchFabState extends State<_SearchFab>
+class _CenterBookButtonState extends State<_CenterBookButton>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulse;
   bool _pressed = false;
@@ -253,29 +277,30 @@ class _SearchFabState extends State<_SearchFab>
       child: AnimatedBuilder(
         animation: _pulse,
         builder: (context, child) {
-          final glow = 0.28 + (_pulse.value * 0.18);
+          final glow = 0.28 + (_pulse.value * 0.20);
           return AnimatedScale(
-            scale: _pressed ? 0.94 : 1,
+            scale: _pressed ? 0.92 : 1.0,
             duration: const Duration(milliseconds: 120),
             child: Container(
-              width: 58.w,
-              height: 58.w,
+              width: 60.w,
+              height: 60.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [AppColors.primary, AppColors.primaryDark],
+                  colors: [
+                    Color(0xFF4A9AFF),
+                    AppColors.primary,
+                    AppColors.primaryDark,
+                  ],
                 ),
-                border: Border.all(
-                  color: Colors.white,
-                  width: 3.w,
-                ),
+                border: Border.all(color: Colors.white, width: 3.5.w),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.primary.withValues(alpha: glow),
                     blurRadius: 20,
-                    offset: Offset(0, 8.h),
+                    spreadRadius: 1,
                   ),
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.12),
@@ -288,7 +313,11 @@ class _SearchFabState extends State<_SearchFab>
             ),
           );
         },
-        child: Icon(Iconsax.search_normal_1, color: Colors.white, size: 24.sp),
+        child: Icon(
+          Iconsax.add,
+          color: Colors.white,
+          size: 28.sp,
+        ),
       ),
     );
   }

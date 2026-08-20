@@ -1,9 +1,11 @@
-import 'dart:ui';
-
+import 'package:docora/core/constants/app_images.dart';
 import 'package:docora/features/home/components/custom_icon_btn.dart';
+import 'package:docora/features/messages/messages_screen.dart';
+import 'package:docora/features/notifications/notifications_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
@@ -13,7 +15,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.blurProgress = 0,
   });
 
-  /// 0 = fully transparent, 1 = full blur overlay
+  /// 0 = fully transparent, 1 = solid frosted overlay
   final double blurProgress;
 
   @override
@@ -27,20 +29,12 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
       flexibleSpace: progress > 0
-          ? ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: 14 * progress,
-                  sigmaY: 14 * progress,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.75 * progress),
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.black.withValues(alpha: 0.05 * progress),
-                      ),
-                    ),
+          ? Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.92 * progress),
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.black.withValues(alpha: 0.05 * progress),
                   ),
                 ),
               ),
@@ -48,9 +42,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       leading: Center(
         child: CircleAvatar(
-          backgroundImage: NetworkImage(
-            'https://plus.unsplash.com/premium_photo-1693258698597-1b2b1bf943cc?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-          ),
+          backgroundImage: const AssetImage(AppImages.userAvatar),
         ),
       ),
       titleSpacing: 10.w,
@@ -76,9 +68,15 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
-        CustomIconBtn(icon: Iconsax.message, onTap: () {}),
+        CustomIconBtn(
+          icon: Iconsax.message,
+          onTap: () => Get.to(() => const MessagesScreen()),
+        ),
         SizedBox(width: 10.w),
-        CustomIconBtn(icon: Iconsax.notification, onTap: () {}),
+        CustomIconBtn(
+          icon: Iconsax.notification,
+          onTap: () => Get.to(() => const NotificationsScreen()),
+        ),
         SizedBox(width: 16.w),
       ],
     );

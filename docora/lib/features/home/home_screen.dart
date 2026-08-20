@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const TopRatedDoctorsSection(),
                   SizedBox(height: 24.h),
                   const DoctorsNearMeSection(),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 100.h),
                 ],
               ),
             ),
