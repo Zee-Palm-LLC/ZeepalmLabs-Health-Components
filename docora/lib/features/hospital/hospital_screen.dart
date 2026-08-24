@@ -5,36 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../core/constants/app_images.dart';
+import '../../core/data/mock_data.dart';
+import '../../core/navigation/app_nav.dart';
 import '../../core/theme/app_colors.dart';
+import 'hospital_detail_screen.dart';
 import '../home/components/custom_icon_btn.dart';
 import '../home/components/custom_search_field.dart';
 import '../home/components/custom_shade.dart';
-
-class HospitalModel {
-  const HospitalModel({
-    required this.name,
-    required this.address,
-    required this.distance,
-    required this.rating,
-    required this.reviews,
-    required this.departments,
-    required this.imagePath,
-    required this.openHours,
-    this.isEmergency = false,
-    this.isOpen = true,
-  });
-
-  final String name;
-  final String address;
-  final String distance;
-  final double rating;
-  final String reviews;
-  final List<String> departments;
-  final String imagePath;
-  final String openHours;
-  final bool isEmergency;
-  final bool isOpen;
-}
 
 class HospitalScreen extends StatefulWidget {
   const HospitalScreen({super.key});
@@ -51,50 +28,7 @@ class _HospitalScreenState extends State<HospitalScreen>
 
   static const _filters = ['All', 'Nearby', 'Emergency', 'Top Rated'];
 
-  static const _hospitals = [
-    HospitalModel(
-      name: 'City Heart Hospital',
-      address: 'Downtown Medical Avenue',
-      distance: '1.2 km',
-      rating: 4.9,
-      reviews: '2.4k',
-      departments: ['Cardiology', 'Emergency', 'ICU'],
-      imagePath: AppImages.hospital1,
-      openHours: 'Open 24 Hours',
-      isEmergency: true,
-    ),
-    HospitalModel(
-      name: 'The Valley Hospital',
-      address: 'Green Park, Sector 12',
-      distance: '2.8 km',
-      rating: 4.8,
-      reviews: '1.8k',
-      departments: ['Neurology', 'Ortho', 'Lab'],
-      imagePath: AppImages.hospital2,
-      openHours: '08:00 - 22:00',
-    ),
-    HospitalModel(
-      name: 'Metro Care Clinic',
-      address: 'Lake View Road',
-      distance: '3.5 km',
-      rating: 4.7,
-      reviews: '960',
-      departments: ['Dermatology', 'Dental', 'OPD'],
-      imagePath: AppImages.hospital3,
-      openHours: '09:00 - 20:00',
-    ),
-    HospitalModel(
-      name: 'Vision Care Hospital',
-      address: 'Central Business District',
-      distance: '4.1 km',
-      rating: 4.6,
-      reviews: '720',
-      departments: ['Eye Care', 'Surgery'],
-      imagePath: AppImages.hospital1,
-      openHours: 'Open 24 Hours',
-      isEmergency: true,
-    ),
-  ];
+  static const _hospitals = MockData.hospitals;
 
   @override
   void initState() {
@@ -512,7 +446,10 @@ class _HospitalHCardState extends State<_HospitalHCard> {
 
     return GestureDetector(
       onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) => setState(() => _pressed = false),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        AppNav.to(HospitalDetailScreen(hospital: hospital));
+      },
       onTapCancel: () => setState(() => _pressed = false),
       child: AnimatedScale(
         scale: _pressed ? 0.97 : 1,
@@ -671,7 +608,10 @@ class _FeaturedHospitalCardState extends State<_FeaturedHospitalCard> {
 
     return GestureDetector(
       onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) => setState(() => _pressed = false),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        AppNav.to(HospitalDetailScreen(hospital: hospital));
+      },
       onTapCancel: () => setState(() => _pressed = false),
       child: AnimatedScale(
         scale: _pressed ? 0.985 : 1,
@@ -848,7 +788,10 @@ class _HospitalListCardState extends State<_HospitalListCard>
         ).animate(curved),
         child: GestureDetector(
           onTapDown: (_) => setState(() => _pressed = true),
-          onTapUp: (_) => setState(() => _pressed = false),
+          onTapUp: (_) {
+            setState(() => _pressed = false);
+            AppNav.to(HospitalDetailScreen(hospital: hospital));
+          },
           onTapCancel: () => setState(() => _pressed = false),
           child: AnimatedScale(
             scale: _pressed ? 0.985 : 1,

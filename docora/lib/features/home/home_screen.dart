@@ -1,3 +1,7 @@
+import 'package:docora/core/data/mock_data.dart';
+import 'package:docora/core/navigation/app_nav.dart';
+import 'package:docora/features/appointments/appointment_detail_screen.dart';
+import 'package:docora/features/doctor/doctor_detail_screen.dart';
 import 'package:docora/features/home/components/custom_appointment_banner.dart';
 import 'package:docora/features/home/components/custom_search_field.dart';
 import 'package:docora/features/home/components/custom_shade.dart';
@@ -5,6 +9,9 @@ import 'package:docora/features/home/components/home_appbar.dart';
 import 'package:docora/features/home/components/doctors_near_me_section.dart';
 import 'package:docora/features/home/components/medical_specialists_section.dart';
 import 'package:docora/features/home/components/top_rated_doctors_section.dart';
+import 'package:docora/features/messages/messages_screen.dart';
+import 'package:docora/features/search/search_screen.dart';
+import 'package:docora/features/specialty/specialty_doctors_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -39,6 +46,10 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _blurProgress = progress);
   }
 
+  void _openDoctor(DoctorModel doctor) {
+    AppNav.to(DoctorDetailScreen(doctor: doctor));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,15 +66,36 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.all(16.h),
               child: Column(
                 children: [
-                  const CustomSearchField(),
+                  CustomSearchField(
+                    readOnly: true,
+                    onTap: () => AppNav.to(const SearchScreen()),
+                  ),
                   SizedBox(height: 15.h),
-                  const CustomAppointmentBanner(),
+                  CustomAppointmentBanner(
+                    onJoinTap: () => AppNav.to(
+                      AppointmentDetailScreen(
+                        appointment: MockData.appointments.first,
+                      ),
+                    ),
+                    onChatTap: () => AppNav.to(const MessagesScreen()),
+                  ),
                   SizedBox(height: 20.h),
-                  const MedicalSpecialistsSection(),
+                  MedicalSpecialistsSection(
+                    onViewAll: () => AppNav.to(const SearchScreen()),
+                    onSpecialistTap: (s) => AppNav.to(
+                      SpecialtyDoctorsScreen(specialist: s),
+                    ),
+                  ),
                   SizedBox(height: 20.h),
-                  const TopRatedDoctorsSection(),
+                  TopRatedDoctorsSection(
+                    onViewAll: () => AppNav.to(const SearchScreen()),
+                    onDoctorTap: _openDoctor,
+                  ),
                   SizedBox(height: 24.h),
-                  const DoctorsNearMeSection(),
+                  DoctorsNearMeSection(
+                    onViewAll: () => AppNav.to(const SearchScreen()),
+                    onDoctorTap: _openDoctor,
+                  ),
                   SizedBox(height: 100.h),
                 ],
               ),

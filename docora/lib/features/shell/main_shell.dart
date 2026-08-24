@@ -5,10 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
 import '../booking/book_appointment_screen.dart';
+import '../favorites/favorites_screen.dart';
 import '../home/home_screen.dart';
 import '../hospital/hospital_screen.dart';
+import '../settings/settings_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -33,8 +34,8 @@ class _MainShellState extends State<MainShell> {
               HomeScreen(),
               HospitalScreen(),
               SizedBox.shrink(),
-              _PlaceholderTab(label: 'Favorites'),
-              _PlaceholderTab(label: 'Profile'),
+              FavoritesScreen(),
+              SettingsScreen(),
             ],
           ),
           Positioned(
@@ -60,16 +61,6 @@ class _MainShellState extends State<MainShell> {
         ],
       ),
     );
-  }
-}
-
-class _PlaceholderTab extends StatelessWidget {
-  const _PlaceholderTab({required this.label});
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text(label, style: AppTextStyles.sectionTitle));
   }
 }
 
@@ -151,8 +142,8 @@ class _LuxuryFloatingNav extends StatelessWidget {
                     ),
                     Expanded(
                       child: _NavItem(
-                        icon: Iconsax.user,
-                        label: 'Profile',
+                        icon: Iconsax.setting_2,
+                        label: 'Settings',
                         selected: currentIndex == 4,
                         onTap: () => onChanged(4),
                       ),

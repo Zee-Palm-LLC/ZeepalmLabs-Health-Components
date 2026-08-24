@@ -7,11 +7,12 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../core/constants/app_images.dart';
 import '../../core/data/mock_data.dart';
+import '../../core/navigation/app_nav.dart';
 import '../../core/theme/app_colors.dart';
+import '../doctor/doctor_detail_screen.dart';
 import '../home/components/custom_icon_btn.dart';
 import '../home/components/custom_search_field.dart';
 import '../home/components/custom_shade.dart';
-import 'book_slot_screen.dart';
 import 'booking_widgets.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
@@ -304,11 +305,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen>
                             _LuxuryDoctorCard(
                               doctor: doctors[i],
                               index: i,
-                              onTap: () => Get.to(
-                                () => BookSlotScreen(doctor: doctors[i]),
-                                transition: Transition.rightToLeft,
-                                duration: const Duration(milliseconds: 320),
-                                curve: Curves.easeOutCubic,
+                              onTap: () => AppNav.to(
+                                DoctorDetailScreen(doctor: doctors[i]),
                               ),
                             ),
                           ],
