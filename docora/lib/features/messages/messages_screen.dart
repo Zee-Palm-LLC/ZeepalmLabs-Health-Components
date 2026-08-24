@@ -10,6 +10,8 @@ import '../../core/theme/app_colors.dart';
 import '../../features/home/components/custom_icon_btn.dart';
 import '../../features/home/components/custom_search_field.dart';
 import '../../features/home/components/custom_shade.dart';
+import 'chat_screen.dart';
+import 'components/message_motion.dart';
 
 class ChatPreview {
   const ChatPreview({
@@ -93,6 +95,15 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   String _query = '';
 
+  void _openChat(ChatPreview chat) {
+    Get.to(
+      () => ChatScreen(chat: chat),
+      transition: Transition.fadeIn,
+      duration: const Duration(milliseconds: 280),
+      curve: const Cubic(0.16, 1, 0.3, 1),
+    );
+  }
+
   List<ChatPreview> get _filtered {
     if (_query.trim().isEmpty) return _chats;
     final q = _query.toLowerCase();
@@ -120,7 +131,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
-        leadingWidth: 56.w,
+        toolbarHeight: 56.h,
+        leadingWidth: 52.w,
         leading: Padding(
           padding: EdgeInsets.only(left: 12.w),
           child: Center(
@@ -136,94 +148,87 @@ class _MessagesScreenState extends State<MessagesScreen> {
             Text(
               'Messages',
               style: GoogleFonts.poppins(
-                fontSize: 18.sp,
+                fontSize: 17.sp,
                 fontWeight: FontWeight.w600,
                 color: AppColors.ink,
+                height: 1.2,
               ),
             ),
             Text(
-              unreadTotal > 0 ? '$unreadTotal unread chats' : 'All caught up',
+              unreadTotal > 0 ? '$unreadTotal unread' : 'All caught up',
               style: GoogleFonts.poppins(
                 fontSize: 11.sp,
                 fontWeight: FontWeight.w400,
                 color: AppColors.body,
+                height: 1.2,
               ),
             ),
           ],
         ),
         actions: [
           CustomIconBtn(icon: Iconsax.edit_2, onTap: () {}),
-          SizedBox(width: 16.w),
+          SizedBox(width: 14.w),
         ],
       ),
       body: Stack(
         children: [
-          const CustomShade(height: 120),
+          const CustomShade(height: 96),
           SafeArea(
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics(),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16.w, 6.h, 16.w, 10.h),
+                  child: FadeScaleIn(
                     child: CustomSearchField(
                       hintText: 'Search conversations...',
                       onChanged: (value) => setState(() => _query = value),
                     ),
                   ),
-                  SizedBox(height: 14.h),
-                  SizedBox(
-                    height: 86.h,
+                ),
+                FadeScaleIn(
+                  delay: const Duration(milliseconds: 60),
+                  child: SizedBox(
+                    height: 74.h,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      primary: false,
-                      physics: const BouncingScrollPhysics(),
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       itemCount: _chats.where((c) => c.isOnline).length + 1,
-                      separatorBuilder: (context, index) => SizedBox(width: 14.w),
+                      separatorBuilder: (_, __) => SizedBox(width: 12.w),
                       itemBuilder: (context, index) {
                         if (index == 0) {
-                          return const _OnlineChip(
-                            label: 'New Chat',
-                            isAdd: true,
-                          );
+                          return const _OnlineChip(label: 'New', isAdd: true);
                         }
                         final online = _chats.where((c) => c.isOnline).toList();
                         final chat = online[index - 1];
                         return _OnlineChip(
                           label: chat.name.split(' ').last,
                           imageUrl: chat.imageUrl,
+                          onTap: () => _openChat(chat),
                         );
                       },
                     ),
                   ),
-                  SizedBox(height: 8.h),
-                  if (chats.isEmpty)
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 80.h),
-                      child: _EmptyState(
-                        icon: Iconsax.message,
-                        title: 'No chats found',
-                        subtitle: 'Try a different name or specialty',
-                      ),
-                    )
-                  else
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 28.h),
-                      child: Column(
-                        children: [
-                          for (var i = 0; i < chats.length; i++) ...[
-                            if (i > 0) SizedBox(height: 12.h),
-                            _MessageCard(chat: chats[i]),
-                          ],
-                        ],
-                      ),
-                    ),
-                ],
-              ),
+                ),
+                Expanded(
+                  child: chats.isEmpty
+                      ? const _EmptyState()
+                      : ListView.builder(
+                          padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 20.h),
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: chats.length,
+                          itemBuilder: (context, i) {
+                            return FadeScaleIn(
+                              delay: Duration(milliseconds: 50 + i * 45),
+                              child: _MessageTile(
+                                chat: chats[i],
+                                showDivider: i != chats.length - 1,
+                                onTap: () => _openChat(chats[i]),
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
             ),
           ),
         ],
@@ -237,235 +242,213 @@ class _OnlineChip extends StatelessWidget {
     required this.label,
     this.imageUrl,
     this.isAdd = false,
+    this.onTap,
   });
 
   final String label;
   final String? imageUrl;
   final bool isAdd;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 64.w,
-      child: Column(
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 54.w,
-                height: 54.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isAdd ? AppColors.primaryLight : AppColors.border,
-                  border: Border.all(
-                    color: isAdd ? AppColors.primary.withValues(alpha: 0.25) : Colors.white,
-                    width: 2.w,
+    return PressScale(
+      onTap: onTap,
+      child: SizedBox(
+        width: 58.w,
+        child: Column(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 46.w,
+                  height: 46.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isAdd ? AppColors.primaryLight : AppColors.border,
+                    border: Border.all(color: Colors.white, width: 1.5.w),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.08),
-                      blurRadius: 10,
-                      offset: Offset(0, 4.h),
-                    ),
-                  ],
+                  clipBehavior: Clip.antiAlias,
+                  child: isAdd
+                      ? Icon(Iconsax.add, color: AppColors.primary, size: 18.sp)
+                      : AppImage(path: imageUrl!, fit: BoxFit.cover),
                 ),
-                clipBehavior: Clip.antiAlias,
-                child: isAdd
-                    ? Icon(Iconsax.add, color: AppColors.primary, size: 22.sp)
-                    : AppImage(path: imageUrl!, fit: BoxFit.cover),
-              ),
-              if (!isAdd)
-                Positioned(
-                  right: 2.w,
-                  bottom: 2.h,
-                  child: Container(
-                    width: 12.w,
-                    height: 12.w,
-                    decoration: BoxDecoration(
-                      color: AppColors.success,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2.w),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          SizedBox(height: 6.h),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              fontSize: 10.sp,
-              fontWeight: FontWeight.w500,
-              color: AppColors.ink,
+                if (!isAdd)
+                  Positioned(right: 0, bottom: 0, child: PulseDot(size: 10)),
+              ],
             ),
-          ),
-        ],
+            SizedBox(height: 5.h),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w500,
+                color: AppColors.ink,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _MessageCard extends StatelessWidget {
-  const _MessageCard({required this.chat});
+class _MessageTile extends StatelessWidget {
+  const _MessageTile({
+    required this.chat,
+    required this.onTap,
+    this.showDivider = true,
+  });
 
   final ChatPreview chat;
+  final VoidCallback onTap;
+  final bool showDivider;
 
   @override
   Widget build(BuildContext context) {
     final hasUnread = chat.unread > 0;
 
-    return Container(
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(
-          color: hasUnread
-              ? AppColors.primary.withValues(alpha: 0.18)
-              : AppColors.border.withValues(alpha: 0.7),
-          width: 0.8.w,
+    return PressScale(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        decoration: BoxDecoration(
+          border: showDivider
+              ? Border(
+                  bottom: BorderSide(
+                    color: AppColors.border.withValues(alpha: 0.8),
+                    width: 0.6,
+                  ),
+                )
+              : null,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: hasUnread ? 0.08 : 0.04),
-            blurRadius: 14,
-            offset: Offset(0, 6.h),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(14.r),
-                child: SizedBox(
-                  width: 54.w,
-                  height: 54.w,
-                  child: AppImage(path: chat.imageUrl, fit: BoxFit.cover),
-                ),
-              ),
-              if (chat.isOnline)
-                Positioned(
-                  right: -2.w,
-                  bottom: -2.h,
-                  child: Container(
-                    width: 14.w,
-                    height: 14.w,
-                    decoration: BoxDecoration(
-                      color: AppColors.success,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2.w),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        chat.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.ink,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      chat.time,
-                      style: GoogleFonts.poppins(
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w500,
-                        color: hasUnread ? AppColors.primary : AppColors.muted,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 2.h),
-                Text(
-                  chat.specialty,
-                  style: GoogleFonts.poppins(
-                    fontSize: 10.sp,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.body,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14.r),
+                  child: SizedBox(
+                    width: 48.w,
+                    height: 48.w,
+                    child: AppImage(path: chat.imageUrl, fit: BoxFit.cover),
                   ),
                 ),
-                SizedBox(height: 4.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        chat.isTyping ? 'Typing...' : chat.lastMessage,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
-                          fontSize: 12.sp,
-                          fontWeight: hasUnread ? FontWeight.w500 : FontWeight.w400,
-                          color: chat.isTyping
-                              ? AppColors.primary
-                              : hasUnread
-                                  ? AppColors.ink
-                                  : AppColors.body,
-                          fontStyle: chat.isTyping ? FontStyle.italic : FontStyle.normal,
-                        ),
-                      ),
-                    ),
-                    if (hasUnread) ...[
-                      SizedBox(width: 8.w),
-                      Container(
-                        constraints: BoxConstraints(minWidth: 20.w),
-                        height: 20.w,
-                        padding: EdgeInsets.symmetric(horizontal: 5.w),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
+                if (chat.isOnline)
+                  Positioned(
+                    right: -1.w,
+                    bottom: -1.h,
+                    child: const PulseDot(size: 11),
+                  ),
+              ],
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
                         child: Text(
-                          '${chat.unread}',
+                          chat.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.poppins(
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            fontSize: 14.sp,
+                            fontWeight: hasUnread
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                            color: AppColors.ink,
                           ),
                         ),
                       ),
+                      Text(
+                        chat.time,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.w500,
+                          color: hasUnread
+                              ? AppColors.primary
+                              : AppColors.muted,
+                        ),
+                      ),
                     ],
-                  ],
-                ),
-              ],
+                  ),
+                  SizedBox(height: 3.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: chat.isTyping
+                            ? Row(
+                                children: [
+                                  const TypingDots(),
+                                  SizedBox(width: 6.w),
+                                  Text(
+                                    'Typing',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Text(
+                                chat.lastMessage,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12.sp,
+                                  fontWeight: hasUnread
+                                      ? FontWeight.w500
+                                      : FontWeight.w400,
+                                  color: hasUnread
+                                      ? AppColors.ink
+                                      : AppColors.body,
+                                ),
+                              ),
+                      ),
+                      if (hasUnread) ...[
+                        SizedBox(width: 8.w),
+                        Container(
+                          constraints: BoxConstraints(minWidth: 18.w),
+                          height: 18.w,
+                          padding: EdgeInsets.symmetric(horizontal: 5.w),
+                          alignment: Alignment.center,
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${chat.unread}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
+  const _EmptyState();
 
   @override
   Widget build(BuildContext context) {
@@ -473,30 +456,14 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 64.w,
-            height: 64.w,
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: AppColors.primary, size: 28.sp),
-          ),
-          SizedBox(height: 14.h),
+          Icon(Iconsax.message, color: AppColors.muted, size: 28.sp),
+          SizedBox(height: 8.h),
           Text(
-            title,
+            'No chats found',
             style: GoogleFonts.poppins(
-              fontSize: 15.sp,
+              fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.ink,
-            ),
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            subtitle,
-            style: GoogleFonts.poppins(
-              fontSize: 12.sp,
-              color: AppColors.body,
             ),
           ),
         ],
