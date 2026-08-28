@@ -11,8 +11,11 @@ import '../../features/home/components/custom_shade.dart';
 
 enum NotificationType { appointment, message, reminder, promo, system }
 
+enum _NotifMenuAction { markRead, markUnread, delete }
+
 class AppNotification {
   const AppNotification({
+    required this.id,
     required this.title,
     required this.body,
     required this.time,
@@ -20,6 +23,7 @@ class AppNotification {
     this.isRead = false,
   });
 
+  final String id;
   final String title;
   final String body;
   final String time;
@@ -35,37 +39,29 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  int _filter = 0;
-
   late List<AppNotification> _today;
   late List<AppNotification> _earlier;
-
-  static const _filters = [
-    _FilterOption(label: 'All', icon: Iconsax.notification),
-    _FilterOption(label: 'Unread', icon: Iconsax.message_notif),
-    _FilterOption(label: 'Appointments', icon: Iconsax.calendar),
-    _FilterOption(label: 'Messages', icon: Iconsax.message),
-    _FilterOption(label: 'Reminders', icon: Iconsax.clock),
-    _FilterOption(label: 'Tips', icon: Iconsax.heart),
-  ];
 
   @override
   void initState() {
     super.initState();
     _today = [
       const AppNotification(
+        id: 't1',
         title: 'Appointment Reminder',
         body: 'Video call with Dr. Esther Howard starts in 30 minutes.',
         time: 'Just now',
         type: NotificationType.reminder,
       ),
       const AppNotification(
+        id: 't2',
         title: 'New Message',
         body: 'Dr. Jacob Jones sent you a follow-up note about your report.',
         time: '12 min ago',
         type: NotificationType.message,
       ),
       const AppNotification(
+        id: 't3',
         title: 'Booking Confirmed',
         body: 'Your appointment with Dr. Bessie Cooper is confirmed for Sunday.',
         time: '1 hr ago',
@@ -74,6 +70,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     ];
     _earlier = [
       const AppNotification(
+        id: 'e1',
         title: 'Payment Successful',
         body: 'You paid \$120.00 for consultation with Dr. Darlene Robertson.',
         time: 'Yesterday',
@@ -81,6 +78,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         isRead: true,
       ),
       const AppNotification(
+        id: 'e2',
         title: 'Health Tip',
         body: 'Drink enough water today and take a short walk after meals.',
         time: '2 days ago',
@@ -88,6 +86,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         isRead: true,
       ),
       const AppNotification(
+        id: 'e3',
         title: 'Reschedule Request',
         body: 'Dr. Brooklyn Simmons suggested a new slot for Monday 10:00 AM.',
         time: '3 days ago',
@@ -95,6 +94,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         isRead: true,
       ),
       const AppNotification(
+        id: 'e4',
         title: 'Welcome to Docora',
         body: 'Book trusted doctors nearby and manage appointments easily.',
         time: '1 week ago',
@@ -102,23 +102,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         isRead: true,
       ),
     ];
-  }
-
-  List<AppNotification> _applyFilter(List<AppNotification> list) {
-    switch (_filter) {
-      case 1:
-        return list.where((n) => !n.isRead).toList();
-      case 2:
-        return list.where((n) => n.type == NotificationType.appointment).toList();
-      case 3:
-        return list.where((n) => n.type == NotificationType.message).toList();
-      case 4:
-        return list.where((n) => n.type == NotificationType.reminder).toList();
-      case 5:
-        return list.where((n) => n.type == NotificationType.promo).toList();
-      default:
-        return list;
-    }
   }
 
   void _markAllRead() {
@@ -129,6 +112,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   AppNotification _asRead(AppNotification n) => AppNotification(
+        id: n.id,
         title: n.title,
         body: n.body,
         time: n.time,
@@ -136,12 +120,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         isRead: true,
       );
 
+  AppNotification _asUnread(AppNotification n) => AppNotification(
+        id: n.id,
+        title: n.title,
+        body: n.body,
+        time: n.time,
+        type: n.type,
+      );
+
   @override
   Widget build(BuildContext context) {
-    final today = _applyFilter(_today);
-    final earlier = _applyFilter(_earlier);
     final unreadCount = [..._today, ..._earlier].where((n) => !n.isRead).length;
-    final isEmpty = today.isEmpty && earlier.isEmpty;
+    final isEmpty = _today.isEmpty && _earlier.isEmpty;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -226,86 +216,67 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ),
                   ),
                 ),
-
-                // Horizontally scrollable chips — also scrolls away with page
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 10.h, bottom: 4.h),
-                    child: SizedBox(
-                      height: 40.h,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        primary: false,
-                        physics: const BouncingScrollPhysics(),
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        itemCount: _filters.length,
-                        separatorBuilder: (context, index) => SizedBox(width: 8.w),
-                        itemBuilder: (context, index) {
-                          final item = _filters[index];
-                          return _FilterChip(
-                            label: item.label,
-                            icon: item.icon,
-                            selected: _filter == index,
-                            badge: index == 1 && unreadCount > 0 ? unreadCount : null,
-                            onTap: () => setState(() => _filter = index),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-
                 if (isEmpty)
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: _EmptyState(),
                   )
                 else ...[
-                  if (today.isNotEmpty) ...[
+                  if (_today.isNotEmpty) ...[
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 8.h),
-                        child: _SectionLabel(
-                          label: 'Today',
-                          count: today.length,
-                        ),
+                        padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 4.h),
+                        child: _SectionLabel(label: 'Today'),
                       ),
                     ),
                     SliverPadding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       sliver: SliverList.separated(
-                        itemCount: today.length,
-                        separatorBuilder: (context, index) => SizedBox(height: 10.h),
+                        itemCount: _today.length,
+                        separatorBuilder: (context, index) => const Divider(
+                          color: AppColors.border,
+                          height: 1,
+                        ),
                         itemBuilder: (context, index) {
-                          final n = today[index];
-                          return _NotificationCard(
+                          final n = _today[index];
+                          return _NotificationTile(
                             notification: n,
                             onTap: () => _markOneRead(n, isToday: true),
+                            onLongPress: (pos) => _openContextMenu(
+                              n,
+                              isToday: true,
+                              position: pos,
+                            ),
                           );
                         },
                       ),
                     ),
                   ],
-                  if (earlier.isNotEmpty) ...[
+                  if (_earlier.isNotEmpty) ...[
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
-                        child: _SectionLabel(
-                          label: 'Earlier',
-                          count: earlier.length,
-                        ),
+                        padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 4.h),
+                        child: _SectionLabel(label: 'Earlier'),
                       ),
                     ),
                     SliverPadding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       sliver: SliverList.separated(
-                        itemCount: earlier.length,
-                        separatorBuilder: (context, index) => SizedBox(height: 10.h),
+                        itemCount: _earlier.length,
+                        separatorBuilder: (context, index) => const Divider(
+                          color: AppColors.border,
+                          height: 1,
+                        ),
                         itemBuilder: (context, index) {
-                          final n = earlier[index];
-                          return _NotificationCard(
+                          final n = _earlier[index];
+                          return _NotificationTile(
                             notification: n,
                             onTap: () => _markOneRead(n, isToday: false),
+                            onLongPress: (pos) => _openContextMenu(
+                              n,
+                              isToday: false,
+                              position: pos,
+                            ),
                           );
                         },
                       ),
@@ -323,155 +294,91 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   void _markOneRead(AppNotification n, {required bool isToday}) {
     if (n.isRead) return;
+    _replaceOne(_asRead(n), isToday: isToday);
+  }
+
+  void _markOneUnread(AppNotification n, {required bool isToday}) {
+    if (!n.isRead) return;
+    _replaceOne(_asUnread(n), isToday: isToday);
+  }
+
+  void _replaceOne(AppNotification updated, {required bool isToday}) {
     setState(() {
-      final updated = _asRead(n);
+      final list = isToday ? _today : _earlier;
+      final i = list.indexWhere((item) => item.id == updated.id);
+      if (i >= 0) list[i] = updated;
+    });
+  }
+
+  void _deleteOne(AppNotification n, {required bool isToday}) {
+    setState(() {
       if (isToday) {
-        final i = _today.indexOf(n);
-        if (i >= 0) _today[i] = updated;
+        _today.removeWhere((item) => item.id == n.id);
       } else {
-        final i = _earlier.indexOf(n);
-        if (i >= 0) _earlier[i] = updated;
+        _earlier.removeWhere((item) => item.id == n.id);
       }
     });
   }
-}
 
-class _FilterOption {
-  const _FilterOption({required this.label, required this.icon});
-  final String label;
-  final IconData icon;
-}
-
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({required this.label, required this.count});
-
-  final String label;
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 15.sp,
-            fontWeight: FontWeight.w600,
-            color: AppColors.ink,
-          ),
-        ),
-        SizedBox(width: 8.w),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
-          decoration: BoxDecoration(
-            color: AppColors.primaryLight,
-            borderRadius: BorderRadius.circular(10.r),
-          ),
-          child: Text(
-            '$count',
-            style: GoogleFonts.poppins(
-              fontSize: 11.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
-            ),
-          ),
-        ),
-      ],
+  Future<void> _openContextMenu(
+    AppNotification n, {
+    required bool isToday,
+    required Offset position,
+  }) async {
+    HapticFeedback.mediumImpact();
+    final action = await showGeneralDialog<_NotifMenuAction>(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Dismiss notification menu',
+      barrierColor: Colors.black.withValues(alpha: 0.22),
+      transitionDuration: const Duration(milliseconds: 180),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return _NotificationContextMenu(
+          position: position,
+          isRead: n.isRead,
+        );
+      },
     );
+    if (!mounted || action == null) return;
+    switch (action) {
+      case _NotifMenuAction.markRead:
+        _markOneRead(n, isToday: isToday);
+      case _NotifMenuAction.markUnread:
+        _markOneUnread(n, isToday: isToday);
+      case _NotifMenuAction.delete:
+        _deleteOne(n, isToday: isToday);
+    }
   }
 }
 
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-    this.badge,
-  });
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.label});
 
   final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-  final int? badge;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.primary : Colors.white,
-          borderRadius: BorderRadius.circular(22.r),
-          border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border.withValues(alpha: 0.8),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: selected
-                  ? AppColors.primary.withValues(alpha: 0.22)
-                  : Colors.black.withValues(alpha: 0.03),
-              blurRadius: selected ? 12 : 8,
-              offset: Offset(0, 4.h),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 15.sp,
-              color: selected ? Colors.white : AppColors.muted,
-            ),
-            SizedBox(width: 6.w),
-            Text(
-              label,
-              style: GoogleFonts.poppins(
-                fontSize: 12.sp,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                color: selected ? Colors.white : AppColors.body,
-              ),
-            ),
-            if (badge != null) ...[
-              SizedBox(width: 6.w),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-                decoration: BoxDecoration(
-                  color: selected
-                      ? Colors.white.withValues(alpha: 0.22)
-                      : AppColors.primaryLight,
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                child: Text(
-                  '$badge',
-                  style: GoogleFonts.poppins(
-                    fontSize: 10.sp,
-                    fontWeight: FontWeight.w600,
-                    color: selected ? Colors.white : AppColors.primary,
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
+    return Text(
+      label,
+      style: GoogleFonts.poppins(
+        fontSize: 15.sp,
+        fontWeight: FontWeight.w600,
+        color: AppColors.ink,
       ),
     );
   }
 }
 
-class _NotificationCard extends StatelessWidget {
-  const _NotificationCard({
+class _NotificationTile extends StatelessWidget {
+  const _NotificationTile({
     required this.notification,
     required this.onTap,
+    required this.onLongPress,
   });
 
   final AppNotification notification;
   final VoidCallback onTap;
+  final ValueChanged<Offset> onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -480,24 +387,10 @@ class _NotificationCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 12.h),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18.r),
-          border: Border.all(
-            color: unread
-                ? AppColors.primary.withValues(alpha: 0.14)
-                : AppColors.border.withValues(alpha: 0.55),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.035),
-              blurRadius: 12,
-              offset: Offset(0, 5.h),
-            ),
-          ],
-        ),
+      onLongPressStart: (details) => onLongPress(details.globalPosition),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 14.h),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -519,16 +412,33 @@ class _NotificationCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: Text(
-                          notification.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
-                            height: 1.25,
-                          ),
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                notification.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.ink,
+                                  height: 1.25,
+                                ),
+                              ),
+                            ),
+                            if (unread) ...[
+                              SizedBox(width: 6.w),
+                              Container(
+                                width: 7.w,
+                                height: 7.w,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                       SizedBox(width: 8.w),
@@ -554,48 +464,6 @@ class _NotificationCard extends StatelessWidget {
                       height: 1.4,
                     ),
                   ),
-                  SizedBox(height: 8.h),
-                  Row(
-                    children: [
-                      Text(
-                        style.label,
-                        style: GoogleFonts.poppins(
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w500,
-                          color: style.iconColor,
-                        ),
-                      ),
-                      if (unread) ...[
-                        SizedBox(width: 8.w),
-                        Container(
-                          width: 4.w,
-                          height: 4.w,
-                          decoration: BoxDecoration(
-                            color: AppColors.muted.withValues(alpha: 0.5),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        SizedBox(width: 8.w),
-                        Container(
-                          width: 7.w,
-                          height: 7.w,
-                          decoration: const BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        SizedBox(width: 5.w),
-                        Text(
-                          'New',
-                          style: GoogleFonts.poppins(
-                            fontSize: 11.sp,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -610,39 +478,173 @@ class _NotificationCard extends StatelessWidget {
       case NotificationType.appointment:
         return const _NotifStyle(
           icon: Iconsax.calendar,
-          label: 'Appointment',
           background: AppColors.primaryLight,
           iconColor: AppColors.primary,
         );
       case NotificationType.message:
         return const _NotifStyle(
           icon: Iconsax.message,
-          label: 'Message',
           background: AppColors.neuro,
           iconColor: AppColors.neuroIcon,
         );
       case NotificationType.reminder:
         return const _NotifStyle(
           icon: Iconsax.clock,
-          label: 'Reminder',
           background: AppColors.derma,
           iconColor: AppColors.dermaIcon,
         );
       case NotificationType.promo:
         return const _NotifStyle(
           icon: Iconsax.heart,
-          label: 'Health Tip',
           background: AppColors.cardio,
           iconColor: AppColors.cardioIcon,
         );
       case NotificationType.system:
         return const _NotifStyle(
           icon: Iconsax.tick_circle,
-          label: 'System',
           background: Color(0xFFE8FFF3),
           iconColor: AppColors.success,
         );
     }
+  }
+}
+
+class _NotificationContextMenu extends StatelessWidget {
+  const _NotificationContextMenu({
+    required this.position,
+    required this.isRead,
+  });
+
+  final Offset position;
+  final bool isRead;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final padding = MediaQuery.paddingOf(context);
+    final menuWidth = 214.w;
+    final menuHeight = 108.h;
+    final gap = 10.h;
+
+    var left = position.dx - (menuWidth / 2);
+    var top = position.dy + gap;
+
+    left = left.clamp(16.w, size.width - menuWidth - 16.w);
+    if (top + menuHeight > size.height - padding.bottom - 16.h) {
+      top = position.dy - menuHeight - gap;
+    }
+    top = top.clamp(padding.top + 8.h, size.height - menuHeight - padding.bottom - 8.h);
+
+    return Material(
+      type: MaterialType.transparency,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => Navigator.of(context).pop(),
+            ),
+          ),
+          Positioned(
+            left: left,
+            top: top,
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: 1),
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOutCubic,
+              builder: (context, t, child) {
+                return Opacity(
+                  opacity: t,
+                  child: Transform.scale(
+                    scale: 0.92 + (0.08 * t),
+                    alignment: Alignment.topCenter,
+                    child: child,
+                  ),
+                );
+              },
+              child: Container(
+                width: menuWidth,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: AppColors.border.withValues(alpha: 0.8)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.12),
+                      blurRadius: 24,
+                      offset: Offset(0, 10.h),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _ContextMenuItem(
+                      icon: isRead ? Iconsax.eye : Iconsax.tick_circle,
+                      label: isRead ? 'Mark as unread' : 'Mark as read',
+                      onTap: () => Navigator.of(context).pop(
+                        isRead
+                            ? _NotifMenuAction.markUnread
+                            : _NotifMenuAction.markRead,
+                      ),
+                    ),
+                    Divider(height: 1, color: AppColors.border.withValues(alpha: 0.9)),
+                    _ContextMenuItem(
+                      icon: Iconsax.trash,
+                      label: 'Delete',
+                      color: const Color(0xFFE11D48),
+                      onTap: () => Navigator.of(context).pop(_NotifMenuAction.delete),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ContextMenuItem extends StatelessWidget {
+  const _ContextMenuItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final tint = color ?? AppColors.ink;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16.r),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 13.h),
+        child: Row(
+          children: [
+            Icon(icon, size: 18.sp, color: tint),
+            SizedBox(width: 10.w),
+            Expanded(
+              child: Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w500,
+                  color: tint,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -679,7 +681,7 @@ class _EmptyState extends StatelessWidget {
             ),
             SizedBox(height: 6.h),
             Text(
-              'Try another filter or check back later',
+              'Check back later for new updates',
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
                 fontSize: 12.sp,
@@ -697,13 +699,11 @@ class _EmptyState extends StatelessWidget {
 class _NotifStyle {
   const _NotifStyle({
     required this.icon,
-    required this.label,
     required this.background,
     required this.iconColor,
   });
 
   final IconData icon;
-  final String label;
   final Color background;
   final Color iconColor;
 }

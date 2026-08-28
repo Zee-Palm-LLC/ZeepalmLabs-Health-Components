@@ -1,15 +1,20 @@
-import 'package:aira_health/screens/onboarding/onboarding_screen.dart';
-import 'package:aira_health/theme/app_theme.dart';
+import 'package:aira_health/onboarding/components/primary_bg.dart';
+import 'package:aira_health/onboarding/onboarding_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
   runApp(const AiraApp());
@@ -20,47 +25,33 @@ class AiraApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Aira Health',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: AiraColors.mist,
-        splashFactory: NoSplash.splashFactory,
-        highlightColor: Colors.transparent,
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: SoftFadePageTransitionsBuilder(),
-            TargetPlatform.iOS: SoftFadePageTransitionsBuilder(),
-          },
-        ),
-      ),
-      home: const OnboardingScreen(),
-    );
-  }
-}
-
-class SoftFadePageTransitionsBuilder extends PageTransitionsBuilder {
-  const SoftFadePageTransitionsBuilder();
-
-  @override
-  Widget buildTransitions<T>(
-    PageRoute<T> route,
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    final fade = CurvedAnimation(
-      parent: animation,
-      curve: const Cubic(0.16, 1, 0.3, 1),
-    );
-    return FadeTransition(
-      opacity: fade,
-      child: ScaleTransition(
-        scale: Tween<double>(begin: 0.985, end: 1).animate(fade),
-        child: child,
-      ),
+    return ScreenUtilInit(
+      designSize: const Size(390, 844),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (_, _) {
+        return GetMaterialApp(
+          title: 'Aira Health',
+          scrollBehavior: ScrollBehavior().copyWith(
+            overscroll: false,
+            physics: BouncingScrollPhysics(),
+          ),
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            useMaterial3: true,
+            brightness: Brightness.light,
+            scaffoldBackgroundColor: PrimaryBgColors.base,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFF7B61FF),
+              surface: Colors.white,
+            ),
+            textTheme: GoogleFonts.plusJakartaSansTextTheme(),
+            splashFactory: NoSplash.splashFactory,
+            highlightColor: Colors.transparent,
+          ),
+          home: const OnboardingView(),
+        );
+      },
     );
   }
 }
