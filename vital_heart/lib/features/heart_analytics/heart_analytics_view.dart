@@ -25,7 +25,7 @@ class HeartAnalyticsView extends StatelessWidget {
       backgroundColor: AppColors.bg,
       extendBodyBehindAppBar: true,
       appBar: HeartAppBar(
-        title: 'Heart Analitic',
+        title: 'Heart Analytics',
         showBack: true,
         onBack: Get.back,
       ),
