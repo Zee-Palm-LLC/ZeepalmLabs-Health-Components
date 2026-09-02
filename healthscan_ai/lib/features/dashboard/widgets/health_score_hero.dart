@@ -6,9 +6,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:healthscan_ai/core/theme/app_colors.dart';
 import 'package:healthscan_ai/core/theme/app_text_styles.dart';
+import 'package:healthscan_ai/features/analysis/analysis_view.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
-class HealthScoreHero extends StatelessWidget {
+class HealthScoreHero extends StatefulWidget {
   const HealthScoreHero({
     super.key,
     this.score = 92,
@@ -25,122 +26,390 @@ class HealthScoreHero extends StatelessWidget {
   final double trendPercent;
 
   @override
-  Widget build(BuildContext context) {
-    final circleSize = 168.w;
-    final overflowRight = 42.w;
-    final cardHeight = 162.h;
+  State<HealthScoreHero> createState() => _HealthScoreHeroState();
+}
 
-    return Container(
-      height: cardHeight,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment(-0.9, -0.5),
-          end: Alignment(0.9, 0.5),
-          colors: [
-            Color(0xFF2F5BD2),
-            Color(0xFF214BD2),
-            Color(0xFF147FDB),
-            Color(0xFF3ACBC5),
-          ],
-          stops: [0.0, 0.42, 0.7, 1.0],
-        ),
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF163FA4).withValues(alpha: 0.28),
-            blurRadius: 30,
-            offset: Offset(0, 15.h),
+class _HealthScoreHeroState extends State<HealthScoreHero>
+    with TickerProviderStateMixin {
+  late final AnimationController _introCtrl;
+  late final AnimationController _gradientCtrl;
+  late final Animation<double> _introAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _introCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    );
+    _introAnim = CurvedAnimation(
+      parent: _introCtrl,
+      curve: Curves.easeOutCubic,
+    );
+    _gradientCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 18),
+    )..repeat();
+
+    _introCtrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _introCtrl.dispose();
+    _gradientCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final circleSize = 178.w;
+    final cardHeight = 162.h;
+    final circleClipRight = circleSize * 0.18;
+    final progress = widget.score / widget.maxScore;
+
+    return AnimatedBuilder(
+      animation: Listenable.merge([_introAnim, _gradientCtrl]),
+      builder: (context, child) {
+        final animatedScore =
+            (widget.score * _introAnim.value).round().clamp(0, widget.score);
+        final animatedProgress = progress * _introAnim.value;
+
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AnalysisView()),
+            );
+          },
+          child: Container(
+          clipBehavior: Clip.antiAlias,
+          height: cardHeight,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.r),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF163FA4).withValues(alpha: 0.28),
+                blurRadius: 30,
+                offset: Offset(0, 15.h),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(10.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'AI Health Score',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.white.withValues(alpha: 0.82),
-                    letterSpacing: 0.1,
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: _LiquidGradientBackground(t: _gradientCtrl.value),
+              ),
+              Padding(
+                padding: EdgeInsets.all(10.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '$score',
-                      style: AppTextStyles.heroScore.copyWith(
-                        fontSize: 42.sp,
-                        fontWeight: FontWeight.w800,
+                      'AI Health Score',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.white.withValues(alpha: 0.82),
+                        letterSpacing: 0.1,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 3.w),
-                      child: Text(
-                        '/$maxScore',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.white.withValues(alpha: 0.65),
+                    SizedBox(height: 6.h),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          '$animatedScore',
+                          style: AppTextStyles.heroScore.copyWith(
+                            fontSize: 42.sp,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 8.h),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        statusLabel,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.white,
+                        Padding(
+                          padding: EdgeInsets.only(left: 3.w),
+                          child: Text(
+                            '/${widget.maxScore}',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.white.withValues(alpha: 0.65),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    SizedBox(width: 5.w),
-                    Icon(
-                      Iconsax.magic_star,
-                      size: 14.sp,
-                      color: AppColors.white.withValues(alpha: 0.9),
+                    SizedBox(height: 8.h),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            widget.statusLabel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.white,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 5.w),
+                        Icon(
+                          Iconsax.magic_star,
+                          size: 14.sp,
+                          color: AppColors.white.withValues(alpha: 0.9),
+                        ),
+                      ],
                     ),
+                    SizedBox(height: 14.h),
+                    _TrendBadge(label: widget.trendLabel),
                   ],
-                ),
-                SizedBox(height: 14.h),
-                _TrendBadge(label: trendLabel),
-              ],
-            ),
-          ),
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Transform.translate(
-                offset: Offset(overflowRight, 0),
-                child: SizedBox(
-                  width: circleSize,
-                  height: circleSize,
-                  child: const _AiHealthCircle(),
                 ),
               ),
-            ),
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Transform.translate(
+                    offset: Offset(circleClipRight, 0),
+                    child: SizedBox(
+                      width: circleSize,
+                      height: circleSize,
+                      child: _AiHealthCircle(progress: animatedProgress),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ));
+      },
     );
   }
+}
+
+class _LiquidGradientBackground extends StatelessWidget {
+  const _LiquidGradientBackground({required this.t});
+
+  final double t;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _LiquidGradientPainter(t: t),
+      child: const SizedBox.expand(),
+    );
+  }
+}
+
+class _LiquidGradientPainter extends CustomPainter {
+  const _LiquidGradientPainter({required this.t});
+
+  final double t;
+
+  static const _deep = Color(0xFF103BA7);
+  static const _baseBlue = Color(0xFF214BD2);
+  static const _midBlue = Color(0xFF147FDB);
+  static const _cyan = Color(0xFF39D7D1);
+  static const _mint = Color(0xFFA9FFF1);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = _deep,
+    );
+
+    final blobs = <_LiquidBlob>[
+      _LiquidBlob(
+        color: _baseBlue,
+        phase: 0,
+        orbitX: 0.38,
+        orbitY: 0.28,
+        speedX: 0.22,
+        speedY: 0.17,
+        radius: 0.72,
+        alpha: 0.92,
+      ),
+      _LiquidBlob(
+        color: _cyan,
+        phase: 1.4,
+        orbitX: 0.42,
+        orbitY: 0.34,
+        speedX: 0.19,
+        speedY: 0.24,
+        radius: 0.68,
+        alpha: 0.88,
+      ),
+      _LiquidBlob(
+        color: _mint,
+        phase: 2.8,
+        orbitX: 0.36,
+        orbitY: 0.3,
+        speedX: 0.26,
+        speedY: 0.15,
+        radius: 0.55,
+        alpha: 0.75,
+      ),
+      _LiquidBlob(
+        color: _midBlue,
+        phase: 4.1,
+        orbitX: 0.45,
+        orbitY: 0.32,
+        speedX: 0.16,
+        speedY: 0.21,
+        radius: 0.62,
+        alpha: 0.85,
+      ),
+      _LiquidBlob(
+        color: const Color(0xFF4BEEDD),
+        phase: 5.5,
+        orbitX: 0.3,
+        orbitY: 0.38,
+        speedX: 0.23,
+        speedY: 0.18,
+        radius: 0.48,
+        alpha: 0.7,
+      ),
+    ];
+
+    for (final blob in blobs) {
+      _drawLiquidBlob(canvas, size, blob);
+    }
+
+    _drawLiquidSheen(canvas, size);
+  }
+
+  void _drawLiquidBlob(Canvas canvas, Size size, _LiquidBlob blob) {
+    final theta = t * 2 * math.pi;
+    final center = Offset(
+      size.width *
+          (0.5 +
+              blob.orbitX *
+                  math.sin(theta * blob.speedX + blob.phase)),
+      size.height *
+          (0.5 +
+              blob.orbitY *
+                  math.cos(theta * blob.speedY + blob.phase * 0.9)),
+    );
+    final baseR = size.shortestSide * blob.radius * 0.5;
+    final path = _morphingBlobPath(center, baseR, blob.phase);
+
+    final paint = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(-0.15, -0.2),
+        radius: 1.0,
+        colors: [
+          blob.color.withValues(alpha: blob.alpha),
+          blob.color.withValues(alpha: blob.alpha * 0.55),
+          blob.color.withValues(alpha: 0.0),
+        ],
+        stops: const [0.0, 0.42, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: baseR * 1.15))
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 28);
+
+    canvas.drawPath(path, paint);
+
+    final corePaint = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          Colors.white.withValues(alpha: 0.08),
+          blob.color.withValues(alpha: blob.alpha * 0.35),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.35, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: baseR * 0.7))
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18);
+    canvas.drawPath(path, corePaint);
+  }
+
+  Path _morphingBlobPath(Offset center, double radius, double phase) {
+    const segments = 10;
+    final path = Path();
+    final theta = t * 2 * math.pi;
+
+    for (var i = 0; i <= segments; i++) {
+      final angle = (i / segments) * 2 * math.pi;
+      final wobble = 1 +
+          0.14 * math.sin(angle * 3 + theta * 1.6 + phase) +
+          0.1 * math.cos(angle * 2 - theta * 1.1 + phase * 1.3) +
+          0.06 * math.sin(angle * 5 + phase);
+      final r = radius * wobble;
+      final point = Offset(
+        center.dx + math.cos(angle) * r,
+        center.dy + math.sin(angle) * r,
+      );
+      if (i == 0) {
+        path.moveTo(point.dx, point.dy);
+      } else {
+        final prevAngle = ((i - 1) / segments) * 2 * math.pi;
+        final prevWobble = 1 +
+            0.14 * math.sin(prevAngle * 3 + theta * 1.6 + phase) +
+            0.1 * math.cos(prevAngle * 2 - theta * 1.1 + phase * 1.3) +
+            0.06 * math.sin(prevAngle * 5 + phase);
+        final prevR = radius * prevWobble;
+        final prev = Offset(
+          center.dx + math.cos(prevAngle) * prevR,
+          center.dy + math.sin(prevAngle) * prevR,
+        );
+        final cp = Offset(
+          (prev.dx + point.dx) / 2 + math.sin(angle + theta) * 8,
+          (prev.dy + point.dy) / 2 + math.cos(angle + theta) * 8,
+        );
+        path.quadraticBezierTo(cp.dx, cp.dy, point.dx, point.dy);
+      }
+    }
+    path.close();
+    return path;
+  }
+
+  void _drawLiquidSheen(Canvas canvas, Size size) {
+    final sheenCenter = Offset(
+      size.width * (0.62 + 0.08 * math.sin(t * 2 * math.pi * 0.3)),
+      size.height * (0.28 + 0.06 * math.cos(t * 2 * math.pi * 0.25)),
+    );
+    final sheenPaint = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          Colors.white.withValues(alpha: 0.14),
+          Colors.white.withValues(alpha: 0.04),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.35, 1.0],
+      ).createShader(
+        Rect.fromCircle(center: sheenCenter, radius: size.width * 0.35),
+      )
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 22);
+    canvas.drawCircle(sheenCenter, size.width * 0.35, sheenPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _LiquidGradientPainter oldDelegate) =>
+      oldDelegate.t != t;
+}
+
+class _LiquidBlob {
+  const _LiquidBlob({
+    required this.color,
+    required this.phase,
+    required this.orbitX,
+    required this.orbitY,
+    required this.speedX,
+    required this.speedY,
+    required this.radius,
+    required this.alpha,
+  });
+
+  final Color color;
+  final double phase;
+  final double orbitX;
+  final double orbitY;
+  final double speedX;
+  final double speedY;
+  final double radius;
+  final double alpha;
 }
 
 class _TrendBadge extends StatelessWidget {
@@ -197,9 +466,10 @@ class _TrendBadge extends StatelessWidget {
   }
 }
 
-/// Flutter port of `enhanced-ai-health-circle.html`
 class _AiHealthCircle extends StatefulWidget {
-  const _AiHealthCircle();
+  const _AiHealthCircle({required this.progress});
+
+  final double progress;
 
   @override
   State<_AiHealthCircle> createState() => _AiHealthCircleState();
@@ -379,7 +649,7 @@ class _AiHealthCircleState extends State<_AiHealthCircle>
         angle: rotation,
         child: CustomPaint(
           size: Size(ringSize, ringSize),
-          painter: const _ProgressRingPainter(),
+          painter: _ProgressRingPainter(progress: widget.progress),
         ),
       ),
     );
@@ -540,59 +810,83 @@ class _OrbitRingPainter extends CustomPainter {
 }
 
 class _ProgressRingPainter extends CustomPainter {
-  const _ProgressRingPainter();
+  const _ProgressRingPainter({required this.progress});
+
+  final double progress;
+
+  static const _startAngle = 138 * math.pi / 180;
+  static const _maxSweep = math.pi * 1.72;
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
     final stroke = size.width * 0.125;
-    final rect = Rect.fromCircle(center: center, radius: radius - stroke / 2);
+    final ringR = radius - stroke / 2;
+    final rect = Rect.fromCircle(center: center, radius: ringR);
+    final sweep = _maxSweep * progress.clamp(0.0, 1.0);
 
-    final glow = Paint()
-      ..color = const Color(0xFFC2FFF7).withValues(alpha: 0.2)
+    final trackGlow = Paint()
+      ..color = const Color(0xFFC2FFF7).withValues(alpha: 0.12)
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke + 4
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
-    canvas.drawCircle(center, radius - stroke / 2, glow);
+    canvas.drawCircle(center, ringR, trackGlow);
 
-    final ringPaint = Paint()
+    final trackPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.12)
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
-      ..strokeCap = StrokeCap.butt
-      ..shader = SweepGradient(
-        startAngle: 138 * math.pi / 180,
-        endAngle: 138 * math.pi / 180 + 2 * math.pi,
-        colors: const [
-          Color(0x1FFFFFFF),
-          Color(0xB8FFFFFF),
-          Color(0xFFFFFFFF),
-          Color(0xE6DAFFF8),
-          Color(0xB865E6DE),
-          Color(0x1FFFFFFF),
-        ],
-        stops: [0.0, 20 / 360, 38 / 360, 190 / 360, 267 / 360, 1.0],
-        transform: GradientRotation(138 * math.pi / 180),
-      ).createShader(rect);
+      ..strokeCap = StrokeCap.round;
+    canvas.drawArc(rect, _startAngle, _maxSweep, false, trackPaint);
 
-    canvas.drawArc(rect, 0, 2 * math.pi, false, ringPaint);
+    if (sweep > 0.01) {
+      final progressGlow = Paint()
+        ..color = const Color(0xFFC2FFF7).withValues(alpha: 0.35)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke + 6
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+      canvas.drawArc(rect, _startAngle, sweep, false, progressGlow);
 
-    final dotAngle = 138 * math.pi / 180 + 2 * math.pi * 0.72;
-    final dotR = radius - stroke / 2;
-    final dot = Offset(
-      center.dx + math.cos(dotAngle) * dotR,
-      center.dy + math.sin(dotAngle) * dotR,
-    );
+      final ringPaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke
+        ..strokeCap = StrokeCap.round
+        ..shader = SweepGradient(
+          startAngle: _startAngle,
+          endAngle: _startAngle + _maxSweep,
+          colors: const [
+            Color(0x1FFFFFFF),
+            Color(0xB8FFFFFF),
+            Color(0xFFFFFFFF),
+            Color(0xE6DAFFF8),
+            Color(0xB865E6DE),
+            Color(0x1FFFFFFF),
+          ],
+          stops: [0.0, 20 / 360, 38 / 360, 190 / 360, 267 / 360, 1.0],
+          transform: GradientRotation(_startAngle),
+        ).createShader(rect);
 
-    final dotGlow = Paint()
-      ..color = Colors.white.withValues(alpha: 0.9)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 9);
-    canvas.drawCircle(dot, 9, dotGlow);
-    canvas.drawCircle(dot, 6, Paint()..color = Colors.white);
+      canvas.drawArc(rect, _startAngle, sweep, false, ringPaint);
+
+      final dotAngle = _startAngle + sweep;
+      final dot = Offset(
+        center.dx + math.cos(dotAngle) * ringR,
+        center.dy + math.sin(dotAngle) * ringR,
+      );
+
+      final dotGlow = Paint()
+        ..color = Colors.white.withValues(alpha: 0.9)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 9);
+      canvas.drawCircle(dot, 9, dotGlow);
+      canvas.drawCircle(dot, 6, Paint()..color = Colors.white);
+    }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _ProgressRingPainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }
 
 class _SparkleIconPainter extends CustomPainter {
