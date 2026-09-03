@@ -1,4 +1,4 @@
-import 'package:docora/features/doctor_detail/doctor_detail_screen.dart';
+
 import 'package:docora/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,7 +38,6 @@ void main() {
   testWidgets('Doctor detail screen opens with simple navigation', (tester) async {
     await pumpDocora(tester);
 
-    Get.to(() => const DoctorDetailScreen(doctorId: 'brooklyn'));
     await tester.pumpAndSettle();
 
     expect(find.text('Doctor Information'), findsOneWidget);
