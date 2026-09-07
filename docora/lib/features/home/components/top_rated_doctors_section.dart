@@ -3,9 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
-import '../../../core/constants/app_images.dart';
 import '../../../core/data/mock_data.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/doctor_hero_photo.dart';
 
 class TopRatedDoctorsSection extends StatelessWidget {
   const TopRatedDoctorsSection({
@@ -13,11 +13,13 @@ class TopRatedDoctorsSection extends StatelessWidget {
     this.doctors = MockData.topRated,
     this.onViewAll,
     this.onDoctorTap,
+    this.heroScope = 'top-rated',
   });
 
   final List<DoctorModel> doctors;
   final VoidCallback? onViewAll;
   final ValueChanged<DoctorModel>? onDoctorTap;
+  final String heroScope;
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +62,8 @@ class TopRatedDoctorsSection extends StatelessWidget {
               final doctor = doctors[index];
               return TopRatedDoctorCard(
                 doctor: doctor,
-                onTap: () {
-                  if (onDoctorTap != null) {
-                    onDoctorTap!(doctor);
-                  } else {}
-                },
+                heroScope: heroScope,
+                onTap: () => onDoctorTap?.call(doctor),
               );
             },
           ),
@@ -75,10 +74,16 @@ class TopRatedDoctorsSection extends StatelessWidget {
 }
 
 class TopRatedDoctorCard extends StatelessWidget {
-  const TopRatedDoctorCard({super.key, required this.doctor, this.onTap});
+  const TopRatedDoctorCard({
+    super.key,
+    required this.doctor,
+    this.onTap,
+    this.heroScope = 'top-rated',
+  });
 
   final DoctorModel doctor;
   final VoidCallback? onTap;
+  final String heroScope;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +94,7 @@ class TopRatedDoctorCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _DoctorPhoto(doctor: doctor),
+            _DoctorPhoto(doctor: doctor, heroScope: heroScope),
             SizedBox(height: 10.h),
             Row(
               children: [
@@ -186,36 +191,20 @@ class TopRatedDoctorCard extends StatelessWidget {
 }
 
 class _DoctorPhoto extends StatelessWidget {
-  const _DoctorPhoto({required this.doctor});
+  const _DoctorPhoto({required this.doctor, required this.heroScope});
 
   final DoctorModel doctor;
+  final String heroScope;
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16.r),
-      child: SizedBox(
-        width: 118.w,
-        height: 118.w,
-        child: doctor.imageUrl == null
-            ? ColoredBox(
-                color: doctor.avatarColor,
-                child: Center(
-                  child: Text(
-                    doctor.initials,
-                    style: GoogleFonts.poppins(
-                      fontSize: 24.sp,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.ink.withValues(alpha: 0.45),
-                    ),
-                  ),
-                ),
-              )
-            : AppImage(
-                path: doctor.imageUrl!,
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-              ),
+    return SizedBox(
+      width: 118.w,
+      height: 118.w,
+      child: DoctorHeroPhoto(
+        doctor: doctor,
+        scope: heroScope,
+        borderRadius: BorderRadius.circular(16.r),
       ),
     );
   }

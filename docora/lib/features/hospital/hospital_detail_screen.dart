@@ -8,6 +8,7 @@ import '../../core/constants/app_images.dart';
 import '../../core/data/mock_data.dart';
 import '../../core/navigation/app_nav.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/doctor_hero_photo.dart';
 import '../booking/book_appointment_screen.dart';
 import '../booking/book_slot_screen.dart';
 import '../doctor/doctor_detail_screen.dart';
@@ -332,8 +333,11 @@ class HospitalDetailScreen extends StatelessWidget {
                               for (var i = 0; i < doctors.length; i++) ...[
                                 if (i > 0) SizedBox(height: 8.h),
                                 PressScale(
-                                  onTap: () => AppNav.to(
-                                    DoctorDetailScreen(doctor: doctors[i]),
+                                  onTap: () => AppNav.hero(
+                                    DoctorDetailScreen(
+                                      doctor: doctors[i],
+                                      heroScope: 'hospital',
+                                    ),
                                   ),
                                   child: _DoctorRow(doctor: doctors[i]),
                                 ),
@@ -462,9 +466,11 @@ class _DoctorRow extends StatelessWidget {
             child: SizedBox(
               width: 48.w,
               height: 48.w,
-              child: doctor.imageUrl != null
-                  ? AppImage(path: doctor.imageUrl!, fit: BoxFit.cover)
-                  : ColoredBox(color: doctor.avatarColor),
+              child: DoctorHeroPhoto(
+                doctor: doctor,
+                scope: 'hospital',
+                borderRadius: BorderRadius.circular(12.r),
+              ),
             ),
           ),
           SizedBox(width: 12.w),

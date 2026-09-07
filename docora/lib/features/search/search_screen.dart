@@ -8,6 +8,7 @@ import '../../core/constants/app_images.dart';
 import '../../core/data/mock_data.dart';
 import '../../core/navigation/app_nav.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/doctor_hero_photo.dart';
 import '../doctor/doctor_detail_screen.dart';
 import '../home/components/custom_icon_btn.dart';
 import '../home/components/custom_shade.dart';
@@ -269,8 +270,11 @@ class _SearchScreenState extends State<SearchScreen> {
                             FadeScaleIn(
                               delay: Duration(milliseconds: 40 + i * 40),
                               child: PressScale(
-                                onTap: () => AppNav.to(
-                                  DoctorDetailScreen(doctor: doctors[i]),
+                                onTap: () => AppNav.hero(
+                                  DoctorDetailScreen(
+                                    doctor: doctors[i],
+                                    heroScope: 'search',
+                                  ),
                                 ),
                                 child: _ResultDoctor(doctor: doctors[i]),
                               ),
@@ -337,9 +341,11 @@ class _ResultDoctor extends StatelessWidget {
             child: SizedBox(
               width: 48.w,
               height: 48.w,
-              child: doctor.imageUrl != null
-                  ? AppImage(path: doctor.imageUrl!, fit: BoxFit.cover)
-                  : ColoredBox(color: doctor.avatarColor),
+              child: DoctorHeroPhoto(
+                doctor: doctor,
+                scope: 'search',
+                borderRadius: BorderRadius.circular(12.r),
+              ),
             ),
           ),
           SizedBox(width: 12.w),

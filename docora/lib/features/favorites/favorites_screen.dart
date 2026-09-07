@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
-import '../../core/constants/app_images.dart';
 import '../../core/data/mock_data.dart';
 import '../../core/navigation/app_nav.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/doctor_hero_photo.dart';
 import '../../features/home/components/custom_shade.dart';
 import '../doctor/doctor_detail_screen.dart';
 import '../messages/components/message_motion.dart';
@@ -101,8 +101,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                                     doctor: left[i],
                                     tall: i.isEven,
                                     onRemove: () => _remove(left[i]),
-                                    onTap: () => AppNav.to(
-                                      DoctorDetailScreen(doctor: left[i]),
+                                    onTap: () => AppNav.hero(
+                                      DoctorDetailScreen(
+                                        doctor: left[i],
+                                        heroScope: 'favorites',
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -123,8 +126,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                                     doctor: right[i],
                                     tall: i.isOdd,
                                     onRemove: () => _remove(right[i]),
-                                    onTap: () => AppNav.to(
-                                      DoctorDetailScreen(doctor: right[i]),
+                                    onTap: () => AppNav.hero(
+                                      DoctorDetailScreen(
+                                        doctor: right[i],
+                                        heroScope: 'favorites',
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -181,9 +187,11 @@ class _FavoriteCard extends StatelessWidget {
                 SizedBox(
                   height: tall ? 132.h : 108.h,
                   width: double.infinity,
-                  child: doctor.imageUrl == null
-                      ? ColoredBox(color: doctor.avatarColor)
-                      : AppImage(path: doctor.imageUrl!, fit: BoxFit.cover),
+                  child: DoctorHeroPhoto(
+                    doctor: doctor,
+                    scope: 'favorites',
+                    borderRadius: BorderRadius.zero,
+                  ),
                 ),
                 Positioned(
                   top: 8.h,

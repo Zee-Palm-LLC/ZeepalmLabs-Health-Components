@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
-import '../../core/constants/app_images.dart';
 import '../../core/data/mock_data.dart';
 import '../../core/navigation/app_nav.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/doctor_hero_photo.dart';
 import '../booking/book_slot_screen.dart';
 import '../doctor/doctor_detail_screen.dart';
 import '../home/components/custom_icon_btn.dart';
@@ -122,7 +122,12 @@ class SpecialtyDoctorsScreen extends StatelessWidget {
                         delay: Duration(milliseconds: 40 + (index - 1) * 50),
                         child: PressScale(
                           onTap: () =>
-                              AppNav.to(DoctorDetailScreen(doctor: d)),
+                              AppNav.hero(
+                                DoctorDetailScreen(
+                                  doctor: d,
+                                  heroScope: 'specialty',
+                                ),
+                              ),
                           child: _SpecialtyDoctorCard(doctor: d),
                         ),
                       );
@@ -159,13 +164,16 @@ class _SpecialtyDoctorCard extends StatelessWidget {
       child: Row(
         children: [
           ClipRRect(
+            // Keep outer clip for card polish; Hero lives inside DoctorHeroPhoto.
             borderRadius: BorderRadius.circular(14.r),
             child: SizedBox(
               width: 72.w,
               height: 72.w,
-              child: doctor.imageUrl != null
-                  ? AppImage(path: doctor.imageUrl!, fit: BoxFit.cover)
-                  : ColoredBox(color: doctor.avatarColor),
+              child: DoctorHeroPhoto(
+                doctor: doctor,
+                scope: 'specialty',
+                borderRadius: BorderRadius.circular(14.r),
+              ),
             ),
           ),
           SizedBox(width: 12.w),

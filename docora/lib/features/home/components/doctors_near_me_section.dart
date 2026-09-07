@@ -3,9 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
-import '../../../core/constants/app_images.dart';
 import '../../../core/data/mock_data.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/doctor_hero_photo.dart';
 
 class DoctorsNearMeSection extends StatelessWidget {
   const DoctorsNearMeSection({
@@ -13,11 +13,13 @@ class DoctorsNearMeSection extends StatelessWidget {
     this.doctors = MockData.nearMe,
     this.onViewAll,
     this.onDoctorTap,
+    this.heroScope = 'near-me',
   });
 
   final List<DoctorModel> doctors;
   final VoidCallback? onViewAll;
   final ValueChanged<DoctorModel>? onDoctorTap;
+  final String heroScope;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +60,7 @@ class DoctorsNearMeSection extends StatelessWidget {
             final doctor = doctors[index];
             return NearMeDoctorCard(
               doctor: doctor,
+              heroScope: heroScope,
               onTap: () => onDoctorTap?.call(doctor),
             );
           },
@@ -74,12 +77,14 @@ class NearMeDoctorCard extends StatefulWidget {
     this.onTap,
     this.onShare,
     this.onFavorite,
+    this.heroScope = 'near-me',
   });
 
   final DoctorModel doctor;
   final VoidCallback? onTap;
   final VoidCallback? onShare;
   final VoidCallback? onFavorite;
+  final String heroScope;
 
   @override
   State<NearMeDoctorCard> createState() => _NearMeDoctorCardState();
@@ -137,6 +142,7 @@ class _NearMeDoctorCardState extends State<NearMeDoctorCard> {
                   children: [
                     _DoctorPhoto(
                       doctor: doctor,
+                      heroScope: widget.heroScope,
                       showOnline: doctor.availableNow,
                     ),
                     SizedBox(width: 12.w),
@@ -354,10 +360,12 @@ class _SpecialtyAccent {
 class _DoctorPhoto extends StatelessWidget {
   const _DoctorPhoto({
     required this.doctor,
+    required this.heroScope,
     this.showOnline = false,
   });
 
   final DoctorModel doctor;
+  final String heroScope;
   final bool showOnline;
 
   @override
@@ -381,30 +389,13 @@ class _DoctorPhoto extends StatelessWidget {
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12.r),
-            child: SizedBox(
-              width: 76.w,
-              height: 76.w,
-                  child: doctor.imageUrl == null
-                      ? ColoredBox(
-                          color: doctor.avatarColor,
-                          child: Center(
-                            child: Text(
-                              doctor.initials,
-                              style: GoogleFonts.poppins(
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.ink.withValues(alpha: 0.45),
-                              ),
-                            ),
-                          ),
-                        )
-                      : AppImage(
-                          path: doctor.imageUrl!,
-                          fit: BoxFit.cover,
-                          alignment: Alignment.topCenter,
-                        ),
+          child: SizedBox(
+            width: 76.w,
+            height: 76.w,
+            child: DoctorHeroPhoto(
+              doctor: doctor,
+              scope: heroScope,
+              borderRadius: BorderRadius.circular(12.r),
             ),
           ),
         ),

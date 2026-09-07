@@ -46,8 +46,10 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _blurProgress = progress);
   }
 
-  void _openDoctor(DoctorModel doctor) {
-    AppNav.to(DoctorDetailScreen(doctor: doctor));
+  void _openDoctor(DoctorModel doctor, {required String heroScope}) {
+    AppNav.hero(
+      DoctorDetailScreen(doctor: doctor, heroScope: heroScope),
+    );
   }
 
   @override
@@ -89,12 +91,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(height: 20.h),
                   TopRatedDoctorsSection(
                     onViewAll: () => AppNav.to(const SearchScreen()),
-                    onDoctorTap: _openDoctor,
+                    onDoctorTap: (d) =>
+                        _openDoctor(d, heroScope: 'top-rated'),
                   ),
                   SizedBox(height: 24.h),
                   DoctorsNearMeSection(
                     onViewAll: () => AppNav.to(const SearchScreen()),
-                    onDoctorTap: _openDoctor,
+                    onDoctorTap: (d) =>
+                        _openDoctor(d, heroScope: 'near-me'),
                   ),
                   SizedBox(height: 100.h),
                 ],

@@ -158,7 +158,7 @@ class MedicalRecordModel {
 }
 
 abstract final class MockData {
-  static const userName = 'Muhammad Farhan';
+  static const userName = 'Alexander Brooks';
 
   static const upcoming = DoctorModel(
     id: 'eleanor',
@@ -456,33 +456,33 @@ abstract final class MockData {
 
   static const reviews = [
     ReviewModel(
-      name: 'Ayesha Khan',
+      name: 'Emily Carter',
       rating: 5,
       comment:
           'Very attentive and explained everything clearly. Highly recommended.',
       timeAgo: '2 days ago',
-      initials: 'AK',
+      initials: 'EC',
     ),
     ReviewModel(
-      name: 'Omar Ali',
+      name: 'James Mitchell',
       rating: 4.5,
       comment: 'Clinic was clean and wait time was short. Great experience.',
       timeAgo: '1 week ago',
-      initials: 'OA',
+      initials: 'JM',
     ),
     ReviewModel(
-      name: 'Sara Ahmed',
+      name: 'Olivia Bennett',
       rating: 5,
       comment: 'Professional and kind. Follow-up plan was easy to understand.',
       timeAgo: '2 weeks ago',
-      initials: 'SA',
+      initials: 'OB',
     ),
     ReviewModel(
-      name: 'Bilal Hussain',
+      name: 'William Hayes',
       rating: 4,
       comment: 'Good consultation. Would book again for routine checkups.',
       timeAgo: '1 month ago',
-      initials: 'BH',
+      initials: 'WH',
     ),
   ];
 

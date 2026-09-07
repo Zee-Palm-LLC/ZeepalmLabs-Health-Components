@@ -305,8 +305,11 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen>
                             _LuxuryDoctorCard(
                               doctor: doctors[i],
                               index: i,
-                              onTap: () => AppNav.to(
-                                DoctorDetailScreen(doctor: doctors[i]),
+                              onTap: () => AppNav.hero(
+                                DoctorDetailScreen(
+                                  doctor: doctors[i],
+                                  heroScope: 'booking',
+                                ),
                               ),
                             ),
                           ],
