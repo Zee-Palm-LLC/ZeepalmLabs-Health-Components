@@ -1,0 +1,5 @@
+package com.zeepalmlabs.kinora
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()
