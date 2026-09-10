@@ -17,8 +17,6 @@ import '../widgets/section_card.dart';
 import '../widgets/sparkline.dart';
 import 'breathing_session_screen.dart';
 
-/// Tracks scroll offset so the hero can drift behind the content and the
-/// greeting bar can pick up a surface as the photograph leaves the screen.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -28,7 +26,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   static const _headerHeight = 378.0;
-
   final ValueNotifier<double> _offset = ValueNotifier(0);
 
   @override
@@ -84,14 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// Greeting and avatar ride in a transparent app bar so the hero photograph can
-/// run all the way up to the status bar behind them.
 class GreetingBar extends StatelessWidget implements PreferredSizeWidget {
   const GreetingBar({super.key, required this.offset, required this.headerHeight});
-
   final ValueListenable<double> offset;
   final double headerHeight;
-
   static const _height = 74.0;
 
   @override
@@ -104,8 +97,6 @@ class GreetingBar extends StatelessWidget implements PreferredSizeWidget {
     return ValueListenableBuilder<double>(
       valueListenable: offset,
       builder: (context, value, child) {
-        // Once the photograph has mostly scrolled away the bar earns a surface,
-        // so the greeting keeps its contrast against the cards behind it.
         final t = ((value - fadeStart) / (headerHeight - fadeStart)).clamp(0.0, 1.0);
 
         return AppBar(
@@ -138,7 +129,6 @@ class GreetingBar extends StatelessWidget implements PreferredSizeWidget {
 
 class AvatarBadge extends StatelessWidget {
   const AvatarBadge({super.key, required this.diameter});
-
   final double diameter;
 
   @override
@@ -163,7 +153,6 @@ class AvatarBadge extends StatelessWidget {
 
 class _HomeHeader extends StatelessWidget {
   const _HomeHeader({required this.offset});
-
   final ValueListenable<double> offset;
 
   @override
@@ -171,8 +160,6 @@ class _HomeHeader extends StatelessWidget {
     return ValueListenableBuilder<double>(
       valueListenable: offset,
       builder: (context, value, child) {
-        // Pulling past the top scales the photograph up instead of exposing the
-        // page behind it; scrolling down lets it trail the content at half rate.
         final overscroll = value < 0 ? -value : 0.0;
 
         return ClipRect(
@@ -211,8 +198,7 @@ class _HeaderPlate extends StatelessWidget {
           source: AppImages.homeHeader,
           fallback: [Color(0xFFE3EFF6), Color(0xFFC2D8E4), Color(0xFFDDE9F0)],
         ),
-        // Wash the photograph out at both ends so the greeting above and the
-        // call to action below stay legible over it.
+
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -240,11 +226,8 @@ class _HeaderContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // The body sits behind the greeting bar, so Scaffold already reports
-        // the status bar *and* the app bar in this padding.
         SizedBox(height: MediaQuery.paddingOf(context).top + 12.h),
-        // Loose so the orb gives up height first on short or heavily inset
-        // screens, instead of pushing the call to action out of the header.
+
         Flexible(
           child: SizedBox(
             height: 112.h,
@@ -337,7 +320,6 @@ class _StatGrid extends StatelessWidget {
   }
 }
 
-/// Value plus a caption that counts up to its score.
 class _StatValue extends StatelessWidget {
   const _StatValue({
     required this.value,
@@ -440,7 +422,6 @@ class _MindScoreCard extends StatelessWidget {
 
 class _DailyStreakCard extends StatelessWidget {
   const _DailyStreakCard();
-
   static const _days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   static const _completed = 5;
 
@@ -464,8 +445,6 @@ class _DailyStreakCard extends StatelessWidget {
                 Expanded(
                   child: Column(
                     children: [
-                      // Each dot lands a beat after the one before it, so the
-                      // streak reads left to right like the week it describes.
                       TweenAnimationBuilder<double>(
                         tween: Tween(begin: 0, end: 1),
                         duration: AppMotion.enter + AppMotion.stagger * i,

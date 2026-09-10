@@ -12,14 +12,12 @@ import '../theme/app_motion.dart';
 import '../theme/app_text.dart';
 import '../widgets/breathing_aura.dart';
 
-/// The 4-7-8 programme: inhale for four, hold for seven, release for eight.
 enum BreathPhase {
   inhale('Inhale', 4, 0.72, 1.0),
   hold('Hold', 7, 1.0, 1.0),
   exhale('Exhale', 8, 1.0, 0.72);
 
   const BreathPhase(this.label, this.seconds, this.fromScale, this.toScale);
-
   final String label;
   final int seconds;
   final double fromScale;
@@ -40,11 +38,8 @@ class BreathingSessionScreen extends StatefulWidget {
 class _BreathingSessionScreenState extends State<BreathingSessionScreen>
     with TickerProviderStateMixin {
   static const _clockSeconds = 24.0;
-
   late final AnimationController _breath = AnimationController(vsync: this);
 
-  /// Free-running clock that keeps the aura harmonics moving independently of
-  /// the breath count, so the shape never freezes between phases.
   late final AnimationController _clock = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 24),
@@ -73,8 +68,6 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
 
   void _startPhase(BreathPhase phase, {bool announce = false}) {
     if (announce) {
-      // A different weight per phase: the body learns the pattern without
-      // needing to watch the screen.
       switch (phase) {
         case BreathPhase.inhale:
           HapticFeedback.mediumImpact();
@@ -189,10 +182,8 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
   }
 }
 
-/// Centre-aligned session title with its programme subtitle underneath.
 class _SessionBar extends StatelessWidget implements PreferredSizeWidget {
   const _SessionBar();
-
   static const _height = 68.0;
 
   @override
@@ -228,8 +219,6 @@ class _SessionBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-/// Couples the aura to the session: the breath controller drives expansion, the
-/// clock drives the harmonics, and the phase countdown rides the outer arc.
 class _BreathCircle extends StatelessWidget {
   const _BreathCircle({
     required this.running,
@@ -253,7 +242,7 @@ class _BreathCircle extends StatelessWidget {
       animation: Listenable.merge([breath, clock]),
       builder: (context, _) {
         final t = Curves.easeInOut.transform(breath.value);
-        // Phase scales run 0.72 - 1.0; remap to the aura's 0 - 1 expansion.
+
         final expansion =
             (phase.fromScale + (phase.toScale - phase.fromScale) * t - 0.72) / 0.28;
 
@@ -301,7 +290,6 @@ class _BreathCircle extends StatelessWidget {
 
 class _SessionOption extends StatelessWidget {
   const _SessionOption({required this.icon, required this.title, required this.value});
-
   final IconData icon;
   final String title;
   final String value;
@@ -337,7 +325,6 @@ class _SessionOption extends StatelessWidget {
 
 class _SessionProgress extends StatelessWidget {
   const _SessionProgress({required this.value, required this.label});
-
   final double value;
   final String label;
 
@@ -367,7 +354,6 @@ class _SessionProgress extends StatelessWidget {
 
 class _SessionControls extends StatelessWidget {
   const _SessionControls({required this.running, required this.onToggle});
-
   final bool running;
   final VoidCallback onToggle;
 
@@ -409,7 +395,6 @@ class _SessionControls extends StatelessWidget {
 
 class _CircleControl extends StatelessWidget {
   const _CircleControl({required this.icon});
-
   final IconData icon;
 
   @override

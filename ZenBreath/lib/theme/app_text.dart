@@ -4,8 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
-/// The reference uses two typefaces: a high-contrast serif for the wordmark and
-/// screen titles, and Poppins for every other piece of text.
 class AppText {
   const AppText._();
 
@@ -37,7 +35,6 @@ class AppText {
     letterSpacing: letterSpacing,
   );
 
-  /// Small uppercase-ish card labels sitting next to a leading icon.
   static TextStyle label({Color color = AppColors.textSecondary}) =>
       body(12.5, weight: FontWeight.w500, color: color, letterSpacing: 0.1);
 

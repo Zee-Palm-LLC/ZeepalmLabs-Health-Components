@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_motion.dart';
 
-/// Circular gauge used for Mind Score, Sleep Recovery and the Weekly Calm Score.
-/// The arc is a sweep gradient that fades in from the track colour, and a lit
-/// bead sits on its leading edge.
 class ProgressRing extends StatelessWidget {
   const ProgressRing({
     super.key,
@@ -65,7 +62,6 @@ class _RingPainter extends CustomPainter {
   final Color color;
   final Color trackColor;
   final double strokeWidth;
-
   static const _start = -math.pi / 2;
 
   @override

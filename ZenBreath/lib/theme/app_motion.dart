@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Motion tokens. Everything in the app eases on the same two curves so screen
-/// changes, list entrances and press feedback feel like one system.
 class AppMotion {
   const AppMotion._();
 
@@ -10,13 +8,10 @@ class AppMotion {
   static const tab = Duration(milliseconds: 380);
   static const stagger = Duration(milliseconds: 55);
   static const press = Duration(milliseconds: 120);
-
   static const enterCurve = Curves.easeOutCubic;
   static const exitCurve = Curves.easeInCubic;
 }
 
-/// Route transition used across the app: the incoming page fades up from a few
-/// pixels below while the page it covers drifts back and dims slightly.
 class AppPageTransitionsBuilder extends PageTransitionsBuilder {
   const AppPageTransitionsBuilder();
 
@@ -78,7 +73,6 @@ class _AppPageTransition extends StatelessWidget {
   }
 }
 
-/// Convenience route so pushes outside `MaterialPageRoute` share the same feel.
 class AppPageRoute<T> extends PageRouteBuilder<T> {
   AppPageRoute({required WidgetBuilder builder, super.settings})
     : super(

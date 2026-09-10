@@ -8,11 +8,8 @@ import '../theme/app_decoration.dart';
 import '../theme/app_motion.dart';
 import '../widgets/app_bottom_nav.dart';
 
-/// Hosts the four primary destinations, paints the shared page gradient behind
-/// them and keeps the bottom bar persistent across tab changes.
 class AppShell extends StatefulWidget {
   const AppShell({super.key, this.initialIndex = 0});
-
   final int initialIndex;
 
   @override
@@ -40,8 +37,6 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
-    // Moving right along the bar sends the new page in from the right, and vice
-    // versa, so the tabs feel spatially connected.
     final forward = _index >= _previousIndex;
 
     return Scaffold(

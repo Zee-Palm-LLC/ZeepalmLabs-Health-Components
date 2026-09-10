@@ -44,8 +44,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
         children: [
           _RangeSelector(selected: _range, onChanged: _selectRange),
           SizedBox(height: 14.h),
-          // Re-keying on the range makes every figure re-count when the window
-          // changes, so switching tabs feels like the data actually reloaded.
+
           KeyedSubtree(
             key: ValueKey(_range),
             child: Column(
@@ -77,11 +76,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
   }
 }
 
-/// Segmented control with a single pill that slides between the options rather
-/// than three that fade in and out.
 class _RangeSelector extends StatelessWidget {
   const _RangeSelector({required this.selected, required this.onChanged});
-
   final int selected;
   final ValueChanged<int> onChanged;
 
@@ -102,7 +98,6 @@ class _RangeSelector extends StatelessWidget {
             duration: AppMotion.tab,
             curve: Curves.easeOutCubic,
             builder: (context, position, child) => Align(
-              // -1 to 1 across the three slots.
               alignment: Alignment(position / (_ranges.length - 1) * 2 - 1, 0),
               child: FractionallySizedBox(
                 widthFactor: 1 / _ranges.length,
@@ -211,7 +206,6 @@ class _CalmScoreCard extends StatelessWidget {
 
 class _StreakCard extends StatelessWidget {
   const _StreakCard();
-
   static const _completed = 5;
 
   @override
@@ -262,11 +256,8 @@ class _StreakCard extends StatelessWidget {
   }
 }
 
-/// Completed days stamp themselves in one after another; empty days simply
-/// appear, so the eye follows the streak rather than the whole row.
 class _DayDot extends StatelessWidget {
   const _DayDot({required this.done, required this.index});
-
   final bool done;
   final int index;
 
@@ -343,9 +334,7 @@ class _BreathingMinutesCard extends StatelessWidget {
 
 class _DeltaPill extends StatelessWidget {
   const _DeltaPill({required this.text});
-
   static const color = AppColors.green;
-
   final String text;
 
   @override
@@ -488,7 +477,7 @@ class _InsightsCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 8.h),
-          // Delivered a line at a time, the way the insight would be spoken.
+
           for (var i = 0; i < _lines.length; i++)
             Entrance(
               delay: AppMotion.stagger * (i + 2),

@@ -39,8 +39,6 @@ class _MeditationLibraryScreenState extends State<MeditationLibraryScreen> {
     HapticFeedback.selectionClick();
     setState(() => _filter = label);
 
-    // Bring the chosen chip toward the leading edge so the active filter is
-    // never half-hidden at the end of the row.
     final target = (index * 92.w - 40.w).clamp(0.0, _filters.position.maxScrollExtent);
     _filters.animateTo(target, duration: AppMotion.tab, curve: AppMotion.enterCurve);
   }
@@ -110,7 +108,6 @@ class _MeditationLibraryScreenState extends State<MeditationLibraryScreen> {
 
 class _FilterChip extends StatelessWidget {
   const _FilterChip({required this.label, required this.selected, required this.onTap});
-
   final String label;
   final bool selected;
   final VoidCallback onTap;
@@ -154,7 +151,6 @@ class _FilterChip extends StatelessWidget {
 
 class _MeditationCard extends StatelessWidget {
   const _MeditationCard({required this.item});
-
   final Meditation item;
 
   @override

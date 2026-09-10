@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_motion.dart';
 
-/// Fades a widget up into place, optionally after a delay so a column of cards
-/// can arrive one after another.
 class Entrance extends StatefulWidget {
   const Entrance({
     super.key,
@@ -65,8 +63,6 @@ class _EntranceState extends State<Entrance> with SingleTickerProviderStateMixin
   }
 }
 
-/// A [ListView] whose content arrives in sequence. Plain spacers pass through
-/// untouched so the cadence follows the cards, not the gaps between them.
 class StaggeredList extends StatelessWidget {
   const StaggeredList({
     super.key,
@@ -96,10 +92,8 @@ class StaggeredList extends StatelessWidget {
   }
 }
 
-/// Dips a tappable element slightly while the finger is down.
 class PressableScale extends StatefulWidget {
   const PressableScale({super.key, required this.child, this.onTap, this.scale = 0.97});
-
   final Widget child;
   final VoidCallback? onTap;
   final double scale;

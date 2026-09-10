@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_motion.dart';
 
-/// Smoothed trend line that draws itself on, with a bead riding the head of the
-/// stroke as it advances.
 class Sparkline extends StatelessWidget {
   const Sparkline({
     super.key,
@@ -77,8 +75,6 @@ class _SparklinePainter extends CustomPainter {
         ),
     ];
 
-    // Catmull-style smoothing: each segment bends through the midpoint of the
-    // two samples it joins.
     final path = Path()..moveTo(coords.first.dx, coords.first.dy);
     for (var i = 0; i < coords.length - 1; i++) {
       final current = coords[i];

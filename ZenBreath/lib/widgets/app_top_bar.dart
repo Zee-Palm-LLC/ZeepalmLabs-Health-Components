@@ -3,14 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../theme/app_text.dart';
 
-/// Serif screen title bar shared by Library, Progress and Profile. Transparent
-/// so the page gradient painted by the shell reads straight through it.
 class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   const AppTopBar({super.key, required this.title, this.actions});
-
   final String title;
   final List<Widget>? actions;
-
   static const _height = 60.0;
 
   @override

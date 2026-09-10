@@ -3,22 +3,17 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../theme/app_colors.dart';
 
-/// Photography sources. The welcome hero ships with the app because it carries
-/// the brand orb; everything else streams from Unsplash and degrades to the
-/// tonal gradients declared alongside each usage.
 class AppImages {
   const AppImages._();
 
   static const _unsplash = 'https://images.unsplash.com/';
   static const _card = '?auto=format&fit=crop&w=800&q=70';
   static const _thumb = '?auto=format&fit=crop&w=240&q=70';
-
   static const welcomeBackground = 'assets/images/welcome_bg.jpg';
   static const homeHeader = '${_unsplash}photo-1506905925346-21bda4d32df4$_card';
   static const avatar = '${_unsplash}photo-1494790108377-be9c29b29330$_thumb';
   static const quickStart = '${_unsplash}photo-1506905925346-21bda4d32df4$_thumb';
 
-  /// Everything worth decoding before the user can navigate to it.
   static List<String> get all => [
     welcomeBackground,
     homeHeader,

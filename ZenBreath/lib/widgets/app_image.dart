@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Renders photography from either a bundled asset or a remote URL.
-///
-/// While a remote image is in flight — and permanently if it fails — the widget
-/// paints the tonal gradient passed in [fallback], so every composition keeps
-/// its intended colour weight instead of collapsing to a grey box.
 class AppImage extends StatelessWidget {
   const AppImage({
     super.key,

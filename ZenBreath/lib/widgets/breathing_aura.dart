@@ -4,19 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 
-/// The signature visual of ZenBreath: a living aura whose outline is a sum of
-/// sine harmonics rather than a circle.
-///
-/// Each ring is described in polar form as
-///
-///   r(θ) = R · (1 + Σᵢ aᵢ·sin(mᵢθ + ωᵢt + φ))
-///
-/// Because the mode numbers `mᵢ` are coprime (3, 5, 7) and each harmonic is
-/// carried by its own angular speed `ωᵢ`, the layers never realign — the shape
-/// keeps folding into itself and never visibly loops. The harmonic amplitude is
-/// tied to the breath: it swells on the exhale and settles to almost a perfect
-/// circle at the top of the inhale, so the geometry rewards the user for
-/// following it.
 class BreathingAura extends StatelessWidget {
   const BreathingAura({
     super.key,
@@ -30,21 +17,11 @@ class BreathingAura extends StatelessWidget {
     this.child,
   });
 
-  /// Overall extent of the aura, halo included.
   final double diameter;
-
-  /// Free-running clock in seconds. Drives the harmonics.
   final double time;
-
-  /// Breath expansion, 0 (fully exhaled) to 1 (fully inhaled).
   final double breath;
-
-  /// Optional 0-1 phase progress drawn as an arc on the outer ring.
   final double? progress;
-
-  /// Scales how far the outline is allowed to deviate from a circle.
   final double turbulence;
-
   final bool ripples;
   final bool particles;
   final Widget? child;
@@ -84,11 +61,8 @@ class _AuraPainter extends CustomPainter {
   final double turbulence;
   final bool ripples;
   final bool particles;
-
-  /// Coprime mode numbers: the outline folds without ever repeating.
   static const _modes = [3, 5, 7];
 
-  /// Radius, opacity and spin rate for each stacked shell.
   static const _shells = [
     (radius: 1.00, opacity: 0.07, spin: 0.09),
     (radius: 0.86, opacity: 0.11, spin: -0.13),
@@ -100,9 +74,8 @@ class _AuraPainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final unit = size.shortestSide / 2;
 
-    // The whole aura breathes between 82% and 100% of the available radius.
     final scale = 0.82 + 0.18 * breath;
-    // Calm at the top of the inhale, unsettled at the bottom of the exhale.
+
     final amplitude = (0.050 - 0.030 * breath) * turbulence;
 
     if (ripples) _paintRipples(canvas, center, unit * scale);
@@ -126,7 +99,6 @@ class _AuraPainter extends CustomPainter {
     if (progress != null) _paintProgress(canvas, center, unit * scale);
   }
 
-  /// r(θ) = R · (1 + Σ aᵢ·sin(mᵢθ + ωᵢt + φ)), sampled into a closed path.
   Path _harmonicPath(Offset center, double radius, double amplitude, double spin) {
     const samples = 168;
     final path = Path();
@@ -136,7 +108,6 @@ class _AuraPainter extends CustomPainter {
       var factor = 1.0;
 
       for (var m = 0; m < _modes.length; m++) {
-        // Higher harmonics contribute less, and each drifts at its own rate.
         factor +=
             amplitude /
             (m + 1) *
@@ -154,7 +125,6 @@ class _AuraPainter extends CustomPainter {
     return path..close();
   }
 
-  /// Rings released on a fixed period, fading as the square of their travel.
   void _paintRipples(Canvas canvas, Offset center, double radius) {
     const count = 3;
     const period = 4.2;
@@ -196,8 +166,6 @@ class _AuraPainter extends CustomPainter {
       );
   }
 
-  /// Motes riding a rose curve, r = R·(1 + k·sin(3θ)), so they gather and part
-  /// three times around the ring instead of marching evenly.
   void _paintParticles(Canvas canvas, Offset center, double radius) {
     const count = 26;
 

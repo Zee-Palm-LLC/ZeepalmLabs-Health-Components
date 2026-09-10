@@ -7,8 +7,6 @@ import '../theme/app_text.dart';
 import 'motion.dart';
 import 'shimmer_sweep.dart';
 
-/// The primary call to action: a gold gradient pill with optional leading or
-/// trailing glyph.
 class GoldButton extends StatelessWidget {
   const GoldButton({
     super.key,

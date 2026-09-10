@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_motion.dart';
 
-/// Rolls a metric up from zero when it first appears. Pair the [delay] with the
-/// surrounding [Entrance] so the number starts climbing as the card arrives
-/// rather than while it is still invisible.
 class CountUpText extends StatefulWidget {
   const CountUpText({
     super.key,

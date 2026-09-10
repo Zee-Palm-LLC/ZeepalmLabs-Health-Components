@@ -97,7 +97,7 @@ class _WelcomeHero extends StatelessWidget {
             fallback: [Color(0xFFDCEAF2), Color(0xFFB9D2E0), Color(0xFFE8D7C2)],
             alignment: Alignment.center,
           ),
-          // Dissolve both edges of the photograph into the page.
+
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(

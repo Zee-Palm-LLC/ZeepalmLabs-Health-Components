@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Slides a soft band of light across its child on a long loop. Used sparingly:
-/// the primary call to action and the premium badge only.
 class ShimmerSweep extends StatefulWidget {
   const ShimmerSweep({
     super.key,
@@ -36,8 +34,6 @@ class _ShimmerSweepState extends State<ShimmerSweep> with SingleTickerProviderSt
       animation: _controller,
       child: widget.child,
       builder: (context, child) {
-        // The band spends most of the loop off-screen, so the highlight reads
-        // as an occasional glint rather than a constant sweep.
         final t = Curves.easeInOut.transform(_controller.value) * 2.6 - 1.3;
 
         return ShaderMask(

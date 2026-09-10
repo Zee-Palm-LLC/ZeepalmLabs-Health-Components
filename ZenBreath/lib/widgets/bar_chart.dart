@@ -5,9 +5,6 @@ import '../theme/app_colors.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_text.dart';
 
-/// Weekly column chart used by the Breathing Minutes card. The day labels are a
-/// fixed footer and the columns take whatever height is left, so the chart
-/// cannot overflow when the type scale changes.
 class WeeklyBarChart extends StatelessWidget {
   const WeeklyBarChart({
     super.key,

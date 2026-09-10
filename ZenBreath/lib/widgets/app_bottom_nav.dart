@@ -10,7 +10,6 @@ import '../theme/app_text.dart';
 
 class NavDestination {
   const NavDestination(this.icon, this.label);
-
   final IconData icon;
   final String label;
 }
@@ -22,12 +21,8 @@ const kNavDestinations = <NavDestination>[
   NavDestination(LucideIcons.user, 'Profile'),
 ];
 
-/// Bottom bar with a gold halo that glides between destinations. The halo is a
-/// single animated element rather than one per item, so the movement reads as
-/// travel instead of a cross-fade.
 class AppBottomNav extends StatelessWidget {
   const AppBottomNav({super.key, required this.currentIndex, required this.onChanged});
-
   final int currentIndex;
   final ValueChanged<int> onChanged;
 
@@ -55,8 +50,7 @@ class AppBottomNav extends StatelessWidget {
                   Expanded(
                     child: _NavItem(
                       destination: kNavDestinations[i],
-                      // Proximity, not equality: the item lights up as the halo
-                      // arrives rather than the instant the tap lands.
+
                       amount: (1 - (position - i).abs()).clamp(0.0, 1.0),
                       onTap: () => _select(i),
                     ),
@@ -72,7 +66,6 @@ class AppBottomNav extends StatelessWidget {
 
 class _Halo extends StatelessWidget {
   const _Halo({required this.position});
-
   final double position;
 
   @override
@@ -110,7 +103,6 @@ class _Halo extends StatelessWidget {
 
 class _NavItem extends StatelessWidget {
   const _NavItem({required this.destination, required this.amount, required this.onTap});
-
   final NavDestination destination;
   final double amount;
   final VoidCallback onTap;

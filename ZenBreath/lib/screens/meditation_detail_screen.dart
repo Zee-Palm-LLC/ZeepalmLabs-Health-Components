@@ -14,12 +14,8 @@ import 'breathing_session_screen.dart';
 
 String meditationHeroTag(Meditation item) => 'meditation-${item.title}';
 
-/// Unclipped poster shared by the library card and this screen, so the Hero
-/// flight carries identical content at both ends. Each side supplies its own
-/// [ClipRRect]; the shuttle below interpolates between the two radii.
 class MeditationPoster extends StatelessWidget {
   const MeditationPoster({super.key, required this.item});
-
   final Meditation item;
 
   @override
@@ -47,8 +43,6 @@ class MeditationPoster extends StatelessWidget {
   }
 }
 
-/// Eases the poster's corners from the grid card's all-round radius to the
-/// header's square top and rounded bottom while it flies.
 Widget meditationHeroShuttle(
   BuildContext flightContext,
   Animation<double> animation,
@@ -77,7 +71,6 @@ Widget meditationHeroShuttle(
 
 class MeditationDetailScreen extends StatelessWidget {
   const MeditationDetailScreen({super.key, required this.item});
-
   final Meditation item;
 
   @override
@@ -194,7 +187,6 @@ class _BeginSessionButton extends StatelessWidget {
 
 class _MetaChip extends StatelessWidget {
   const _MetaChip({required this.icon, required this.label});
-
   final IconData icon;
   final String label;
 

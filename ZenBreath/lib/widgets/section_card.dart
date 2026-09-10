@@ -6,10 +6,8 @@ import '../theme/app_colors.dart';
 import '../theme/app_decoration.dart';
 import '../theme/app_text.dart';
 
-/// White rounded panel shared by the dashboard, progress and profile screens.
 class SectionCard extends StatelessWidget {
   const SectionCard({super.key, required this.child, this.padding, this.color, this.radius});
-
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final Color? color;
@@ -26,7 +24,6 @@ class SectionCard extends StatelessWidget {
   }
 }
 
-/// `icon + title` row that heads most cards in the reference.
 class CardHeading extends StatelessWidget {
   const CardHeading({
     super.key,

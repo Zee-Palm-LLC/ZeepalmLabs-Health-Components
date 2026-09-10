@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 
-/// The ZenBreath wordmark glyph: three gold lotus petals that bloom outward
-/// from the base, the centre petal leading and the wings following.
 class LotusMark extends StatefulWidget {
   const LotusMark({
     super.key,
@@ -58,11 +56,9 @@ class _LotusMarkState extends State<LotusMark> with SingleTickerProviderStateMix
 
 class _LotusPainter extends CustomPainter {
   const _LotusPainter({required this.color, required this.bloom});
-
   final Color color;
   final double bloom;
 
-  /// Angle, height factor, width factor and bloom delay per petal.
   static const _petals = [
     (angle: 0.0, height: 1.00, width: 0.26, delay: 0.0),
     (angle: -1.337, height: 0.78, width: 0.24, delay: 0.18),
@@ -75,7 +71,6 @@ class _LotusPainter extends CustomPainter {
     final span = size.height * 0.9;
 
     for (final petal in _petals) {
-      // Each petal runs its own slice of the timeline, then settles.
       final local = ((bloom - petal.delay) / (1 - petal.delay)).clamp(0.0, 1.0);
       if (local <= 0) continue;
       final t = Curves.easeOutBack.transform(local);
@@ -83,7 +78,6 @@ class _LotusPainter extends CustomPainter {
       canvas
         ..save()
         ..translate(base.dx, base.dy)
-        // Petals unfold from upright to their resting angle as they grow.
         ..rotate(petal.angle * t)
         ..scale(1.0, t);
 

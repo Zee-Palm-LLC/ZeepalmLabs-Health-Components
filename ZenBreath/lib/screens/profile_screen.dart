@@ -109,7 +109,6 @@ class _PremiumBadge extends StatelessWidget {
 
 class _DailyGoalCard extends StatelessWidget {
   const _DailyGoalCard();
-
   static const _progress = 5 / 7;
 
   @override
@@ -180,7 +179,6 @@ class _DailyGoalCard extends StatelessWidget {
 
 class _SettingsGroup extends StatelessWidget {
   const _SettingsGroup({required this.rows});
-
   final List<SettingsRow> rows;
 
   @override
@@ -205,7 +203,6 @@ class _SettingsGroup extends StatelessWidget {
 
 class _SettingsTile extends StatelessWidget {
   const _SettingsTile({required this.row});
-
   final SettingsRow row;
 
   @override
