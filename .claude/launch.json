@@ -1,0 +1,47 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "adhd-mood-web",
+      "runtimeExecutable": "C:/Users/shame/AppData/Local/Programs/Python/Python39/python.exe",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8124",
+        "--bind",
+        "127.0.0.1",
+        "-d",
+        "C:/Users/shame/Desktop/Flutter/ZeepalmLabs-Health-Components/adhd_mood_tracker/build/web"
+      ],
+      "port": 8124
+    },
+    {
+      "name": "vitals-web",
+      "runtimeExecutable": "C:/Users/shame/AppData/Local/Programs/Python/Python39/python.exe",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8125",
+        "--bind",
+        "127.0.0.1",
+        "-d",
+        "C:/Users/shame/Desktop/Flutter/ZeepalmLabs-Health-Components/vitals_intro/build/web"
+      ],
+      "port": 8125
+    },
+    {
+      "name": "innur-web",
+      "runtimeExecutable": "C:/Users/shame/AppData/Local/Programs/Python/Python39/python.exe",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8126",
+        "--bind",
+        "127.0.0.1",
+        "-d",
+        "C:/Users/shame/Desktop/Flutter/ZeepalmLabs-Health-Components/innur_steps/build/web"
+      ],
+      "port": 8126
+    }
+  ]
+}
