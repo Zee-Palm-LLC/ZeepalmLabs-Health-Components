@@ -406,20 +406,32 @@ class QuestIconPainter extends CustomPainter {
     );
   }
 
+  /// A side-on trainer: collar, instep, toe, then the sole as its own bar.
+  /// Drawn as separate pieces because at 24 px a single outline turns to mush.
   void _shoe(Canvas c) {
     c.drawPath(
       Path()
-        ..moveTo(10, 72)
-        ..lineTo(12, 48)
-        ..lineTo(34, 44)
-        ..lineTo(48, 26)
-        ..cubicTo(58, 32, 60, 42, 58, 50)
-        ..lineTo(84, 60)
-        ..cubicTo(92, 63, 92, 72, 84, 72)
+        ..moveTo(16, 38)
+        ..lineTo(38, 34)
+        ..lineTo(46, 52)
+        ..cubicTo(60, 54, 74, 59, 86, 66)
+        ..cubicTo(92, 69, 91, 74, 84, 74)
+        ..lineTo(16, 74)
         ..close(),
       _fill,
     );
-    c.drawLine(const Offset(12, 74), const Offset(86, 74), _line(7));
+    c.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(10, 72, 82, 13),
+        const Radius.circular(6),
+      ),
+      _fill,
+    );
+    final lace = _line(4.5, const Color(0xE6FFFFFF));
+    c.drawLine(const Offset(27, 44), const Offset(41, 49), lace);
+    c.drawLine(const Offset(25, 54), const Offset(39, 59), lace);
+    c.drawLine(const Offset(10, 79), const Offset(92, 79),
+        _line(3, const Color(0x59000000)));
   }
 
   void _heart(Canvas c) {

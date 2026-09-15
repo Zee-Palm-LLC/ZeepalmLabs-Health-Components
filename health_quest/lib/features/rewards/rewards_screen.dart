@@ -169,7 +169,7 @@ class _RewardsScreenState extends State<RewardsScreen>
                                     D.rowStagger * 0.6, D.rowSpan)),
                                 onTap: () => _claim(Reward.all[i + 1]),
                               )
-                            : const SizedBox(height: 168),
+                            : const SizedBox(height: 188),
                       ),
                     ],
                   ),
@@ -308,7 +308,7 @@ class _Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (t <= 0) return const SizedBox(height: 168);
+    if (t <= 0) return const SizedBox(height: 188);
 
     final tone = owned || _affordable ? reward.tone : Quests.locked;
     final pulse = _affordable ? 0.4 + 0.35 * math.sin(idle * 2.1) : 0.0;
@@ -320,7 +320,11 @@ class _Tile extends StatelessWidget {
         child: Pressable(
           onTap: onTap,
           pressedScale: 0.95,
-          child: HudPanel(
+          // The plate carries no intrinsic height, and a Row of them sits in
+          // a ListView, so the height has to be stated here.
+          child: SizedBox(
+            height: 188,
+            child: HudPanel(
             cut: 16,
             accent: tone,
             accentStrength: owned ? 1 : (_affordable ? 0.85 : 0.4),
@@ -406,6 +410,7 @@ class _Tile extends StatelessWidget {
                   tone: tone,
                 ),
               ],
+            ),
             ),
           ),
         ),

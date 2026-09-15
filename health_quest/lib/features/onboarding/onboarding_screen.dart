@@ -70,6 +70,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   // The clip.
   bool _useVideo = false;
   double _videoPos = 0;
+  double _lastSeenPos = 0;
+  int _stalls = 0;
   Timer? _videoWatchdog;
 
   // Parallax, integrated by hand so a release keeps its velocity.
@@ -106,10 +108,32 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
     if (widget.playIntro) {
       _useVideo = true;
-      // If the clip has not reported a single frame by now it is not going
-      // to, whatever the platform said when it was asked to load it.
-      _videoWatchdog = Timer(const Duration(milliseconds: 2500), () {
-        if (mounted && _videoPos <= 0) _fallBack();
+      // The clip drives the entrance, so if it never starts, nothing arrives.
+      // Autoplay can be refused, a codec can be missing, a backgrounded tab
+      // freezes playback: all of them look the same from here, which is a
+      // position that does not advance. Watch for that rather than for any
+      // one cause, and hand over to the timed entrance when it happens.
+      _videoWatchdog = Timer.periodic(const Duration(milliseconds: 1100), (
+        Timer timer,
+      ) {
+        if (!mounted || !_useVideo) {
+          timer.cancel();
+          return;
+        }
+        if (_videoPos >= 0.98) {
+          timer.cancel();
+          return;
+        }
+        if (_videoPos <= _lastSeenPos + 0.001) {
+          _stalls++;
+          if (_stalls >= 2) {
+            timer.cancel();
+            _fallBack();
+          }
+        } else {
+          _stalls = 0;
+        }
+        _lastSeenPos = _videoPos;
       });
     } else {
       _entrance.forward();
@@ -125,7 +149,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   void _onVideoProgress(double p) {
     if (!_useVideo || !mounted) return;
-    _videoWatchdog?.cancel();
     setState(() {
       _videoPos = p;
       // The interface arrives over the middle of the clip and is fully in by

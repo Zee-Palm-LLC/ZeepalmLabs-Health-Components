@@ -226,7 +226,7 @@ void main() {
       expect(find.text('X2'), findsOneWidget);
       expect(find.text('2,840 / 4,000 XP'), findsOneWidget);
       expect(find.text("TODAY'S QUESTS"), findsOneWidget);
-      expect(find.text('1/3 Completed'), findsOneWidget);
+      expect(find.text('1/3 DONE'), findsOneWidget);
       for (final q in Quest.today) {
         expect(find.text(q.title), findsOneWidget);
         expect(find.text('+${q.xp} XP'), findsOneWidget);

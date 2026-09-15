@@ -34,9 +34,9 @@ class D {
 
   /// Where the cut-out was taken from inside that frame.
   static const double cutLeft = 91;
-  static const double cutTop = 331;
+  static const double cutTop = 327;
   static const double cutWidth = 539;
-  static const double cutHeight = 780;
+  static const double cutHeight = 784;
 
   /// Aspect of the cut-out figure, head to the underside of the rock.
   static const double heroAspect = cutWidth / cutHeight;

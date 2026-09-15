@@ -446,7 +446,11 @@ class HudHeading extends StatelessWidget {
           painter: _BladePainter(accent),
         ),
         const SizedBox(width: 9),
+        // The title gets the lion's share of the free space. Flexible and
+        // Expanded are both flex 1 by default, which would split it evenly
+        // and clip the title to make room for a decorative rule.
         Flexible(
+          flex: 8,
           child: Text(
             title,
             maxLines: 1,
@@ -456,6 +460,7 @@ class HudHeading extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Expanded(
+          flex: 2,
           child: CustomPaint(
             size: const Size(double.infinity, 6),
             painter: _RulePainter(accent),

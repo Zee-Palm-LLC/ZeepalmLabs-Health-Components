@@ -345,13 +345,20 @@ class _XpPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Text(
-            '${grouped((player.xp * fill).round())} / '
-            '${grouped(player.xpToNext)} XP',
-            maxLines: 1,
-            style: T.questTitle,
+          // Shrinks rather than overflows: five figures of XP on a 360-wide
+          // phone is one pixel past what the row can give it.
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                '${grouped((player.xp * fill).round())} / '
+                '${grouped(player.xpToNext)} XP',
+                maxLines: 1,
+                style: T.questTitle,
+              ),
+            ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 2),
         ],
       ),
       ),

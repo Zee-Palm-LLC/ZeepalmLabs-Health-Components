@@ -57,17 +57,27 @@ class _IntroVideoState extends State<IntroVideo> {
         await c.dispose();
         return;
       }
+      // Muted, because an intro that makes noise on open is a bug, and
+      // because muted is the only form of autoplay a browser will allow.
       await c.setVolume(0);
       await c.setLooping(false);
       c.addListener(_onTick);
-      await c.play();
       setState(() {
         _controller = c;
         _ready = true;
       });
+      await c.play();
     } catch (_) {
+      // play() can reject after the controller has already been adopted, so
+      // unwind whatever state was reached rather than assuming none was.
+      c.removeListener(_onTick);
       await c.dispose();
-      if (mounted) widget.onFailed();
+      if (!mounted) return;
+      setState(() {
+        _controller = null;
+        _ready = false;
+      });
+      widget.onFailed();
     }
   }
 
