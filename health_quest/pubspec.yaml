@@ -1,0 +1,37 @@
+name: health_quest
+description: "Health Quest onboarding - a gamified RPG-style wellness intro."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  video_player: ^2.14.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  shaders:
+    - shaders/stardust.frag
+
+  assets:
+    - assets/hero/
+    - assets/video/
+
+  fonts:
+    - family: Saira
+      fonts:
+        - asset: assets/fonts/Saira-Variable.ttf
+        - asset: assets/fonts/Saira-Italic-Variable.ttf
+          style: italic
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Variable.ttf

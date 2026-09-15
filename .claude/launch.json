@@ -42,6 +42,34 @@
         "C:/Users/shame/Desktop/Flutter/ZeepalmLabs-Health-Components/innur_steps/build/web"
       ],
       "port": 8126
+    },
+    {
+      "name": "symptom-web",
+      "runtimeExecutable": "C:/Users/shame/AppData/Local/Programs/Python/Python39/python.exe",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8127",
+        "--bind",
+        "127.0.0.1",
+        "-d",
+        "C:/Users/shame/Desktop/Flutter/ZeepalmLabs-Health-Components/symptom_assessment/build/web"
+      ],
+      "port": 8127
+    },
+    {
+      "name": "quest-web",
+      "runtimeExecutable": "C:/Users/shame/AppData/Local/Programs/Python/Python39/python.exe",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8128",
+        "--bind",
+        "127.0.0.1",
+        "-d",
+        "C:/Users/shame/Desktop/Flutter/ZeepalmLabs-Health-Components/health_quest/build/web"
+      ],
+      "port": 8128
     }
   ]
 }
