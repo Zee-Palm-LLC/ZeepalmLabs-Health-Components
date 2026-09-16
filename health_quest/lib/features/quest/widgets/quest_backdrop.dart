@@ -2,13 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-
-/// The valley behind the quest detail: a night sky, two ridges of pines and a
-/// far mountain line, all drawn.
-///
-/// The reference uses a painted landscape here. Shipping a bitmap for it would
-/// mean one fixed composition at one resolution; generated from a seeded
-/// random it costs nothing, parallaxes in layers, and the stars can twinkle.
 class QuestBackdrop extends StatelessWidget {
   const QuestBackdrop({
     super.key,
@@ -60,7 +53,6 @@ class _BackdropPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
 
-    // Sky.
     canvas.drawRect(
       rect,
       Paint()
@@ -77,7 +69,6 @@ class _BackdropPainter extends CustomPainter {
         ).createShader(rect),
     );
 
-    // A wash of the quest's own colour, low on the horizon.
     canvas.drawCircle(
       Offset(size.width * 0.5 + parallax.dx * 10, size.height * 0.46),
       size.width * 0.75,
@@ -108,14 +99,10 @@ class _BackdropPainter extends CustomPainter {
       );
     }
 
-    // Far mountains, then two ridges of pines. Each layer is lighter and
-    // slower than the one in front of it, which is what makes it read as
-    // distance rather than as three shapes.
     _mountains(canvas, size, 0.50, const Color(0xFF1B2140), parallax.dx * 3);
     _pines(canvas, size, 0.56, const Color(0xFF141A33), 22, 0.09, parallax.dx * 6);
     _pines(canvas, size, 0.66, const Color(0xFF0B1022), 15, 0.14, parallax.dx * 11);
 
-    // Ground haze so the ridges sit in something.
     canvas.drawRect(
       Rect.fromLTWH(0, size.height * 0.55, size.width, size.height * 0.45),
       Paint()
@@ -161,7 +148,6 @@ class _BackdropPainter extends CustomPainter {
     while (x < size.width + 60) {
       final h = size.height * heightFactor * (0.6 + r.nextDouble() * 0.8);
       final w = spacing * (0.7 + r.nextDouble() * 0.7);
-      // A pine is three stacked triangles; two is enough at this size.
       path
         ..lineTo(x, y)
         ..lineTo(x + w / 2, y - h)

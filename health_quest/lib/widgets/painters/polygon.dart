@@ -2,16 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-/// Builds a regular polygon with rounded corners, stretched to fill [size].
-///
-/// The stat badges are pointy-top hexagons and the level badge is an octagon;
-/// both are the same construction with a different side count, so they share
-/// one path builder and their corners round identically.
-///
-/// The vertices are normalised to the box rather than inscribed in it. A
-/// pointy-top hexagon inscribed in a circle only spans cos(30°) of the width,
-/// so inscribing would make a badge asked for at 52 wide come out at 45 - and
-/// the two badge shapes would disagree about what "52 wide" means.
 Path polygonPath(
   Size size, {
   required int sides,
@@ -45,8 +35,6 @@ Path polygonPath(
       ),
   ];
 
-  // A polygon stretched to a non-square box has uneven edges, so the corner
-  // radius is capped per corner at a share of its shorter neighbouring edge.
   final path = Path();
   for (var i = 0; i < sides; i++) {
     final prev = points[(i - 1 + sides) % sides];
@@ -76,8 +64,6 @@ Path polygonPath(
   return path;
 }
 
-/// A polygon pane: dark glass inside, a lit edge, and a glow that sits behind
-/// it. Used for both badge shapes and for the tap ripple.
 class PolygonPane extends StatelessWidget {
   const PolygonPane({
     super.key,

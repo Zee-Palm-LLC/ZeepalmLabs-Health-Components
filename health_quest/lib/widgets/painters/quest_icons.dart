@@ -2,11 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-/// Every glyph on the dashboard, the quest detail and the vault.
-///
-/// All drawn, for the same reason the stat icons are: one stroke weight, one
-/// highlight convention, and each one can animate. An icon font would give
-/// none of that and would not match the stat badges it sits beside.
 enum QuestGlyph {
   drop,
   footprints,
@@ -27,6 +22,9 @@ enum QuestGlyph {
   shoe,
   heart,
   shield,
+  mail,
+  eye,
+  eyeOff,
 }
 
 class QuestIcon extends StatelessWidget {
@@ -45,7 +43,6 @@ class QuestIcon extends StatelessWidget {
   final Color color;
   final Color? highlight;
 
-  /// Used by the animated glyphs: the check draws on, the flame flickers.
   final double progress;
   final double? strokeWidth;
 
@@ -120,6 +117,12 @@ class QuestIconPainter extends CustomPainter {
         _heart(canvas);
       case QuestGlyph.shield:
         _shield(canvas);
+      case QuestGlyph.mail:
+        _mail(canvas);
+      case QuestGlyph.eye:
+        _eye(canvas, crossed: false);
+      case QuestGlyph.eyeOff:
+        _eye(canvas, crossed: true);
     }
     canvas.restore();
   }
@@ -300,6 +303,38 @@ class QuestIconPainter extends CustomPainter {
     );
   }
 
+  void _mail(Canvas c) {
+    c.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(14, 26, 72, 50),
+        const Radius.circular(9),
+      ),
+      _line(7),
+    );
+    c.drawPath(
+      Path()
+        ..moveTo(18, 32)
+        ..lineTo(50, 55)
+        ..lineTo(82, 32),
+      _line(7),
+    );
+  }
+
+  void _eye(Canvas c, {required bool crossed}) {
+    c.drawPath(
+      Path()
+        ..moveTo(10, 50)
+        ..cubicTo(26, 24, 74, 24, 90, 50)
+        ..cubicTo(74, 76, 26, 76, 10, 50)
+        ..close(),
+      _line(7),
+    );
+    c.drawCircle(const Offset(50, 50), 12, _fill);
+    if (crossed) {
+      c.drawLine(const Offset(18, 82), const Offset(82, 18), _line(8));
+    }
+  }
+
   void _lock(Canvas c) {
     c.drawRRect(
       RRect.fromRectAndRadius(
@@ -406,8 +441,6 @@ class QuestIconPainter extends CustomPainter {
     );
   }
 
-  /// A side-on trainer: collar, instep, toe, then the sole as its own bar.
-  /// Drawn as separate pieces because at 24 px a single outline turns to mush.
   void _shoe(Canvas c) {
     c.drawPath(
       Path()

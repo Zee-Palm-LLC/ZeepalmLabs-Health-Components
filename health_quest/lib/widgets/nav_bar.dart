@@ -1,7 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+
+import '../core/audio/sfx.dart';
 
 import '../core/design.dart';
 import '../core/motion/idle.dart';
@@ -11,43 +12,31 @@ import '../core/type.dart';
 import 'painters/polygon.dart';
 import 'painters/quest_icons.dart';
 
-/// The four tabs from the reference.
 enum NavTab { quests, stats, rewards, profile }
 
 extension NavTabInfo on NavTab {
   String get label => switch (this) {
-        NavTab.quests => 'QUESTS',
-        NavTab.stats => 'STATS',
-        NavTab.rewards => 'REWARDS',
-        NavTab.profile => 'PROFILE',
-      };
+    NavTab.quests => 'QUESTS',
+    NavTab.stats => 'STATS',
+    NavTab.rewards => 'REWARDS',
+    NavTab.profile => 'PROFILE',
+  };
 
   QuestGlyph get glyph => switch (this) {
-        NavTab.quests => QuestGlyph.swords,
-        NavTab.stats => QuestGlyph.bars,
-        NavTab.rewards => QuestGlyph.trophy,
-        NavTab.profile => QuestGlyph.person,
-      };
+    NavTab.quests => QuestGlyph.swords,
+    NavTab.stats => QuestGlyph.bars,
+    NavTab.rewards => QuestGlyph.trophy,
+    NavTab.profile => QuestGlyph.person,
+  };
 
   Color get tone => switch (this) {
-        NavTab.quests => Quests.purple,
-        NavTab.stats => Quests.blue,
-        NavTab.rewards => Quests.gold,
-        NavTab.profile => Quests.green,
-      };
+    NavTab.quests => Quests.purple,
+    NavTab.stats => Quests.blue,
+    NavTab.rewards => Quests.gold,
+    NavTab.profile => Quests.green,
+  };
 }
 
-/// The command bar.
-///
-/// The plate is chamfered and carries a notch in its top edge, and the notch
-/// travels to whichever tab is selected. The active tab's hex rises out of
-/// that notch and sits proud of the bar, lit in its own colour, with a blade
-/// of light under it. A pill sliding along a rounded rectangle is what every
-/// app does; a bar that opens to let the selected station stand up is what a
-/// game does, and it makes the selection readable from the corner of the eye.
-///
-/// Underneath, a charge line runs the length of the plate on a slow loop, so
-/// the bar is never completely still.
 class NavBar extends StatelessWidget {
   const NavBar({
     super.key,
@@ -59,7 +48,6 @@ class NavBar extends StatelessWidget {
   final NavTab current;
   final ValueChanged<NavTab> onChanged;
 
-  /// Entrance progress.
   final double t;
 
   static const double _riser = 20;
@@ -77,80 +65,75 @@ class NavBar extends StatelessWidget {
           child: IdleBuilder(
             builder: (BuildContext context, double idle, Widget? _) =>
                 LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints c) {
-                final slot = c.maxWidth / NavTab.values.length;
-                final target = slot * (current.index + 0.5);
+                  builder: (BuildContext context, BoxConstraints c) {
+                    final slot = c.maxWidth / NavTab.values.length;
+                    final target = slot * (current.index + 0.5);
 
-                return TweenAnimationBuilder<double>(
-                  tween: Tween<double>(end: target),
-                  duration: const Duration(milliseconds: 460),
-                  curve: D.emphasized,
-                  builder: (BuildContext context, double notchX, Widget? _) {
-                    return Stack(
-                      clipBehavior: Clip.none,
-                      children: <Widget>[
-                        // The plate, with a notch that follows the selection.
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          top: _riser,
-                          height: D.navHeight,
-                          child: CustomPaint(
-                            painter: _PlatePainter(
-                              notchX: notchX,
-                              notchWidth: slot * 0.62,
-                              tone: current.tone,
-                              idle: idle,
-                            ),
-                          ),
-                        ),
-
-                        // Inactive tabs sit inside the plate.
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          top: _riser,
-                          height: D.navHeight,
-                          child: Row(
-                            children: <Widget>[
-                              for (final tab in NavTab.values)
-                                Expanded(
-                                  child: Pressable(
-                                    haptic: false,
-                                    pressedScale: 0.9,
-                                    onTap: () {
-                                      HapticFeedback.selectionClick();
-                                      onChanged(tab);
-                                    },
-                                    child: _Station(
-                                      tab: tab,
-                                      selected: tab == current,
-                                    ),
-                                  ),
+                    return TweenAnimationBuilder<double>(
+                      tween: Tween<double>(end: target),
+                      duration: const Duration(milliseconds: 460),
+                      curve: D.emphasized,
+                      builder: (BuildContext context, double notchX, Widget? _) {
+                        return Stack(
+                          clipBehavior: Clip.none,
+                          children: <Widget>[
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              top: _riser,
+                              height: D.navHeight,
+                              child: CustomPaint(
+                                painter: _PlatePainter(
+                                  notchX: notchX,
+                                  notchWidth: slot * 0.62,
+                                  tone: current.tone,
+                                  idle: idle,
                                 ),
-                            ],
-                          ),
-                        ),
-
-                        // The active hex, standing up out of the notch.
-                        Positioned(
-                          left: notchX - 27,
-                          top: 0,
-                          width: 54,
-                          height: 58,
-                          child: IgnorePointer(
-                            child: _ActiveCrest(
-                              tab: current,
-                              idle: idle,
+                              ),
                             ),
-                          ),
-                        ),
-                      ],
+
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              top: _riser,
+                              height: D.navHeight,
+                              child: Row(
+                                children: <Widget>[
+                                  for (final tab in NavTab.values)
+                                    Expanded(
+                                      child: Pressable(
+                                        haptic: false,
+                                        sound: tab == current ? null : Sfx.nav,
+                                        pressedScale: 0.9,
+                                        onTap: () {
+                                          Haptics.buzz(Buzz.selection);
+                                          onChanged(tab);
+                                        },
+                                        child: _Station(
+                                          tab: tab,
+                                          selected: tab == current,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+
+                            Positioned(
+                              left: notchX - 27,
+                              top: 0,
+                              width: 54,
+                              height: 58,
+                              child: IgnorePointer(
+                                child: _ActiveCrest(tab: current, idle: idle),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
+                ),
           ),
         ),
       ),
@@ -158,11 +141,6 @@ class NavBar extends StatelessWidget {
   }
 }
 
-/// One station: the label, and the icon when it is not the selected one.
-///
-/// The selected tab's icon lives in the crest above instead, so the slot below
-/// it carries only the name - which is what stops the bar from showing the
-/// same glyph twice.
 class _Station extends StatelessWidget {
   const _Station({required this.tab, required this.selected});
 
@@ -202,7 +180,6 @@ class _Station extends StatelessWidget {
   }
 }
 
-/// The hexagon that rises out of the notch, carrying the active glyph.
 class _ActiveCrest extends StatelessWidget {
   const _ActiveCrest({required this.tab, required this.idle});
 
@@ -240,7 +217,6 @@ class _ActiveCrest extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 3),
-        // The blade of light the crest stands on.
         CustomPaint(
           size: const Size(34, 3),
           painter: _BladeGlow(tab.tone, pulse),
@@ -283,7 +259,6 @@ class _BladeGlow extends CustomPainter {
       old.color != color || old.pulse != pulse;
 }
 
-/// The chamfered plate with a travelling notch in its top edge.
 class _PlatePainter extends CustomPainter {
   const _PlatePainter({
     required this.notchX,
@@ -341,7 +316,6 @@ class _PlatePainter extends CustomPainter {
         ).createShader(Offset.zero & size),
     );
 
-    // Weave, so the plate has a surface rather than being a flat fill.
     canvas.save();
     canvas.clipPath(path);
     final weave = Paint()
@@ -351,7 +325,6 @@ class _PlatePainter extends CustomPainter {
       canvas.drawLine(Offset(0, y), Offset(w, y), weave);
     }
 
-    // A charge line running the length of the plate, on a slow loop.
     final travel = (idle * 0.22) % 1.4 - 0.2;
     canvas.drawRect(
       Rect.fromLTWH(0, h - 2.5, w, 2.5),
@@ -369,7 +342,6 @@ class _PlatePainter extends CustomPainter {
     );
     canvas.restore();
 
-    // Edge, then a brighter run along the notch so the opening reads as lit.
     canvas.drawPath(
       path,
       Paint()
@@ -403,7 +375,6 @@ class _PlatePainter extends CustomPainter {
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 7),
     );
 
-    // Rivets between the stations.
     final stations = NavTab.values.length;
     for (var i = 1; i < stations; i++) {
       final x = w / stations * i;

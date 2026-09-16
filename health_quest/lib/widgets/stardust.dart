@@ -7,11 +7,6 @@ import 'package:flutter/widgets.dart';
 import '../core/palette.dart';
 import '../core/shaders.dart';
 
-/// The atmosphere over the hero art: motes, light shafts, nebula shimmer, and
-/// the ring that sweeps out when the call to action is charged.
-///
-/// Drawn additively over the plate so it only ever adds light. If the shader
-/// did not compile, a painted mote field stands in.
 class Stardust extends StatefulWidget {
   const Stardust({
     super.key,
@@ -113,7 +108,6 @@ class _ShaderDust extends CustomPainter {
   bool shouldRepaint(_ShaderDust old) => true;
 }
 
-/// Fallback: a handful of drifting motes, no shafts, no shimmer.
 class _PaintedDust extends CustomPainter {
   _PaintedDust({
     required this.time,

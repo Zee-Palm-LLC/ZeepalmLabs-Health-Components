@@ -8,11 +8,6 @@ import '../../../core/type.dart';
 import '../../../widgets/hud.dart';
 import '../../../widgets/painters/polygon.dart';
 
-/// The player progression card: the level badge and the XP bar.
-///
-/// The bar is empty at rest, which is the point of an onboarding screen, so
-/// everything here is built to look right at zero: the track has its own
-/// inner shadow and lit rim rather than relying on a fill to give it shape.
 class XpCard extends StatelessWidget {
   const XpCard({
     super.key,
@@ -25,12 +20,10 @@ class XpCard extends StatelessWidget {
 
   final int level;
 
-  /// Current XP, animated by the parent during the charge.
   final double xp;
   final int maxXp;
   final double idle;
 
-  /// 0..1 while the call to action is charging; lights the whole card.
   final double charge;
 
   @override
@@ -125,8 +118,6 @@ class _LevelBadge extends StatelessWidget {
   }
 }
 
-/// The level number rolls over rather than cutting, so reaching a new level
-/// is something you see happen.
 class _RollingLevel extends StatelessWidget {
   const _RollingLevel({required this.level});
 

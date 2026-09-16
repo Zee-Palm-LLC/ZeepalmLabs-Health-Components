@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import '../core/palette.dart';
 import '../widgets/painters/quest_icons.dart';
 
-/// A daily quest on the dashboard.
 @immutable
 class Quest {
   const Quest({
@@ -29,18 +28,14 @@ class Quest {
   final Color tone;
   final int xp;
 
-  /// 0..1.
   final double progress;
 
-  /// What the detail screen counts, e.g. "STEPS".
   final String unit;
   final int current;
   final int target;
 
-  /// The detail screen's subtitle.
   final String cheer;
 
-  /// Step counts along the milestone rail.
   final List<int> milestones;
   final String nextReward;
 
@@ -98,7 +93,6 @@ class Quest {
   static int get completed => today.where((Quest q) => q.done).length;
 }
 
-/// A prize in the rewards vault.
 @immutable
 class Reward {
   const Reward({
@@ -116,11 +110,9 @@ class Reward {
   final QuestGlyph glyph;
   final Color tone;
 
-  /// In XP.
   final int cost;
   final bool owned;
 
-  /// When set, the reward is gated on level rather than on XP.
   final int? unlocksAtLevel;
 
   static const List<Reward> all = <Reward>[
@@ -177,7 +169,6 @@ class Reward {
   ];
 }
 
-/// The signed-in player. One instance, [Player.you].
 @immutable
 class Player {
   const Player({
@@ -202,7 +193,6 @@ class Player {
 
   double get xpFraction => (xp / xpToNext).clamp(0.0, 1.0);
 
-  /// Unspent XP, which is what the vault charges against.
   int get balance => xp;
 
   static const Player you = Player(
@@ -217,7 +207,6 @@ class Player {
   );
 }
 
-/// 2840 -> "2,840".
 String grouped(int value) {
   final s = value.toString();
   final out = StringBuffer();

@@ -5,14 +5,6 @@ import 'package:flutter/widgets.dart';
 import '../core/palette.dart';
 import '../core/type.dart';
 
-/// A rectangle with its corners cut off.
-///
-/// The chamfer is what separates a game panel from an app card. A rounded
-/// rectangle reads as software; a plate with bevelled corners reads as
-/// something machined, which is the whole visual argument of a HUD.
-///
-/// [cut] is the length taken off each corner along both edges, and is clamped
-/// so it can never exceed half of the shorter side.
 Path chamferPath(
   Size size, {
   double cut = 12,
@@ -58,7 +50,6 @@ Path chamferPath(
   return p;
 }
 
-/// Clips its child to a chamfered plate.
 class ChamferClipper extends CustomClipper<Path> {
   const ChamferClipper({this.cut = 12});
 
@@ -71,11 +62,6 @@ class ChamferClipper extends CustomClipper<Path> {
   bool shouldReclip(ChamferClipper old) => old.cut != cut;
 }
 
-/// The workhorse surface: a chamfered plate with a lit edge, an optional
-/// accent rail down one side, corner brackets and a faint scanline weave.
-///
-/// Everything a card does on these screens goes through here, so the dashboard,
-/// the quest detail and the vault cannot drift apart.
 class HudPanel extends StatelessWidget {
   const HudPanel({
     super.key,
@@ -102,7 +88,6 @@ class HudPanel extends StatelessWidget {
   final Color edge;
   final double edgeWidth;
 
-  /// Lights the brackets, the rail and the glow. Defaults to [edge].
   final Color? accent;
   final double accentStrength;
 
@@ -110,7 +95,6 @@ class HudPanel extends StatelessWidget {
   final double bracketLength;
   final bool scanlines;
 
-  /// A solid bar down the left edge, the way a game marks a panel's faction.
   final bool rail;
 
   final EdgeInsets padding;
@@ -200,8 +184,6 @@ class _HudPanelPainter extends CustomPainter {
       canvas.restore();
     }
 
-    // The lit edge, plus a brighter highlight along the top two segments so
-    // the plate looks like it is catching a light from above.
     canvas.drawPath(
       path,
       Paint()
@@ -245,8 +227,6 @@ class _HudPanelPainter extends CustomPainter {
         ..strokeCap = StrokeCap.square
         ..color = accent.withValues(alpha: 0.8 * accentStrength)
         ..isAntiAlias = true;
-      // Top-left and bottom-right only: four brackets is a targeting
-      // reticle, two is a frame.
       canvas.drawPath(
         Path()
           ..moveTo(0, c + b)
@@ -282,11 +262,6 @@ class _HudPanelPainter extends CustomPainter {
       old.glow != glow;
 }
 
-/// An energy bar built from discrete cells rather than one smooth fill.
-///
-/// Segments are how a game says "resource". The partial cell at the leading
-/// edge is drawn at fractional width and lit, so the bar still reads
-/// continuously while looking built out of parts.
 class SegmentedMeter extends StatelessWidget {
   const SegmentedMeter({
     super.key,
@@ -355,7 +330,6 @@ class _SegmentPainter extends CustomPainter {
       final x = i * (cell + gap);
       final fillFraction = (lit - i).clamp(0.0, 1.0);
 
-      // Each cell is a parallelogram, leaning the way a power gauge does.
       Path cellPath(double width) => Path()
         ..moveTo(x + skew, 0)
         ..lineTo(x + width, 0)
@@ -380,7 +354,6 @@ class _SegmentPainter extends CustomPainter {
           ).createShader(Rect.fromLTWH(x, 0, cell, size.height)),
       );
 
-      // The last lit cell burns brighter, so the head of the bar is obvious.
       if (fillFraction < 1 || i == (lit.ceil() - 1)) {
         canvas.drawPath(
           cellPath(math.max(w, skew + 0.5)),
@@ -423,8 +396,6 @@ class _SegmentPainter extends CustomPainter {
       old.trackColor != trackColor;
 }
 
-/// A section heading with a leading accent blade, the way a game labels a
-/// panel. Optionally carries a trailing readout.
 class HudHeading extends StatelessWidget {
   const HudHeading({
     super.key,
@@ -446,9 +417,6 @@ class HudHeading extends StatelessWidget {
           painter: _BladePainter(accent),
         ),
         const SizedBox(width: 9),
-        // The title gets the lion's share of the free space. Flexible and
-        // Expanded are both flex 1 by default, which would split it evenly
-        // and clip the title to make room for a decorative rule.
         Flexible(
           flex: 8,
           child: Text(
@@ -517,7 +485,6 @@ class _BladePainter extends CustomPainter {
   bool shouldRepaint(_BladePainter old) => old.color != color;
 }
 
-/// A hairline that fades out to the right, with a small diamond on it.
 class _RulePainter extends CustomPainter {
   const _RulePainter(this.color);
 
@@ -553,11 +520,6 @@ class _RulePainter extends CustomPainter {
   bool shouldRepaint(_RulePainter old) => old.color != color;
 }
 
-/// The chamfered, bevelled key used for every primary action.
-///
-/// Three things make it read as a game control rather than a web button: the
-/// corners are cut, the face carries a hard top highlight and a bottom shade
-/// like moulded plastic, and a sheen crosses it on its own schedule.
 class BevelButton extends StatelessWidget {
   const BevelButton({
     super.key,
@@ -579,7 +541,6 @@ class BevelButton extends StatelessWidget {
   final bool lit;
   final double idle;
 
-  /// 0..1; wipes a brighter overlay across from the left.
   final double charge;
 
   @override
@@ -640,7 +601,6 @@ class _BevelPainter extends CustomPainter {
     canvas.save();
     canvas.clipPath(path);
 
-    // Moulded face: light on the top half, shade on the bottom.
     canvas.drawRect(
       rect,
       Paint()
@@ -687,7 +647,6 @@ class _BevelPainter extends CustomPainter {
     }
     canvas.restore();
 
-    // Rim, then a hard inner highlight just inside the top edge.
     canvas.drawPath(
       path,
       Paint()

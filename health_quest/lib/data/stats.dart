@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import '../core/palette.dart';
 import '../widgets/painters/stat_icons.dart';
 
-/// One of the four wellness stats the player levels up.
 @immutable
 class Stat {
   const Stat({
@@ -20,14 +19,11 @@ class Stat {
   final StatGlyph glyph;
   final StatTone tone;
 
-  /// Shown when the badge is tapped.
   final String blurb;
   final int level;
 
   String get levelLabel => 'Lv. ${level.toString().padLeft(2, '0')}';
 
-  /// The four, in the reading order the reference lays them out: top-left,
-  /// top-right, bottom-left, bottom-right.
   static const List<Stat> all = <Stat>[
     Stat(
       id: 'physical',

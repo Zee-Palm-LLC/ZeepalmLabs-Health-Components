@@ -4,9 +4,6 @@ import 'package:flutter/widgets.dart';
 
 import '../../core/palette.dart';
 
-/// The four stat glyphs, drawn rather than pulled from an icon font so their
-/// weights match each other and so each can carry its own inner highlight
-/// and animate on its own terms.
 enum StatGlyph { heart, brain, bolt, drop }
 
 class StatIcon extends StatelessWidget {
@@ -23,10 +20,8 @@ class StatIcon extends StatelessWidget {
   final StatTone tone;
   final double size;
 
-  /// 0..1, a repeating phase used by the heart's trace and the bolt's flicker.
   final double pulse;
 
-  /// 0..1 entrance, used to draw the glyph on rather than fade it in.
   final double draw;
 
   @override
@@ -97,9 +92,6 @@ class _StatIconPainter extends CustomPainter {
     );
   }
 
-  /// A filled heart with an ECG trace cut through it. The trace sweeps left to
-  /// right on [pulse], which is what makes the badge read as a heartbeat and
-  /// not a sticker.
   void _heart(Canvas canvas) {
     final heart = Path()
       ..moveTo(50, 88)
@@ -119,8 +111,6 @@ class _StatIconPainter extends CustomPainter {
 
     _glowPath(canvas, heart);
 
-    // Fill the heart, then punch the trace straight out of it, so the line
-    // reads as a window onto the nebula rather than ink laid on top.
     canvas.saveLayer(const Rect.fromLTWH(-10, -10, 120, 120), Paint());
     canvas.drawPath(heart, _fill);
     canvas.drawPath(
@@ -146,7 +136,6 @@ class _StatIconPainter extends CustomPainter {
     }
   }
 
-  /// Two hemispheres of lobes with a dividing stem, in outline.
   void _brain(Canvas canvas) {
     final outline = Path()
       ..moveTo(50, 16)
@@ -189,7 +178,6 @@ class _StatIconPainter extends CustomPainter {
     canvas.drawPath(folds, _stroke(4, tone.tip.withValues(alpha: 0.9)));
   }
 
-  /// A bolt that flickers: the core brightens on [pulse] like a filament.
   void _bolt(Canvas canvas) {
     final bolt = Path()
       ..moveTo(58, 6)
@@ -213,7 +201,6 @@ class _StatIconPainter extends CustomPainter {
     );
   }
 
-  /// A droplet with a highlight, and a meniscus that rocks gently.
   void _drop(Canvas canvas) {
     final drop = Path()
       ..moveTo(50, 8)
@@ -225,7 +212,6 @@ class _StatIconPainter extends CustomPainter {
     _glowPath(canvas, drop);
     canvas.drawPath(drop, _fill);
 
-    // Water line inside the drop, tilting on the pulse.
     canvas.save();
     canvas.clipPath(drop);
     final tilt = math.sin(pulse * math.pi * 2) * 3;

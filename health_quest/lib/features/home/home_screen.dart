@@ -2,30 +2,27 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import '../../core/audio/sfx.dart';
 import '../../core/design.dart';
 import '../../core/motion/entrance.dart';
 import '../../core/motion/idle.dart';
 import '../../core/motion/pressable.dart';
+import '../../core/motion/routes.dart';
 import '../../core/palette.dart';
 import '../../core/type.dart';
+import '../../data/game_state.dart';
 import '../../data/quests.dart';
 import '../../widgets/painters/polygon.dart';
 import '../../widgets/painters/quest_icons.dart';
 import '../../widgets/hud.dart';
 import '../../widgets/progress_ring.dart';
+import '../notifications/notifications_screen.dart';
 
-/// The quests dashboard: who you are, how far through the level you are, how
-/// today scored, and the three things left to do.
-///
-/// Everything that can count, counts. The health score dials up from zero,
-/// the XP bar fills, each quest's meter runs out to its value and the
-/// percentages tick alongside them. A dashboard whose numbers are simply
-/// printed looks like a screenshot of an app; one whose numbers arrive looks
-/// like an app.
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.onOpenQuest});
+  const HomeScreen({super.key, required this.onOpenQuest, this.onOpenProfile});
 
   final ValueChanged<Quest> onOpenQuest;
+  final VoidCallback? onOpenProfile;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -50,86 +47,99 @@ class _HomeScreenState extends State<HomeScreen>
     return IdleBuilder(
       builder: (BuildContext context, double idle, Widget? _) =>
           AnimatedBuilder(
-        animation: _in,
-        builder: (BuildContext context, Widget? _) {
-          final t = _in.value;
-          return ListView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(
-                D.pageGutter, 4, D.pageGutter, 12),
-            children: <Widget>[
-              Rise(
-                t: D.headerIn.transform(t),
-                distance: 18,
-                child: const _Header(player: player),
-              ),
-              const SizedBox(height: 14),
-              Rise(
-                t: D.xpPanelIn.transform(t),
-                distance: 20,
-                child: _XpPanel(
-                  player: player,
-                  t: D.xpPanelIn.transform(t),
-                  idle: idle,
+            animation: Listenable.merge(<Listenable>[_in, GameState.instance]),
+            builder: (BuildContext context, Widget? _) {
+              final t = _in.value;
+              return ListView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(
+                  D.pageGutter,
+                  4,
+                  D.pageGutter,
+                  12,
                 ),
-              ),
-              const SizedBox(height: 16),
-              Rise(
-                t: D.scoreIn.transform(t),
-                distance: 26,
-                scaleFrom: 0.97,
-                child: _ScoreCard(
-                  player: player,
-                  t: D.scoreIn.transform(t),
-                  idle: idle,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Rise(
-                t: D.sectionIn.transform(t),
-                distance: 12,
-                child: HudHeading(
-                  title: "TODAY'S QUESTS",
-                  accent: Quests.purple,
-                  trailing: Text(
-                    '${Quest.completed}/${Quest.today.length} DONE',
-                    maxLines: 1,
-                    style: T.rewardLabel,
+                children: <Widget>[
+                  Rise(
+                    t: D.headerIn.transform(t),
+                    distance: 18,
+                    child: _Header(
+                      player: player,
+                      onOpenProfile: widget.onOpenProfile,
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              for (var i = 0; i < Quest.today.length; i++) ...<Widget>[
-                if (i > 0) const SizedBox(height: D.questGap),
-                Builder(
-                  builder: (BuildContext context) {
-                    final p = D.stagger(
-                        t, D.rowsStart, i, D.rowStagger, D.rowSpan);
-                    return Slide(
-                      t: D.outExpo.transform(p),
-                      distance: 34,
-                      child: QuestRow(
-                        quest: Quest.today[i],
-                        t: p,
-                        idle: idle,
-                        onTap: () => widget.onOpenQuest(Quest.today[i]),
+                  const SizedBox(height: 14),
+                  Rise(
+                    t: D.xpPanelIn.transform(t),
+                    distance: 20,
+                    child: _XpPanel(
+                      player: player,
+                      t: D.xpPanelIn.transform(t),
+                      idle: idle,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Rise(
+                    t: D.scoreIn.transform(t),
+                    distance: 26,
+                    scaleFrom: 0.97,
+                    child: _ScoreCard(
+                      player: player,
+                      t: D.scoreIn.transform(t),
+                      idle: idle,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Rise(
+                    t: D.sectionIn.transform(t),
+                    distance: 12,
+                    child: HudHeading(
+                      title: "TODAY'S QUESTS",
+                      accent: Quests.purple,
+                      trailing: Text(
+                        '${Quest.completed}/${Quest.today.length} DONE',
+                        maxLines: 1,
+                        style: T.rewardLabel,
                       ),
-                    );
-                  },
-                ),
-              ],
-            ],
-          );
-        },
-      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  for (var i = 0; i < Quest.today.length; i++) ...<Widget>[
+                    if (i > 0) const SizedBox(height: D.questGap),
+                    Builder(
+                      builder: (BuildContext context) {
+                        final p = D.stagger(
+                          t,
+                          D.rowsStart,
+                          i,
+                          D.rowStagger,
+                          D.rowSpan,
+                        );
+                        return Slide(
+                          t: D.outExpo.transform(p),
+                          distance: 34,
+                          child: QuestRow(
+                            quest: Quest.today[i],
+                            t: p,
+                            idle: idle,
+                            onTap: () => widget.onOpenQuest(Quest.today[i]),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ],
+              );
+            },
+          ),
     );
   }
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.player});
+  const _Header({required this.player, this.onOpenProfile});
 
   final Player player;
+  final VoidCallback? onOpenProfile;
 
   @override
   Widget build(BuildContext context) {
@@ -137,25 +147,30 @@ class _Header extends StatelessWidget {
       height: D.headerAvatar + 4,
       child: Row(
         children: <Widget>[
-          Container(
-            width: D.headerAvatar,
-            height: D.headerAvatar,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Quests.cardRaised,
-              border: Border.all(color: Quests.blueBright, width: 2),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: Quests.blue.withValues(alpha: 0.45),
-                  blurRadius: 16,
+          Pressable(
+            sound: Sfx.nav,
+            pressedScale: 0.9,
+            onTap: onOpenProfile,
+            child: Container(
+              width: D.headerAvatar,
+              height: D.headerAvatar,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Quests.cardRaised,
+                border: Border.all(color: Quests.blueBright, width: 2),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Quests.blue.withValues(alpha: 0.45),
+                    blurRadius: 16,
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/hero/face.png',
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.medium,
                 ),
-              ],
-            ),
-            child: ClipOval(
-              child: Image.asset(
-                'assets/hero/face.png',
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.medium,
               ),
             ),
           ),
@@ -171,7 +186,7 @@ class _Header extends StatelessWidget {
                   children: <Widget>[
                     Flexible(
                       child: Text(
-                        player.name,
+                        GameState.instance.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: T.playerName,
@@ -193,7 +208,7 @@ class _Header extends StatelessWidget {
                     const SizedBox(width: 5),
                     Flexible(
                       child: Text(
-                        'LEVEL ${player.level}  ·  ${player.title}',
+                        'LEVEL ${GameState.instance.level}  ·  ${player.title}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: T.playerMeta,
@@ -212,8 +227,6 @@ class _Header extends StatelessWidget {
   }
 }
 
-/// The waving hand. It waves, once every few seconds, because a hand emoji
-/// that never moves is just a shape.
 class _Wave extends StatelessWidget {
   const _Wave();
 
@@ -242,7 +255,10 @@ class _BellButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Pressable(
       pressedScale: 0.88,
-      onTap: () {},
+      sound: Sfx.open,
+      onTap: () => Navigator.of(
+        context,
+      ).push<void>(hudRoute(const NotificationsScreen())),
       child: SizedBox(
         width: D.headerButton + 6,
         height: D.headerButton + 6,
@@ -265,31 +281,32 @@ class _BellButton extends StatelessWidget {
                 ),
               ),
             ),
-            // Unread dot, pulsing so it reads as new.
-            Positioned(
-              right: 0,
-              top: 0,
-              child: IdleBuilder(
-                builder: (BuildContext context, double s, Widget? _) {
-                  final pulse = 0.5 + 0.5 * math.sin(s * 2.4);
-                  return Container(
-                    width: 11,
-                    height: 11,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Quests.rose,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color:
-                              Quests.rose.withValues(alpha: 0.4 + 0.4 * pulse),
-                          blurRadius: 6 + 5 * pulse,
-                        ),
-                      ],
-                    ),
-                  );
-                },
+            if (GameState.instance.unreadCount > 0)
+              Positioned(
+                right: 0,
+                top: 0,
+                child: IdleBuilder(
+                  builder: (BuildContext context, double s, Widget? _) {
+                    final pulse = 0.5 + 0.5 * math.sin(s * 2.4);
+                    return Container(
+                      width: 11,
+                      height: 11,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Quests.rose,
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: Quests.rose.withValues(
+                              alpha: 0.4 + 0.4 * pulse,
+                            ),
+                            blurRadius: 6 + 5 * pulse,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -307,6 +324,7 @@ class _XpPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fill = D.emphasized.transform(t.clamp(0.0, 1.0));
+    final game = GameState.instance;
     return HudPanel(
       cut: 12,
       accent: Quests.purple,
@@ -315,63 +333,62 @@ class _XpPanel extends StatelessWidget {
       bracketLength: 12,
       padding: const EdgeInsets.symmetric(horizontal: 9),
       child: SizedBox(
-      height: D.xpPanelHeight,
-      child: Row(
-        children: <Widget>[
-          PolygonPane(
-            size: const Size(D.levelHex, D.levelHex),
-            sides: 6,
-            cornerRadius: 4,
-            edgeWidth: 1.8,
-            edge: Quests.purpleBright,
-            glow: Quests.purple.withValues(alpha: 0.6),
-            glowStrength: 0.5,
-            fill: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: <Color>[Color(0xFF3A1D6B), Color(0xFF1B0F33)],
-            ),
-            child: Text('${player.level}', style: T.questXp
-                .copyWith(color: Ink2.bright, fontFamily: T.display)),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: SegmentedMeter(
-              value: player.xpFraction * fill,
-              color: Quests.purple,
-              height: 12,
-              segments: 18,
-              shimmer: idle,
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Shrinks rather than overflows: five figures of XP on a 360-wide
-          // phone is one pixel past what the row can give it.
-          Flexible(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
+        height: D.xpPanelHeight,
+        child: Row(
+          children: <Widget>[
+            PolygonPane(
+              size: const Size(D.levelHex, D.levelHex),
+              sides: 6,
+              cornerRadius: 4,
+              edgeWidth: 1.8,
+              edge: Quests.purpleBright,
+              glow: Quests.purple.withValues(alpha: 0.6),
+              glowStrength: 0.5,
+              fill: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[Color(0xFF3A1D6B), Color(0xFF1B0F33)],
+              ),
               child: Text(
-                '${grouped((player.xp * fill).round())} / '
-                '${grouped(player.xpToNext)} XP',
-                maxLines: 1,
-                style: T.questTitle,
+                '${game.level}',
+                style: T.questXp.copyWith(
+                  color: Ink2.bright,
+                  fontFamily: T.display,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 2),
-        ],
-      ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: SegmentedMeter(
+                value: game.xpFraction * fill,
+                color: Quests.purple,
+                height: 12,
+                segments: 18,
+                shimmer: idle,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  '${grouped((game.xp * fill).round())} / '
+                  '${grouped(game.xpToNext)} XP',
+                  maxLines: 1,
+                  style: T.questTitle,
+                ),
+              ),
+            ),
+            const SizedBox(width: 2),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _ScoreCard extends StatelessWidget {
-  const _ScoreCard({
-    required this.player,
-    required this.t,
-    required this.idle,
-  });
+  const _ScoreCard({required this.player, required this.t, required this.idle});
 
   final Player player;
   final double t;
@@ -443,8 +460,7 @@ class _ScoreCard extends StatelessWidget {
                       children: <Widget>[
                         _Flame(idle: idle),
                         const SizedBox(width: 7),
-                        Text('${player.streakDays} DAYS',
-                            style: T.streakValue),
+                        Text('${player.streakDays} DAYS', style: T.streakValue),
                       ],
                     ),
                   ),
@@ -454,8 +470,7 @@ class _ScoreCard extends StatelessWidget {
                   Text('MULTIPLIER', style: T.cardLabel),
                   const SizedBox(height: 10),
                   Text('X${player.multiplier}', style: T.multiplier),
-                  Text('XP',
-                      style: T.cardLabel.copyWith(color: Quests.blue)),
+                  Text('XP', style: T.cardLabel.copyWith(color: Quests.blue)),
                 ],
               ),
             ),
@@ -473,12 +488,12 @@ class _Flame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => QuestIcon(
-        glyph: QuestGlyph.flame,
-        size: 22,
-        color: Quests.gold,
-        highlight: Quests.goldBright,
-        progress: (idle * 0.6) % 1.0,
-      );
+    glyph: QuestGlyph.flame,
+    size: 22,
+    color: Quests.gold,
+    highlight: Quests.goldBright,
+    progress: (idle * 0.6) % 1.0,
+  );
 }
 
 class _Divider extends StatelessWidget {
@@ -486,10 +501,10 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        height: 1,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
-        color: Quests.divider,
-      );
+    height: 1,
+    margin: const EdgeInsets.symmetric(horizontal: 10),
+    color: Quests.divider,
+  );
 }
 
 class VerticalDivider2 extends StatelessWidget {
@@ -500,7 +515,6 @@ class VerticalDivider2 extends StatelessWidget {
       Container(width: 1, color: Quests.divider);
 }
 
-/// One quest on the dashboard.
 class QuestRow extends StatelessWidget {
   const QuestRow({
     super.key,
@@ -512,7 +526,6 @@ class QuestRow extends StatelessWidget {
 
   final Quest quest;
 
-  /// This row's own entrance progress, 0..1.
   final double t;
   final double idle;
   final VoidCallback? onTap;
@@ -542,89 +555,135 @@ class QuestRow extends StatelessWidget {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 13),
         child: SizedBox(
-        height: D.questCardHeight,
-        child: Row(
-          children: <Widget>[
-            Container(
-              width: D.questIconSize,
-              height: D.questIconSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: quest.tone.withValues(alpha: 0.14),
-                border: Border.all(color: quest.tone.withValues(alpha: 0.30)),
-              ),
-              child: Center(
-                child: QuestIcon(
-                  glyph: quest.glyph,
-                  size: 24,
-                  color: quest.tone,
-                  highlight: Color.lerp(quest.tone, Ink2.bright, 0.45)!,
+          height: D.questCardHeight,
+          child: Row(
+            children: <Widget>[
+              Container(
+                width: D.questIconSize,
+                height: D.questIconSize,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: quest.tone.withValues(alpha: 0.14),
+                  border: Border.all(color: quest.tone.withValues(alpha: 0.30)),
+                ),
+                child: Center(
+                  child: QuestIcon(
+                    glyph: quest.glyph,
+                    size: 24,
+                    color: quest.tone,
+                    highlight: Color.lerp(quest.tone, Ink2.bright, 0.45)!,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(quest.title,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      quest.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: T.questTitle),
-                  const SizedBox(height: 1),
-                  Text(quest.blurb,
+                      style: T.questTitle,
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      quest.blurb,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: T.questBlurb),
-                  const SizedBox(height: 7),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: SegmentedMeter(
-                          value: quest.progress * fill,
-                          color: quest.tone,
-                          height: 9,
-                          segments: 14,
-                          shimmer: quest.done ? idle : 0,
+                      style: T.questBlurb,
+                    ),
+                    const SizedBox(height: 7),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: SegmentedMeter(
+                            value: quest.progress * fill,
+                            color: quest.tone,
+                            height: 9,
+                            segments: 14,
+                            shimmer: quest.done ? idle : 0,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 9),
-                      Text('$shown%',
-                          style: T.questPercent.copyWith(color: quest.tone)),
-                    ],
+                        const SizedBox(width: 9),
+                        Text(
+                          '$shown%',
+                          style: T.questPercent.copyWith(color: quest.tone),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    '+${quest.xp} XP',
+                    style: T.questXp.copyWith(color: quest.tone),
                   ),
+                  const SizedBox(height: 6),
+                  if (quest.done && !GameState.instance.questClaimed(quest))
+                    _ClaimPip(idle: idle)
+                  else if (quest.done)
+                    _DoneBadge(t: fill)
+                  else
+                    const QuestIcon(
+                      glyph: QuestGlyph.chevron,
+                      size: 18,
+                      color: Ink2.muted,
+                      strokeWidth: 8,
+                    ),
                 ],
               ),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text('+${quest.xp} XP',
-                    style: T.questXp.copyWith(color: quest.tone)),
-                const SizedBox(height: 6),
-                if (quest.done)
-                  _DoneBadge(t: fill)
-                else
-                  const QuestIcon(
-                    glyph: QuestGlyph.chevron,
-                    size: 18,
-                    color: Ink2.muted,
-                    strokeWidth: 8,
-                  ),
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// The tick on a finished quest. It draws itself on rather than appearing,
-/// which is the difference between "this is done" and "this was always done".
+class _ClaimPip extends StatelessWidget {
+  const _ClaimPip({required this.idle});
+
+  final double idle;
+
+  @override
+  Widget build(BuildContext context) {
+    final pulse = 0.5 + 0.5 * math.sin(idle * 3.2);
+    return Container(
+      height: 22,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: Quests.gold.withValues(alpha: 0.16 + 0.1 * pulse),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: Quests.gold.withValues(alpha: 0.6 + 0.4 * pulse),
+        ),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Quests.gold.withValues(alpha: 0.25 + 0.3 * pulse),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: Center(
+        widthFactor: 1,
+        child: Text(
+          'CLAIM',
+          style: T.rewardLabel.copyWith(
+            color: Quests.goldBright,
+            fontSize: 10.5,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _DoneBadge extends StatelessWidget {
   const _DoneBadge({required this.t});
 

@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'core/audio/sfx.dart';
+
 import 'core/palette.dart';
+import 'core/settings.dart';
 import 'core/shaders.dart';
 import 'core/type.dart';
 import 'features/onboarding/onboarding_screen.dart';
@@ -9,13 +14,17 @@ import 'features/onboarding/onboarding_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Shaders.warmUp();
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    statusBarBrightness: Brightness.dark,
-    systemNavigationBarColor: Colors.transparent,
-    systemNavigationBarIconBrightness: Brightness.light,
-  ));
+  await GameSettings.instance.load();
+  unawaited(GameAudio.init());
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
   runApp(const HealthQuestApp());
 }
 
@@ -41,8 +50,6 @@ class HealthQuestApp extends StatelessWidget {
         highlightColor: Colors.transparent,
       ),
       builder: (BuildContext context, Widget? child) {
-        // The display type is measured tightly against a 393-wide canvas, so
-        // large accessibility sizes are honoured up to a point and then held.
         final mq = MediaQuery.of(context);
         return MediaQuery(
           data: mq.copyWith(

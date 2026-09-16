@@ -3,21 +3,6 @@ import 'package:video_player/video_player.dart';
 
 import 'hero_stage.dart';
 
-/// The supplied onboarding clip, played once behind the interface.
-///
-/// It is the real thing, not a frame sequence: the character drops out of the
-/// sky, lands on the rock and stands up. The clip is trimmed to end just
-/// before its own built-in stat labels appear, because those are drawn here
-/// as live badges instead.
-///
-/// As it finishes, the frame is transformed toward the still composition's
-/// registration (see [heroFrameRect]) while it cross-fades, so the character
-/// does not change size under the dissolve.
-///
-/// Everything about it is optional. If the platform will not decode it - an
-/// unsupported browser, a locked-down device - [onFailed] fires and the
-/// screen falls back to the still composition with no visible difference
-/// other than a missing intro.
 class IntroVideo extends StatefulWidget {
   const IntroVideo({
     super.key,
@@ -27,11 +12,9 @@ class IntroVideo extends StatefulWidget {
     this.opacity = 1,
   });
 
-  /// Normalised playback position, 0..1, every frame.
   final ValueChanged<double> onProgress;
   final VoidCallback onFailed;
 
-  /// 0 covers the screen, 1 registers with the still composition.
   final double blend;
   final double opacity;
 
@@ -57,8 +40,6 @@ class _IntroVideoState extends State<IntroVideo> {
         await c.dispose();
         return;
       }
-      // Muted, because an intro that makes noise on open is a bug, and
-      // because muted is the only form of autoplay a browser will allow.
       await c.setVolume(0);
       await c.setLooping(false);
       c.addListener(_onTick);
@@ -68,8 +49,6 @@ class _IntroVideoState extends State<IntroVideo> {
       });
       await c.play();
     } catch (_) {
-      // play() can reject after the controller has already been adopted, so
-      // unwind whatever state was reached rather than assuming none was.
       c.removeListener(_onTick);
       await c.dispose();
       if (!mounted) return;

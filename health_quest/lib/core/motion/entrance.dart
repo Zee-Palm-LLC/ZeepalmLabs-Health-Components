@@ -1,10 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-/// Rise-and-fade for one element of a staggered entrance.
-///
-/// [t] may overshoot past 1 when the curve is a spring. Opacity is clamped;
-/// the offset and scale are not, so the overshoot shows as movement instead
-/// of a flash.
 class Rise extends StatelessWidget {
   const Rise({
     super.key,
@@ -42,7 +37,6 @@ class Rise extends StatelessWidget {
   }
 }
 
-/// Slide-and-fade from the side, for rows dealing themselves out.
 class Slide extends StatelessWidget {
   const Slide({
     super.key,
@@ -71,12 +65,6 @@ class Slide extends StatelessWidget {
   }
 }
 
-/// A line of display type that wipes in behind a travelling highlight.
-///
-/// The text is drawn once; a gradient shader masks it from left to right so
-/// the letters appear to be struck rather than faded, and a brighter band
-/// rides the leading edge. This is what stops a big headline from looking
-/// like a plain opacity tween.
 class SweepReveal extends StatelessWidget {
   const SweepReveal({
     super.key,
@@ -88,7 +76,6 @@ class SweepReveal extends StatelessWidget {
   final Widget child;
   final double t;
 
-  /// How soft the wipe's leading edge is, as a fraction of the width.
   final double feather;
 
   @override
@@ -97,7 +84,6 @@ class SweepReveal extends StatelessWidget {
     if (p <= 0) return Opacity(opacity: 0, child: child);
     if (p >= 1) return child;
 
-    // The wipe runs from -feather to 1+feather so the text is fully lit at 1.
     final head = -feather + p * (1 + feather * 2);
     final start = (head - feather).clamp(-1.0, 2.0);
     final end = (head + feather).clamp(-1.0, 2.0);

@@ -5,22 +5,11 @@ import '../../../core/motion/entrance.dart';
 import '../../../core/palette.dart';
 import '../../../core/type.dart';
 
-/// "LEVEL UP / YOUR HEALTH", then the supporting line.
-///
-/// Both display lines are struck in by a travelling wipe rather than faded,
-/// because a 40pt italic display face that simply fades reads as a loading
-/// state. The second line carries the identity gradient and glows in its own
-/// colour; the shader mask tints the glow too, which is why it is applied
-/// over the shadow rather than under it.
 class Headline extends StatelessWidget {
   const Headline({super.key, required this.t, this.message});
 
-  /// Entrance progress for the whole screen, 0..1.
   final double t;
 
-  /// Set while a stat badge is tapped: its blurb takes the supporting line's
-  /// place for a couple of seconds, then hands it back. The two are the same
-  /// height, so nothing below moves.
   final String? message;
 
   @override
@@ -64,10 +53,6 @@ class Headline extends StatelessWidget {
                 'YOUR HEALTH',
                 textAlign: TextAlign.center,
                 style: T.yourHealth.copyWith(
-                  // The mask tints these too, so a white shadow comes out
-                  // violet on the left and blue on the right - which is the
-                  // glow the reference has. Keep it tight; a wide one turns
-                  // the line into a lit box.
                   shadows: const <Shadow>[
                     Shadow(color: Color(0x73FFFFFF), blurRadius: 18),
                   ],
@@ -82,8 +67,6 @@ class Headline extends StatelessWidget {
           distance: 10,
           child: SizedBox(
             height: D.subSize * D.subLineHeight * 2,
-            // Both the default line and every stat blurb wrap to exactly two
-            // lines at this width, so the swap never moves anything below it.
             width: 310,
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 320),

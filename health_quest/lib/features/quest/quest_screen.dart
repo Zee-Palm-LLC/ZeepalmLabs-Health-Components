@@ -1,7 +1,9 @@
 import 'dart:math' as math;
 
-import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/audio/sfx.dart';
 
 import '../../core/design.dart';
 import '../../core/motion/entrance.dart';
@@ -9,18 +11,16 @@ import '../../core/motion/idle.dart';
 import '../../core/motion/pressable.dart';
 import '../../core/palette.dart';
 import '../../core/type.dart';
+import '../../data/game_state.dart';
 import '../../data/quests.dart';
 import '../../widgets/painters/polygon.dart';
 import '../../widgets/painters/quest_icons.dart';
 import '../../widgets/hud.dart';
+import '../../widgets/hud_kit.dart';
 import '../../widgets/progress_ring.dart';
 import 'widgets/quest_backdrop.dart';
+import 'widgets/victory_overlay.dart';
 
-/// One quest, in full: where you are, what it pays, and what is still ahead.
-///
-/// The ring is the screen. It dials from zero on arrival and the count runs
-/// with it, so opening the quest shows you the progress being made rather
-/// than a number that was already there.
 class QuestScreen extends StatefulWidget {
   const QuestScreen({super.key, required this.quest});
 
@@ -43,6 +43,24 @@ class _QuestScreenState extends State<QuestScreen>
   void dispose() {
     _in.dispose();
     super.dispose();
+  }
+
+  Future<void> _claim() async {
+    final game = GameState.instance;
+    final q = widget.quest;
+    final xp = game.payout(q);
+    final gained = game.claimQuest(q);
+    if (gained == null) {
+      GameAudio.play(Sfx.denied);
+      return;
+    }
+    await showVictory(
+      context,
+      quest: q,
+      xp: xp,
+      levelsGained: gained,
+      newLevel: game.level,
+    );
   }
 
   void _onHover(PointerHoverEvent e, Size size) {
@@ -169,10 +187,16 @@ class _QuestScreenState extends State<QuestScreen>
                                 t: D.questCtaIn.transform(t),
                                 distance: 20,
                                 scaleFrom: 0.95,
-                                child: _KeepGoing(
-                                  quest: q,
-                                  idle: idle,
-                                  onTap: () => Navigator.maybePop(context),
+                                child: ListenableBuilder(
+                                  listenable: GameState.instance,
+                                  builder: (BuildContext context, Widget? _) =>
+                                      _QuestCta(
+                                        quest: q,
+                                        idle: idle,
+                                        onClaim: _claim,
+                                        onBack: () =>
+                                            Navigator.maybePop(context),
+                                      ),
                                 ),
                               ),
                               SizedBox(height: 10 + pad.bottom),
@@ -192,7 +216,6 @@ class _QuestScreenState extends State<QuestScreen>
   }
 }
 
-/// Keeps the painter out of the rebuild path of everything above it.
 class QuestBackdropHost extends StatelessWidget {
   const QuestBackdropHost({
     super.key,
@@ -227,12 +250,13 @@ class _TopBar extends StatelessWidget {
           children: <Widget>[
             Align(
               alignment: Alignment.centerLeft,
-              child: _GlassButton(
+              child: GlassButton(
                 glyph: QuestGlyph.back,
+                sound: Sfx.back,
+                semanticLabel: 'Back',
                 onTap: () => Navigator.maybePop(context),
               ),
             ),
-            // The quest's own crest, breathing.
             Builder(
               builder: (BuildContext context) {
                 final breathe = 1 + 0.03 * math.sin(idle * 1.3);
@@ -268,39 +292,56 @@ class _TopBar extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.centerRight,
-              child: _GlassButton(glyph: QuestGlyph.more, onTap: () {}),
+              child: GlassButton(
+                glyph: QuestGlyph.more,
+                sound: null,
+                semanticLabel: 'Quest options',
+                onTap: () => showHudActions(
+                  context,
+                  title: 'QUEST OPTIONS',
+                  actions: <HudAction>[
+                    HudAction(
+                      label: 'Remind me in 2 hours',
+                      glyph: QuestGlyph.bell,
+                      tone: Quests.blue,
+                      onSelected: () => showHudToast(
+                        context,
+                        "Reminder set. We'll ping you in 2 hours.",
+                        tone: Quests.blue,
+                        glyph: QuestGlyph.bell,
+                      ),
+                    ),
+                    HudAction(
+                      label: 'Challenge a friend',
+                      glyph: QuestGlyph.swords,
+                      tone: Quests.gold,
+                      onSelected: () => showHudToast(
+                        context,
+                        'Challenge sent. First to finish takes the XP.',
+                        tone: Quests.gold,
+                        glyph: QuestGlyph.swords,
+                      ),
+                    ),
+                    HudAction(
+                      label: 'Pin to the dashboard',
+                      glyph: QuestGlyph.shield,
+                      tone: Quests.purple,
+                      onSelected: () => showHudToast(
+                        context,
+                        '${quest.title} is pinned to the top.',
+                        tone: Quests.purple,
+                        glyph: QuestGlyph.shield,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
   }
-}
-
-class _GlassButton extends StatelessWidget {
-  const _GlassButton({required this.glyph, required this.onTap});
-
-  final QuestGlyph glyph;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Pressable(
-    onTap: onTap,
-    pressedScale: 0.88,
-    child: SizedBox(
-      width: 46,
-      height: 46,
-      child: HudPanel(
-        cut: 12,
-        fill: const Color(0x99111731),
-        accent: Quests.purple,
-        bracketLength: 9,
-        child: Center(
-          child: QuestIcon(glyph: glyph, size: 20, color: Ink2.primary),
-        ),
-      ),
-    ),
-  );
 }
 
 class _Dial extends StatelessWidget {
@@ -449,7 +490,6 @@ class _Milestones extends StatelessWidget {
     final reached = <bool>[
       for (final m in quest.milestones) quest.current >= m,
     ];
-    // The one you are working toward: the first not yet reached.
     final nextIndex = reached.indexOf(false);
 
     return LayoutBuilder(
@@ -464,8 +504,6 @@ class _Milestones extends StatelessWidget {
           height: 78,
           child: Stack(
             children: <Widget>[
-              // The rail, drawn behind the nodes and filled to the last
-              // milestone actually reached.
               Positioned(
                 left: slot / 2,
                 right: slot / 2,
@@ -632,30 +670,56 @@ class _Milestone extends StatelessWidget {
   }
 }
 
-class _KeepGoing extends StatelessWidget {
-  const _KeepGoing({
+class _QuestCta extends StatelessWidget {
+  const _QuestCta({
     required this.quest,
     required this.idle,
-    required this.onTap,
+    required this.onClaim,
+    required this.onBack,
   });
 
   final Quest quest;
   final double idle;
-  final VoidCallback onTap;
+  final VoidCallback onClaim;
+  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
+    final game = GameState.instance;
+    final claimable = quest.done && !game.questClaimed(quest);
+    final claimed = quest.done && game.questClaimed(quest);
+
+    final String label;
+    final Gradient gradient;
+    final Color glow;
+    final Color ink;
+    if (claimable) {
+      label = 'CLAIM +${game.payout(quest)} XP';
+      gradient = const LinearGradient(
+        colors: <Color>[Color(0xFFFFD166), Color(0xFFF5A623)],
+      );
+      glow = Quests.gold;
+      ink = const Color(0xFF2A1A02);
+    } else {
+      label = claimed ? 'BACK TO QUESTS' : 'KEEP GOING';
+      gradient = Quests.keepGoing;
+      glow = Quests.green;
+      ink = const Color(0xFF0B1405);
+    }
+
     return Pressable(
+      sound: claimable ? null : Sfx.back,
       onTap: () {
-        HapticFeedback.mediumImpact();
-        onTap();
+        Haptics.buzz(Buzz.medium);
+        claimable ? onClaim() : onBack();
       },
       pressedScale: 0.965,
       child: BevelButton(
         height: D.ctaHeight,
         cut: 17,
-        gradient: Quests.keepGoing,
-        glowColor: Quests.green,
+        gradient: gradient,
+        glowColor: glow,
+        lit: claimable && math.sin(idle * 3) > 0,
         idle: idle,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 26),
@@ -663,19 +727,25 @@ class _KeepGoing extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              if (claimable) ...<Widget>[
+                QuestIcon(glyph: QuestGlyph.trophy, size: 20, color: ink),
+                const SizedBox(width: 12),
+              ],
               Flexible(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text('KEEP GOING', style: T.ctaDark),
+                  child: Text(label, style: T.ctaDark.copyWith(color: ink)),
                 ),
               ),
-              const SizedBox(width: 22),
-              const QuestIcon(
-                glyph: QuestGlyph.chevron,
-                size: 20,
-                color: Color(0xFF0B1405),
-                strokeWidth: 9,
-              ),
+              if (!claimable) ...<Widget>[
+                const SizedBox(width: 22),
+                QuestIcon(
+                  glyph: QuestGlyph.chevron,
+                  size: 20,
+                  color: ink,
+                  strokeWidth: 9,
+                ),
+              ],
             ],
           ),
         ),

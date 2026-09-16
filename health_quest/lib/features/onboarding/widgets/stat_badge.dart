@@ -10,12 +10,6 @@ import '../../../data/stats.dart';
 import '../../../widgets/painters/polygon.dart';
 import '../../../widgets/painters/stat_icons.dart';
 
-/// One RPG ability badge: a pointy-top hexagon of dark glass with a lit edge,
-/// the stat's glyph inside, its name, and its level.
-///
-/// It lands with a spring and a ring that snaps outward, then idles with a
-/// slow glow on its own phase so the four never pulse in lockstep. Tapping
-/// one fires the ring again and floods its colour into the character.
 class StatBadge extends StatefulWidget {
   const StatBadge({
     super.key,
@@ -28,13 +22,10 @@ class StatBadge extends StatefulWidget {
 
   final Stat stat;
 
-  /// This badge's own entrance progress, 0..1, may overshoot.
   final double t;
 
-  /// Free-running seconds.
   final double idle;
 
-  /// Offset into the idle cycle, so the four breathe out of step.
   final double phase;
 
   final VoidCallback? onTap;
@@ -69,7 +60,6 @@ class _StatBadgeState extends State<StatBadge>
     }
 
     final tone = widget.stat.tone;
-    // Idle breathing, plus the tail of the entrance ring.
     final breath = 0.5 + 0.5 * math.sin(widget.idle * 1.35 + widget.phase);
 
     return Opacity(
@@ -89,7 +79,6 @@ class _StatBadgeState extends State<StatBadge>
                   AnimatedBuilder(
                     animation: _ping,
                     builder: (BuildContext context, Widget? _) {
-                      // The entrance ring and the tap ring are the same ring.
                       final ringT = _ping.isAnimating || _ping.value > 0
                           ? _ping.value
                           : (settled < 1 ? settled : 0.0);
@@ -167,7 +156,6 @@ class _StatBadgeState extends State<StatBadge>
   }
 }
 
-/// A hexagonal ring that snaps outward and fades.
 class _Ring extends CustomPainter {
   const _Ring({required this.t, required this.tone});
 

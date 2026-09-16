@@ -1,7 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+
+import '../../core/audio/sfx.dart';
 
 import '../../core/design.dart';
 import '../../core/motion/entrance.dart';
@@ -9,19 +10,14 @@ import '../../core/motion/idle.dart';
 import '../../core/motion/pressable.dart';
 import '../../core/palette.dart';
 import '../../core/type.dart';
+import '../../data/game_state.dart';
 import '../../data/quests.dart';
 import '../../widgets/painters/polygon.dart';
 import '../../widgets/painters/quest_icons.dart';
 import '../../widgets/hud.dart';
+import '../../widgets/hud_kit.dart';
 import '../../widgets/progress_ring.dart';
 
-/// The rewards vault: what the XP is actually for.
-///
-/// A badge is in one of three states and each one looks different from
-/// across the room. Claimed badges are lit and carry a tick. Affordable ones
-/// glow and invite a tap. Locked ones are desaturated with the requirement
-/// stated plainly, because a reward you cannot reach is only motivating if
-/// you can see exactly what it would take.
 class RewardsScreen extends StatefulWidget {
   const RewardsScreen({super.key});
 
@@ -36,33 +32,46 @@ class _RewardsScreenState extends State<RewardsScreen>
     duration: D.pageEntrance,
   )..forward();
 
-  static const Player _player = Player.you;
-
-  /// Claimed during this session, on top of what was already owned.
-  final Set<String> _claimed = <String>{};
-  int _spent = 0;
+  final GameState _game = GameState.instance;
   String? _justClaimed;
 
-  int get _balance => _player.balance - _spent;
+  int get _balance => _game.balance;
 
-  bool _owned(Reward r) => r.owned || _claimed.contains(r.name);
+  bool _owned(Reward r) => _game.owns(r);
 
   void _claim(Reward r) {
-    if (_owned(r)) return;
-    if (r.unlocksAtLevel != null && _player.level < r.unlocksAtLevel!) {
-      HapticFeedback.heavyImpact();
-      return;
+    switch (_game.claimReward(r)) {
+      case ClaimResult.claimed:
+        GameAudio.play(Sfx.coin);
+        Haptics.buzz(Buzz.medium);
+        setState(() => _justClaimed = r.name);
+        showHudToast(
+          context,
+          '${r.name} claimed. It is on your profile now.',
+          tone: r.tone,
+          glyph: r.glyph,
+        );
+      case ClaimResult.alreadyOwned:
+        GameAudio.play(Sfx.tap);
+      case ClaimResult.levelLocked:
+        GameAudio.play(Sfx.denied);
+        Haptics.buzz(Buzz.heavy);
+        showHudToast(
+          context,
+          'Reach level ${r.unlocksAtLevel} to unlock ${r.name}.',
+          tone: Quests.locked,
+          glyph: QuestGlyph.lock,
+        );
+      case ClaimResult.tooExpensive:
+        GameAudio.play(Sfx.denied);
+        Haptics.buzz(Buzz.heavy);
+        showHudToast(
+          context,
+          'Need ${grouped(r.cost - _balance)} more XP for ${r.name}.',
+          tone: Quests.rose,
+          glyph: QuestGlyph.lock,
+        );
     }
-    if (r.cost > _balance) {
-      HapticFeedback.heavyImpact();
-      return;
-    }
-    HapticFeedback.mediumImpact();
-    setState(() {
-      _claimed.add(r.name);
-      _spent += r.cost;
-      _justClaimed = r.name;
-    });
   }
 
   @override
@@ -76,108 +85,124 @@ class _RewardsScreenState extends State<RewardsScreen>
     return IdleBuilder(
       builder: (BuildContext context, double idle, Widget? _) =>
           AnimatedBuilder(
-        animation: _in,
-        builder: (BuildContext context, Widget? _) {
-          final t = _in.value;
-          final owned = Reward.all.where(_owned).length;
+            animation: Listenable.merge(<Listenable>[_in, _game]),
+            builder: (BuildContext context, Widget? _) {
+              final t = _in.value;
+              final owned = Reward.all.where(_owned).length;
 
-          return ListView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(
-                D.pageGutter, 8, D.pageGutter, 12),
-            children: <Widget>[
-              Rise(
-                t: D.headerIn.transform(t),
-                distance: 16,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
+              return ListView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(
+                  D.pageGutter,
+                  8,
+                  D.pageGutter,
+                  12,
+                ),
+                children: <Widget>[
+                  Rise(
+                    t: D.headerIn.transform(t),
+                    distance: 16,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              const HudHeading(
+                                title: 'REWARDS VAULT',
+                                accent: Quests.gold,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                '$owned of ${Reward.all.length} badges claimed',
+                                style: T.sectionMeta,
+                              ),
+                            ],
+                          ),
+                        ),
+                        _Balance(balance: _balance, idle: idle),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Rise(
+                    t: D.xpPanelIn.transform(t),
+                    distance: 20,
+                    child: _VaultProgress(
+                      owned: owned,
+                      total: Reward.all.length,
+                      t: D.xpPanelIn.transform(t),
+                      idle: idle,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Rise(
+                    t: D.sectionIn.transform(t),
+                    distance: 12,
+                    child: const HudHeading(
+                      title: 'ALL BADGES',
+                      accent: Quests.purple,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  for (var i = 0; i < Reward.all.length; i += 2)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: D.questGap),
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          const HudHeading(
-                            title: 'REWARDS VAULT',
-                            accent: Quests.gold,
+                          Expanded(
+                            child: _Tile(
+                              reward: Reward.all[i],
+                              owned: _owned(Reward.all[i]),
+                              balance: _balance,
+                              level: _game.level,
+                              idle: idle,
+                              justClaimed: _justClaimed == Reward.all[i].name,
+                              t: D.softPop.transform(
+                                D.stagger(
+                                  t,
+                                  D.rowsStart,
+                                  i,
+                                  D.rowStagger * 0.6,
+                                  D.rowSpan,
+                                ),
+                              ),
+                              onTap: () => _claim(Reward.all[i]),
+                            ),
                           ),
-                          const SizedBox(height: 5),
-                          Text(
-                            '$owned of ${Reward.all.length} badges claimed',
-                            style: T.sectionMeta,
+                          const SizedBox(width: D.questGap),
+                          Expanded(
+                            child: i + 1 < Reward.all.length
+                                ? _Tile(
+                                    reward: Reward.all[i + 1],
+                                    owned: _owned(Reward.all[i + 1]),
+                                    balance: _balance,
+                                    level: _game.level,
+                                    idle: idle,
+                                    justClaimed:
+                                        _justClaimed == Reward.all[i + 1].name,
+                                    t: D.softPop.transform(
+                                      D.stagger(
+                                        t,
+                                        D.rowsStart,
+                                        i + 1,
+                                        D.rowStagger * 0.6,
+                                        D.rowSpan,
+                                      ),
+                                    ),
+                                    onTap: () => _claim(Reward.all[i + 1]),
+                                  )
+                                : const SizedBox(height: 188),
                           ),
                         ],
                       ),
                     ),
-                    _Balance(balance: _balance, idle: idle),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Rise(
-                t: D.xpPanelIn.transform(t),
-                distance: 20,
-                child: _VaultProgress(
-                  owned: owned,
-                  total: Reward.all.length,
-                  t: D.xpPanelIn.transform(t),
-                  idle: idle,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Rise(
-                t: D.sectionIn.transform(t),
-                distance: 12,
-                child: const HudHeading(
-                  title: 'ALL BADGES',
-                  accent: Quests.purple,
-                ),
-              ),
-              const SizedBox(height: 12),
-              for (var i = 0; i < Reward.all.length; i += 2)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: D.questGap),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        child: _Tile(
-                          reward: Reward.all[i],
-                          owned: _owned(Reward.all[i]),
-                          balance: _balance,
-                          level: _player.level,
-                          idle: idle,
-                          justClaimed: _justClaimed == Reward.all[i].name,
-                          t: D.softPop.transform(D.stagger(
-                              t, D.rowsStart, i, D.rowStagger * 0.6,
-                              D.rowSpan)),
-                          onTap: () => _claim(Reward.all[i]),
-                        ),
-                      ),
-                      const SizedBox(width: D.questGap),
-                      Expanded(
-                        child: i + 1 < Reward.all.length
-                            ? _Tile(
-                                reward: Reward.all[i + 1],
-                                owned: _owned(Reward.all[i + 1]),
-                                balance: _balance,
-                                level: _player.level,
-                                idle: idle,
-                                justClaimed:
-                                    _justClaimed == Reward.all[i + 1].name,
-                                t: D.softPop.transform(D.stagger(
-                                    t, D.rowsStart, i + 1,
-                                    D.rowStagger * 0.6, D.rowSpan)),
-                                onTap: () => _claim(Reward.all[i + 1]),
-                              )
-                            : const SizedBox(height: 188),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          );
-        },
-      ),
+                ],
+              );
+            },
+          ),
     );
   }
 }
@@ -207,8 +232,6 @@ class _Balance extends StatelessWidget {
             highlight: Quests.goldBright,
           ),
           const SizedBox(width: 7),
-          // Rolls when a badge is claimed rather than cutting to the new
-          // number, so spending XP is visible.
           TweenAnimationBuilder<double>(
             tween: Tween<double>(end: balance.toDouble()),
             duration: const Duration(milliseconds: 700),
@@ -319,98 +342,97 @@ class _Tile extends StatelessWidget {
         scale: t.clamp(0.02, 1.25),
         child: Pressable(
           onTap: onTap,
+          sound: null,
           pressedScale: 0.95,
-          // The plate carries no intrinsic height, and a Row of them sits in
-          // a ListView, so the height has to be stated here.
           child: SizedBox(
             height: 188,
             child: HudPanel(
-            cut: 16,
-            accent: tone,
-            accentStrength: owned ? 1 : (_affordable ? 0.85 : 0.4),
-            edge: owned
-                ? tone.withValues(alpha: 0.45)
-                : (_affordable
-                      ? tone.withValues(alpha: 0.30 + pulse * 0.4)
-                      : Quests.cardEdge),
-            glow: owned ? 0.2 : pulse * 0.5,
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: <Color>[
-                tone.withValues(alpha: owned ? 0.16 : 0.06),
-                tone.withValues(alpha: 0),
-              ],
-            ),
-            padding: const EdgeInsets.fromLTRB(12, 14, 12, 12),
-            child: Column(
-              children: <Widget>[
-                Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    PolygonPane(
-                      size: const Size(52, 58),
-                      sides: 6,
-                      cornerRadius: 6,
-                      edgeWidth: 1.6,
-                      edge: tone.withValues(alpha: owned ? 0.95 : 0.55),
-                      glow: tone.withValues(alpha: 0.6),
-                      glowStrength: owned ? 0.55 : pulse,
-                      fill: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: <Color>[
-                          tone.withValues(alpha: owned ? 0.32 : 0.12),
-                          const Color(0xCC080B16),
-                        ],
+              cut: 16,
+              accent: tone,
+              accentStrength: owned ? 1 : (_affordable ? 0.85 : 0.4),
+              edge: owned
+                  ? tone.withValues(alpha: 0.45)
+                  : (_affordable
+                        ? tone.withValues(alpha: 0.30 + pulse * 0.4)
+                        : Quests.cardEdge),
+              glow: owned ? 0.2 : pulse * 0.5,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  tone.withValues(alpha: owned ? 0.16 : 0.06),
+                  tone.withValues(alpha: 0),
+                ],
+              ),
+              padding: const EdgeInsets.fromLTRB(12, 14, 12, 12),
+              child: Column(
+                children: <Widget>[
+                  Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      PolygonPane(
+                        size: const Size(52, 58),
+                        sides: 6,
+                        cornerRadius: 6,
+                        edgeWidth: 1.6,
+                        edge: tone.withValues(alpha: owned ? 0.95 : 0.55),
+                        glow: tone.withValues(alpha: 0.6),
+                        glowStrength: owned ? 0.55 : pulse,
+                        fill: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: <Color>[
+                            tone.withValues(alpha: owned ? 0.32 : 0.12),
+                            const Color(0xCC080B16),
+                          ],
+                        ),
+                        child: QuestIcon(
+                          glyph: _levelLocked && !owned
+                              ? QuestGlyph.lock
+                              : reward.glyph,
+                          size: 26,
+                          color: tone,
+                          highlight: Color.lerp(tone, Ink2.bright, 0.5)!,
+                        ),
                       ),
-                      child: QuestIcon(
-                        glyph: _levelLocked && !owned
-                            ? QuestGlyph.lock
-                            : reward.glyph,
-                        size: 26,
-                        color: tone,
-                        highlight: Color.lerp(tone, Ink2.bright, 0.5)!,
-                      ),
-                    ),
-                    if (owned)
-                      Positioned(
-                        right: 6,
-                        bottom: 0,
-                        child: _ClaimTick(justClaimed: justClaimed),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  reward.name,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: T.rewardName.copyWith(
-                    color: owned ? Ink2.bright : Ink2.primary,
+                      if (owned)
+                        Positioned(
+                          right: 6,
+                          bottom: 0,
+                          child: _ClaimTick(justClaimed: justClaimed),
+                        ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 3),
-                Expanded(
-                  child: Text(
-                    reward.blurb,
+                  const SizedBox(height: 10),
+                  Text(
+                    reward.name,
                     textAlign: TextAlign.center,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: T.questBlurb,
+                    style: T.rewardName.copyWith(
+                      color: owned ? Ink2.bright : Ink2.primary,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                _Footer(
-                  owned: owned,
-                  levelLocked: _levelLocked,
-                  affordable: _affordable,
-                  reward: reward,
-                  tone: tone,
-                ),
-              ],
-            ),
+                  const SizedBox(height: 3),
+                  Expanded(
+                    child: Text(
+                      reward.blurb,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: T.questBlurb,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  _Footer(
+                    owned: owned,
+                    levelLocked: _levelLocked,
+                    affordable: _affordable,
+                    reward: reward,
+                    tone: tone,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -465,8 +487,6 @@ class _Footer extends StatelessWidget {
   }
 }
 
-/// The tick that lands on a badge when it is claimed. It draws on the first
-/// time you see it and is simply there afterwards.
 class _ClaimTick extends StatelessWidget {
   const _ClaimTick({required this.justClaimed});
 

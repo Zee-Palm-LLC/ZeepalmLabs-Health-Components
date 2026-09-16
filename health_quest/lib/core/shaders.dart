@@ -2,11 +2,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 
-/// Loads the atmosphere program once, before the first frame.
-///
-/// If it will not compile on this platform the screen still works: every
-/// caller falls back to a painted layer, so a shader failure costs sparkle,
-/// never the screen.
 class Shaders {
   Shaders._();
 

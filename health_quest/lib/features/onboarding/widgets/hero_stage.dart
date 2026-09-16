@@ -6,13 +6,6 @@ import '../../../core/design.dart';
 import '../../../core/palette.dart';
 import '../../../widgets/stardust.dart';
 
-/// Where the 720 x 1280 source frame is drawn.
-///
-/// [blend] runs from 0, the frame covering the whole screen the way the intro
-/// video plays it, to 1, the frame scaled and shifted so its character lands
-/// exactly on top of the still composition's cut-out. Animating the video
-/// through this while it cross-fades is what lets the clip settle into the
-/// static screen without the character changing size under the dissolve.
 Rect heroFrameRect(Size box, double blend) {
   final coverScale =
       math.max(box.width / D.frameWidth, box.height / D.frameHeight);
@@ -36,17 +29,6 @@ Rect heroFrameRect(Size box, double blend) {
   return Rect.lerp(cover, match, blend.clamp(0.0, 1.0))!;
 }
 
-/// The full-bleed art behind the interface, in four planes.
-///
-/// Back to front: a defocused plate, the violet aura the character stands in,
-/// the atmosphere shader, and the character himself, cut out of the source
-/// frame and kept sharp. Each plane takes a different share of the parallax,
-/// which is what turns a flat still into a diorama with the character
-/// standing inside it.
-///
-/// The plate is defocused on purpose. It gives the depth of field the design
-/// calls for, and it means the only sharp thing on the screen is the thing
-/// you are supposed to look at.
 class HeroStage extends StatelessWidget {
   const HeroStage({
     super.key,
@@ -58,20 +40,14 @@ class HeroStage extends StatelessWidget {
     this.tintStrength = 0,
   });
 
-  /// 0..1 across the screen's entrance.
   final double entrance;
 
-  /// Free-running seconds, for the breathing and the aura's pulse.
   final double idle;
 
-  /// -1..1 in each axis, from drag.
   final Offset parallax;
 
-  /// 0..1 while the call to action is charging.
   final double surge;
 
-  /// A stat's colour, flooded into the character's rim light when its badge
-  /// is tapped.
   final Color? tint;
   final double tintStrength;
 
@@ -86,19 +62,14 @@ class HeroStage extends StatelessWidget {
         final heroIn = D.heroIn.transform(entrance);
         final flash = D.platformFlash.transform(entrance);
 
-        // Where the cut-out sits. Fractions, so the composition holds on any
-        // phone rather than only the one it was measured on.
         final heroH = h * D.heroHeightFraction;
         final heroW = heroH * D.heroAspect;
         final heroLeft = w * D.heroCentreFraction - heroW / 2;
         final heroTop = h * D.heroTopFraction;
 
-        // Breathing. Small on purpose: four pixels over four seconds reads as
-        // a person standing, and anything more reads as a bobbing toy.
         final breathe = math.sin(idle * 2 * math.pi / 4.2) * 4;
         final sway = math.sin(idle * 2 * math.pi / 6.7) * 2.4;
 
-        // The ground the character stands on, in screen units.
         final groundY = heroTop + heroH * 0.80;
         final auraCentre = Offset(
           heroLeft + heroW / 2 + parallax.dx * 8,
@@ -109,7 +80,6 @@ class HeroStage extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              // 1. Defocused plate, pushed in slightly as it arrives.
               Transform.translate(
                 offset: Offset(parallax.dx * 9, parallax.dy * 7),
                 child: Transform.scale(
@@ -125,7 +95,6 @@ class HeroStage extends StatelessWidget {
                 ),
               ),
 
-              // 2. The aura he stands in, breathing on its own slow cycle.
               _Aura(
                 centre: auraCentre,
                 radius: heroW * (0.78 + 0.03 * math.sin(idle * 1.1)),
@@ -136,17 +105,12 @@ class HeroStage extends StatelessWidget {
                 tintStrength: tintStrength,
               ),
 
-              // 3. Atmosphere: motes, shafts, shimmer, and the charge ring.
               Stardust(
                 parallax: parallax,
                 intensity: plateIn.clamp(0.0, 1.0),
                 surge: surge,
               ),
 
-              // 4. Scrim. The reference is near-black behind the headline and
-              // behind the controls, and glows only around the character.
-              // This sits under the figure, so it darkens the sky without
-              // ever touching him.
               const IgnorePointer(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
@@ -168,7 +132,6 @@ class HeroStage extends StatelessWidget {
                 ),
               ),
 
-              // 5. The character, sharp, riding the most parallax of all.
               Positioned(
                 left: heroLeft + parallax.dx * 26 + sway,
                 top: heroTop + parallax.dy * 18 + breathe + (1 - heroIn) * 64,
@@ -180,7 +143,6 @@ class HeroStage extends StatelessWidget {
                 ),
               ),
 
-              // 6. The landing flash, once, as he settles onto the rock.
               if (flash > 0 && flash < 1)
                 Positioned(
                   left: 0,
@@ -217,8 +179,6 @@ class _Figure extends StatelessWidget {
     );
     final t = tint;
     if (t == null || tintStrength <= 0) return image;
-    // A stat's colour washed over the figure, clipped to his own silhouette
-    // by srcATop, so tapping a badge lights him rather than a rectangle.
     return ShaderMask(
       blendMode: BlendMode.srcATop,
       shaderCallback: (Rect bounds) => RadialGradient(
@@ -310,7 +270,6 @@ class _AuraPainter extends CustomPainter {
       old.tintStrength != tintStrength;
 }
 
-/// The shockwave that leaves the rock as the character lands.
 class _LandingFlash extends CustomPainter {
   const _LandingFlash({required this.t, required this.width});
 
@@ -323,7 +282,6 @@ class _LandingFlash extends CustomPainter {
     final eased = Curves.easeOutCubic.transform(t);
     final fade = (1 - t).clamp(0.0, 1.0);
 
-    // A flat ellipse, because the wave runs along the ground, not the air.
     final r = width * (0.25 + eased * 0.95);
     canvas.drawOval(
       Rect.fromCenter(center: c, width: r * 2, height: r * 0.52),

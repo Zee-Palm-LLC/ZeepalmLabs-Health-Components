@@ -2,12 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-/// The scoring ring used by the health score and the quest detail.
-///
-/// The track is a full circle a shade above the page; the value is an arc with
-/// round caps, a glow behind it and a bright head. The head is what sells it:
-/// a plain arc reads as a chart, an arc with a lit leading edge reads as
-/// something that has been filling up.
 class ProgressRing extends StatelessWidget {
   const ProgressRing({
     super.key,
@@ -20,7 +14,6 @@ class ProgressRing extends StatelessWidget {
     this.child,
   });
 
-  /// 0..1.
   final double value;
   final double size;
   final Color color;
@@ -126,7 +119,6 @@ class _RingPainter extends CustomPainter {
         ).createShader(rect),
     );
 
-    // The lit head of the arc.
     final head = Offset(
       rect.center.dx + rect.width / 2 * math.cos(start + sweep),
       rect.center.dy + rect.height / 2 * math.sin(start + sweep),
@@ -149,7 +141,6 @@ class _RingPainter extends CustomPainter {
       old.glow != glow;
 }
 
-/// A slim horizontal meter, used by the quest rows and the XP bar.
 class MeterBar extends StatelessWidget {
   const MeterBar({
     super.key,
@@ -165,7 +156,6 @@ class MeterBar extends StatelessWidget {
   final double height;
   final Color trackColor;
 
-  /// Free-running seconds; drives a highlight along the filled part.
   final double shimmer;
 
   @override

@@ -2,11 +2,6 @@ import 'package:flutter/widgets.dart';
 
 import 'palette.dart';
 
-/// Two families, both variable.
-///
-/// Saira is the display face: a squared grotesque with a real italic, which is
-/// what gives the headline and the CTA their arcade-marquee slant. Inter
-/// carries everything you actually read as a sentence.
 class T {
   T._();
 
@@ -73,8 +68,6 @@ class T {
       weight: 900, color: Ink2.bright, letterSpacing: 1.4);
   static TextStyle get footer =>
       text(13, weight: 400, color: Ink2.muted);
-
-  // Dashboard, quest detail, vault ---------------------------------------
 
   static TextStyle get greeting => disp(12.5,
       weight: 700, color: Ink2.secondary, letterSpacing: 1.3, italic: false);

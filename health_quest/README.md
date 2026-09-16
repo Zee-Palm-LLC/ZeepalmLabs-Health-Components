@@ -1,7 +1,11 @@
 # Health Quest
 
 A gamified wellness app built from one reference mockup and one supplied
-avatar clip. Four screens, pure Flutter, one third-party package.
+avatar clip. Onboarding, sign-up and log-in, four tabs, the pages on top of
+them, a victory screen, and a full set of synthesised sound effects.
+
+The flow: **Onboarding → Sign up → Choose your main quest → the game.**
+Log in is one tap from sign-up, and signing out lands there.
 
 ```bash
 flutter run
@@ -25,8 +29,80 @@ flutter run
    claimed, affordable or locked, and each state is legible from across the
    room. Claiming one spends XP and the balance rolls down.
 
-`STATS` and `PROFILE` are level-gated rather than dead: each states its
-requirement and shows how far off you are.
+5. **Stats.** The character sheet: a four-axis power radar, each stat's level
+   and progress, XP earned by day or by week with a tappable bar chart, and
+   personal records.
+6. **Profile.** The player card (level, XP, streak, quests, badges), a badge
+   showcase fed by the vault, achievements in progress, a five-week activity
+   heat map, and the way into the pages below.
+7. **Leaderboard.** The weekly league, friends or global: a podium for the top
+   three, a ranked list with your row lit, and a challenge on every rival.
+8. **Notifications.** Today and earlier. Unread messages glow and pulse;
+   opening one reads it, and there is a read-all key.
+9. **Settings.** Sound on or off, a ten-step volume dial you set by ear, a
+   fanfare to test it with, haptics, reminders, replay the intro, sign out.
+10. **Victory.** Claiming a finished quest's XP: god rays, the trophy slams in,
+    the XP counts up with the streak multiplier, and a level-up banner when
+    it tips you over. The bell and the quest's options key are live too.
+
+## Accounts
+
+- **Sign up** is character creation, step 1 of 2: hero name, email, and a
+  password rated like loot (weak, decent, strong, legendary) on a four-cell
+  gauge, plus the terms. Google and Apple skip the form.
+- **Choose your main quest** is step 2: Move more, Hydrate, Calm mind or
+  Sleep well, each with its starter quest, and a difficulty from Casual to
+  Legend. Begin adventure charges up, levels up, and opens the game with the
+  hero's name on the dashboard and the path on the player card.
+- **Log in**: email, password with a reveal toggle, remember me, providers,
+  and a link to sign up.
+- **Forgot password**: the email, a send key, then a confirmation that says
+  where the link went, with resend.
+
+Every field lights while focused and ticks when it takes focus. A refused
+form shakes, plays the denied sound and says under each field what is wrong.
+Nothing is sent anywhere: the forms validate locally and the flow is UI.
+
+What the player earns and spends lives in `GameState`, not in any one screen,
+so XP claimed on a quest is on the dashboard, and a badge bought in the vault
+is on the profile.
+
+## Sound
+
+Every sound is synthesised by `tool/sfx/generate_sfx.py` from oscillators,
+envelopes and filtered noise, in the register of an 8/16-bit arcade game.
+Nothing is sampled or downloaded, so there is nothing to license. Retune a
+sound there and run it again to regenerate `assets/sfx/`.
+
+| Sound | When |
+| --- | --- |
+| `tap` | Any key, the moment it goes down |
+| `nav` | Switching tabs or segments |
+| `back` | Leaving a page |
+| `open` | A page, sheet or dialog coming up |
+| `toggle_on` / `toggle_off` | Switches |
+| `tick` | Chart bars, the volume dial, reading a notification |
+| `confirm` | Positive actions: challenges, read-all, dialog confirm |
+| `coin` | XP changing hands: claiming a badge, the victory count landing |
+| `denied` | A badge you cannot afford or have not unlocked |
+| `charge` | The start button charging, exactly as long as its 1.2 s animation |
+| `level_up` | The onboarding level-up, a real level-up, the settings test |
+| `victory` | Cashing in a finished quest |
+
+**Staying in sync.** A key's click and haptic fire on press-down, on the same
+frame its spring starts pulling it in, not on release a finger-lift later.
+Sounds tied to an animation are cued by that animation's controller, so the
+coin lands as the XP counter stops rather than on a timer that could drift.
+
+**Engines.** In the browser, sounds are decoded once into Web Audio buffers
+and started on the audio clock, about 3 ms from press to sound. An `<audio>`
+element per sound, which is what audioplayers uses on the web, starts 50 to
+150 ms late and has to pause, seek and play to restart. On Android and iOS a
+small pool of pre-loaded audioplayers voices per sound (SoundPool on
+Android) mixes with the player's music and respects the silent switch.
+
+All of it goes through `GameAudio.play`, which respects the sound setting
+and volume. Tests swap in a `RecordingSfxEngine` and assert on what played.
 
 ## The avatar
 
@@ -97,9 +173,9 @@ Every screen has one entrance controller and every element reads its own
 | Dashboard | The health score dials up, the XP bar fills, each quest's meter runs out and its percentage ticks alongside. The finished quest's check draws itself on. |
 | Quest detail | The ring dials from zero and the step count runs with it, so opening a quest shows the progress being made rather than a number that was already there. The milestone rail fills, then the nodes pop in along it. |
 | Vault | The balance rolls down when you spend. Affordable badges pulse; the claim tick draws on the first time you see it. |
-| Every press | `Pressable`: a real spring on a `Ticker`. Release mid-press and it continues from the current velocity, which a tween cannot do. |
+| Every press | `Pressable`: a real spring on a `Ticker`. Release mid-press and it continues from the current velocity, which a tween cannot do. The sound and haptic land on press-down. |
 
-## Two bugs worth keeping in mind
+## Bugs worth keeping in mind
 
 - **`Pressable` created its ticker lazily.** For a button nobody ever pressed,
   first use was `dispose`, where `createTicker`'s lookup of the `TickerMode`
@@ -107,6 +183,10 @@ Every screen has one entrance controller and every element reads its own
 - **No `Material` above a pushed route.** The dashboard and the quest detail
   are their own routes, and without a `Material` ancestor every `Text` renders
   with Flutter's yellow unmaterialised underline. Both are `Scaffold`s now.
+- **Silent on the web after adding audioplayers.** The web plugin registrant
+  was cached from before the package was added, so every call hit a missing
+  plugin and nothing played. The tests could not see it: they run silent.
+  After adding a plugin, `flutter clean` before `flutter build web`.
 
 ## Fidelity, and where it stops
 
@@ -125,14 +205,21 @@ above quests at 70%, 76% and 100%; the count here is computed, so it says
 
 ```
 lib/
-  core/            design tokens, palette, type, shader loader
-  core/motion/     Pressable, entrance helpers, the idle clock
-  data/            stats, quests, rewards, the player
-  features/        onboarding, home, quest, rewards, shell
+  core/            design tokens, palette, type, settings, shader loader
+  core/audio/      Sfx, GameAudio, Web Audio and audioplayers engines
+  core/motion/     Pressable, entrance helpers, routes, the idle clock
+  data/            stats, quests, rewards, player, game state, progress, social
+  features/        onboarding, auth, home, quest, rewards, stats,
+                   profile, leaderboard, notifications, settings, shell
   widgets/         hud kit, nav bar, progress ring, stardust, painters
 shaders/           stardust.frag
-assets/            video (the clip), hero (matted layers), fonts
-test/              20 tests: data, geometry, entrances, navigation, claiming
+assets/            video (the clip), hero (matted layers), sfx, fonts
+tool/sfx/          the sound synthesiser
+test/              42 tests: data, geometry, entrances, sign-up and log-in,
+                   navigation, every page, claiming, settings, and which
+                   sound played when
 ```
 
-Third-party: `video_player` only, for the intro clip.
+Third-party: `video_player` for the intro clip, `audioplayers` for sound on
+phones, `shared_preferences` so settings survive a relaunch, `web` for Web
+Audio in the browser.
