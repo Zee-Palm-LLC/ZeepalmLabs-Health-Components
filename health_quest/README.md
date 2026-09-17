@@ -201,6 +201,27 @@ above quests at 70%, 76% and 100%; the count here is computed, so it says
 "1/3 DONE". And the reference's milestone rail shows 5,000 steps reached at
 3,842 steps; here it is locked until you get there.
 
+## App Store screenshots
+
+Eight store screenshots live in `store/app_store/`: `iphone_6_9` at
+1290 x 2796 for the 6.9" slot and `iphone_6_5` at 1242 x 2688 for the 6.5"
+slot, flattened to RGB because App Store Connect rejects PNGs with alpha.
+`preview.jpg` shows the set side by side.
+
+They are rendered from the real screens rather than mocked: each one mounts the
+app in a phone frame on a nebula backdrop with a headline and floating HUD
+badges, drives it into the right state (the victory claimed, Hydrate picked),
+and captures it at 3x. Change the copy, badges or order in
+`tool/store_screenshots/store_screenshots_test.dart`, then:
+
+```bash
+flutter test tool/store_screenshots/store_screenshots_test.dart
+python tool/store_screenshots/finish.py
+```
+
+The waving-hand emoji is drawn with Windows' Segoe UI Emoji, so render on
+Windows or point `emojiFont` at another colour emoji font.
+
 ## Structure
 
 ```

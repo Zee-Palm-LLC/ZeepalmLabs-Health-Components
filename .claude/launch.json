@@ -84,6 +84,20 @@
         "C:/Users/shame/Desktop/Flutter/ZeepalmLabs-Health-Components/wayfarer_onboarding/build/web"
       ],
       "port": 8129
+    },
+    {
+      "name": "pillora-web",
+      "runtimeExecutable": "C:/Users/shame/AppData/Local/Programs/Python/Python39/python.exe",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8130",
+        "--bind",
+        "127.0.0.1",
+        "-d",
+        "C:/Users/shame/Desktop/Flutter/ZeepalmLabs-Health-Components/pillora/build/web"
+      ],
+      "port": 8130
     }
   ]
 }

@@ -11,3 +11,4 @@ A collection of Flutter projects, each in its own folder.
 - `safe_space` - Soft pastel onboarding screen with floating community cards and staggered entrance animations.
 - `fitonist` - Dark fitness onboarding flow with ScreenUtil, GetX, Google Fonts, and Iconsax — pixel-perfect UI with image placeholders.
 - `docora` - Doctor appointment booking app with home dashboard, search, and spacious doctor detail/booking flow — ScreenUtil, GetX, Google Fonts, Iconsax, smooth animations.
+- `pillora` - Medication reminders with a painted, animated pill-city onboarding, liquid week strip and nav, and an AI helper with a glass-orb fragment shader and voice mode.
