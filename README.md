@@ -12,3 +12,4 @@ A collection of Flutter projects, each in its own folder.
 - `fitonist` - Dark fitness onboarding flow with ScreenUtil, GetX, Google Fonts, and Iconsax — pixel-perfect UI with image placeholders.
 - `docora` - Doctor appointment booking app with home dashboard, search, and spacious doctor detail/booking flow — ScreenUtil, GetX, Google Fonts, Iconsax, smooth animations.
 - `pillora` - Medication reminders with a painted, animated pill-city onboarding, liquid week strip and nav, and an AI helper with a glass-orb fragment shader and voice mode.
+- `glowlens` - AI wrinkle detection with a live face mesh and laser scan, holographic shader cards, animated score rings and trend chart, and a skincare shop with liquid filters and fly-to-cart.
