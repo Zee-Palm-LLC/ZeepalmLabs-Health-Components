@@ -28,7 +28,6 @@ class HaloAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dpr = MediaQuery.devicePixelRatioOf(context);
     return SizedBox.square(
       dimension: size,
       child: Stack(
@@ -36,9 +35,7 @@ class HaloAvatar extends StatelessWidget {
         children: [
           if (glow > 0)
             Positioned.fill(
-              child: RepaintBoundary(
-                child: CustomPaint(painter: _GlowPainter(halo, glow)),
-              ),
+              child: RepaintBoundary(child: CustomPaint(painter: _GlowPainter(halo, glow))),
             ),
           Positioned.fill(
             child: DecoratedBox(
@@ -60,14 +57,7 @@ class HaloAvatar extends StatelessWidget {
                   decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
                   child: Padding(
                     padding: EdgeInsets.all(ring * 0.8),
-                    child: ClipOval(
-                      child: Image.asset(
-                        photo,
-                        fit: BoxFit.cover,
-                        cacheWidth: (size * dpr).round(),
-                        filterQuality: FilterQuality.medium,
-                      ),
-                    ),
+                    child: ClipOval(child: Portrait(photo)),
                   ),
                 ),
               ),
@@ -76,6 +66,36 @@ class HaloAvatar extends StatelessWidget {
           if (badge != null) Positioned(right: -size * 0.02, bottom: size * 0.02, child: badge!),
         ],
       ),
+    );
+  }
+}
+
+class Portrait extends StatelessWidget {
+  const Portrait(this.photo, {super.key, this.size});
+
+  final String photo;
+  final double? size;
+
+  static const decode = 360;
+
+  static ImageProvider provider(String photo) => ResizeImage(AssetImage(photo), width: decode);
+
+  static Future<void> warm(BuildContext context) {
+    return Future.wait([
+      for (final id in ['joe', 'rose', 'mom', 'dad', 'leo', 'patel', 'sara'])
+        precacheImage(provider('assets/people/$id.webp'), context),
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Image(
+      image: provider(photo),
+      width: size,
+      height: size,
+      fit: BoxFit.cover,
+      filterQuality: FilterQuality.medium,
+      gaplessPlayback: true,
     );
   }
 }
@@ -120,7 +140,13 @@ class MoodBadge extends StatelessWidget {
         color: good ? Hue.sage : Hue.honey,
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white, width: 2),
-        boxShadow: [BoxShadow(color: (good ? Hue.sage : Hue.honey).withValues(alpha: 0.35), blurRadius: 6, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: (good ? Hue.sage : Hue.honey).withValues(alpha: 0.35),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       alignment: Alignment.center,
       child: GlyphIcon(good ? Glyph.check : Glyph.alert, size: size * 0.6, color: Colors.white, stroke: 2.4),
@@ -162,14 +188,7 @@ class Surface extends StatelessWidget {
 }
 
 class IconChip extends StatelessWidget {
-  const IconChip({
-    super.key,
-    required this.glyph,
-    required this.tone,
-    this.size = 44,
-    this.iconSize,
-    this.soft,
-  });
+  const IconChip({super.key, required this.glyph, required this.tone, this.size = 44, this.iconSize, this.soft});
 
   final Glyph glyph;
   final Color tone;
@@ -253,18 +272,14 @@ class _PrimaryButtonState extends State<PrimaryButton> with SingleTickerProvider
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(widget.height / 2),
               gradient: LinearGradient(colors: [a, b]),
-              boxShadow: [
-                BoxShadow(color: b.withValues(alpha: 0.32), blurRadius: 20, offset: const Offset(0, 10)),
-              ],
+              boxShadow: [BoxShadow(color: b.withValues(alpha: 0.32), blurRadius: 20, offset: const Offset(0, 10))],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(widget.height / 2),
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: RepaintBoundary(
-                      child: CustomPaint(painter: _ShinePainter(_shine)),
-                    ),
+                    child: RepaintBoundary(child: CustomPaint(painter: _ShinePainter(_shine))),
                   ),
                   Positioned.fill(
                     child: DecoratedBox(
@@ -400,11 +415,10 @@ class CountUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
+      tween: Tween(begin: 0, end: value),
       duration: duration,
-      builder: (context, t, _) {
-        final eased = Curves.easeOutCubic.transform(span(t, delay, 1));
-        final v = value * eased;
+      curve: Interval(delay, 1, curve: Curves.easeOutCubic),
+      builder: (context, v, _) {
         return Text(format != null ? format!(v) : v.round().toString(), style: style);
       },
     );
@@ -424,10 +438,7 @@ class SoftChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: dense ? 9 : 12, vertical: dense ? 4 : 6),
-      decoration: BoxDecoration(
-        color: soft ?? tone.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(40),
-      ),
+      decoration: BoxDecoration(color: soft ?? tone.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(40)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -34,13 +34,7 @@ abstract final class Hue {
   );
 }
 
-TextStyle jakarta(
-  double size,
-  double weight, {
-  Color color = Hue.ink,
-  double spacing = 0,
-  double? height,
-}) {
+TextStyle jakarta(double size, double weight, {Color color = Hue.ink, double spacing = 0, double? height}) {
   return TextStyle(
     fontFamily: 'Jakarta',
     fontSize: size,
@@ -55,7 +49,15 @@ TextStyle jakarta(
 
 List<BoxShadow> softShadow([double strength = 1]) {
   return [
-    BoxShadow(color: Hue.shadow.withValues(alpha: 0.06 * strength), blurRadius: 24, offset: const Offset(0, 10)),
-    BoxShadow(color: Hue.shadow.withValues(alpha: 0.04 * strength), blurRadius: 4, offset: const Offset(0, 1)),
+    BoxShadow(
+      color: Hue.shadow.withValues(alpha: 0.06 * strength),
+      blurRadius: 24,
+      offset: const Offset(0, 10),
+    ),
+    BoxShadow(
+      color: Hue.shadow.withValues(alpha: 0.04 * strength),
+      blurRadius: 4,
+      offset: const Offset(0, 1),
+    ),
   ];
 }

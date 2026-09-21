@@ -131,10 +131,25 @@ class CareStore extends ChangeNotifier {
 
   late final moments = [
     Moment(time: '8:00 AM', title: 'Breakfast logged', glyph: Glyph.coffee, tone: Hue.sage, by: 'mom', liked: true),
-    Moment(time: '9:00 AM', title: 'Metformin 500mg', detail: 'missed', glyph: Glyph.pill, tone: Hue.coral, by: 'mom', thumb: true),
+    Moment(
+      time: '9:00 AM',
+      title: 'Metformin 500mg',
+      detail: 'missed',
+      glyph: Glyph.pill,
+      tone: Hue.coral,
+      by: 'mom',
+      thumb: true,
+    ),
     Moment(time: '11:30 AM', title: 'Morning walk 18 min', glyph: Glyph.walk, tone: Hue.sage, by: 'leo', liked: true),
     Moment(time: '2:00 PM', title: 'Call with Mom', glyph: Glyph.phone, tone: Hue.iris, by: 'mom', liked: true),
-    Moment(time: 'Thu 10:00 AM', title: 'Cardiology · Dr. Patel', glyph: Glyph.calendar, tone: Hue.honey, by: 'patel', thumb: true),
+    Moment(
+      time: 'Thu 10:00 AM',
+      title: 'Cardiology · Dr. Patel',
+      glyph: Glyph.calendar,
+      tone: Hue.honey,
+      by: 'patel',
+      thumb: true,
+    ),
   ];
 
   bool nudged = false;

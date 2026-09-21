@@ -32,27 +32,62 @@ class Reveal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (t >= 1) return child;
-    if (t <= 0) return const SizedBox.shrink();
-    Widget result = child;
-    if (scale != 1) {
-      result = Transform.scale(scale: lerp(scale, 1, t), alignment: alignment, child: result);
-    }
-    if (offset != Offset.zero) {
-      result = Transform.translate(offset: offset * (1 - t), child: result);
-    }
-    return Opacity(opacity: t.clamp(0.0, 1.0), child: result);
+    final v = t.clamp(0.0, 1.0);
+    return Opacity(
+      opacity: v,
+      child: Transform.translate(
+        offset: offset * (1 - t),
+        child: Transform.scale(scale: lerp(scale, 1, t), alignment: alignment, child: child),
+      ),
+    );
+  }
+}
+
+class Staged extends StatelessWidget {
+  const Staged({
+    super.key,
+    required this.animation,
+    required this.child,
+    this.begin = 0,
+    this.end = 1,
+    this.curve = Curves.easeOutCubic,
+    this.offset = const Offset(0, 16),
+    this.scale = 1,
+    this.fade = true,
+    this.alignment = Alignment.center,
+  });
+
+  final Animation<double> animation;
+  final Widget child;
+  final double begin;
+  final double end;
+  final Curve curve;
+  final Offset offset;
+  final double scale;
+  final bool fade;
+  final Alignment alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: animation,
+      child: child,
+      builder: (context, child) {
+        final t = span(animation.value, begin, end, curve);
+        return Opacity(
+          opacity: fade ? t.clamp(0.0, 1.0) : 1,
+          child: Transform.translate(
+            offset: offset * (1 - t),
+            child: Transform.scale(scale: lerp(scale, 1, t), alignment: alignment, child: child),
+          ),
+        );
+      },
+    );
   }
 }
 
 class Pressable extends StatefulWidget {
-  const Pressable({
-    super.key,
-    required this.child,
-    this.onTap,
-    this.scale = 0.93,
-    this.haptic = true,
-  });
+  const Pressable({super.key, required this.child, this.onTap, this.scale = 0.93, this.haptic = true});
 
   final Widget child;
   final VoidCallback? onTap;

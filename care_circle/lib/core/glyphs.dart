@@ -220,7 +220,9 @@ class GlyphPainter extends CustomPainter {
 }
 
 Path parseSvgPath(String data) {
-  final tokens = RegExp(r'[MmLlHhVvCcSsQqAaZz]|-?(?:\d+\.?\d*|\.\d+)(?:e-?\d+)?').allMatches(data).map((m) => m.group(0)!).toList();
+  final tokens = RegExp(
+    r'[MmLlHhVvCcSsQqAaZz]|-?(?:\d+\.?\d*|\.\d+)(?:e-?\d+)?',
+  ).allMatches(data).map((m) => m.group(0)!).toList();
   final path = Path();
   var i = 0;
   var command = '';
@@ -321,7 +323,10 @@ class CareLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(dimension: size, child: const CustomPaint(painter: _LogoPainter()));
+    return SizedBox.square(
+      dimension: size,
+      child: const CustomPaint(painter: _LogoPainter()),
+    );
   }
 }
 
@@ -340,12 +345,11 @@ class _LogoPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.6
         ..strokeJoin = StrokeJoin.round
-        ..shader = const LinearGradient(
-          colors: [Color(0xFFA487FF), Color(0xFF6B48EC)],
-        ).createShader(bounds),
+        ..shader = const LinearGradient(colors: [Color(0xFFA487FF), Color(0xFF6B48EC)]).createShader(bounds),
     );
     canvas.drawCircle(const Offset(15.4, 9.2), 2.2, Paint()..color = const Color(0xFFF58DB4));
-    final arc = Path()..addArc(Rect.fromCircle(center: const Offset(12, 13.4), radius: 3.4), math.pi * 0.15, math.pi * 0.7);
+    final arc = Path()
+      ..addArc(Rect.fromCircle(center: const Offset(12, 13.4), radius: 3.4), math.pi * 0.15, math.pi * 0.7);
     canvas.drawPath(
       arc,
       Paint()
