@@ -17,3 +17,4 @@ A collection of Flutter projects, each in its own folder.
 - `care_circle` - Family care circle: avatars that fly from a floating welcome orbit into a living family orbit, member vitals and a shared timeline, gentle nudges, and a medication sheet with an animated dose ring.
 - `clinic_queue` - ClinicQueue: join a clinic line from home, watch the live queue move, and leave at exactly the right time.
 - `nocturne` - Premium sleep sound mixer: nine living shader orbs, streams that pour into a glass vessel whose nebula mixes by volume, synthesized seamless ambience loops, and a calm sleep mode with a lights-out dim.
+- `trailglow` - Night-running concept on a real Mapbox map: a Manhattan street grid rebuilt in code so mock routes land on actual streets, a glowing trail that grows as a simulated run progresses over 3D buildings, a pace chart and splits, and a lifetime heatmap.

@@ -1,0 +1,4 @@
+{
+  "MAPBOX_ACCESS_TOKEN": "pk.your_public_mapbox_token_here",
+  "MAPBOX_STYLE_URI": "mapbox://styles/mapbox/standard"
+}
