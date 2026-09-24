@@ -19,3 +19,4 @@ A collection of Flutter projects, each in its own folder.
 - `nocturne` - Premium sleep sound mixer: nine living shader orbs, streams that pour into a glass vessel whose nebula mixes by volume, synthesized seamless ambience loops, and a calm sleep mode with a lights-out dim.
 - `trailglow` - Night-running concept on a real Mapbox map: a Manhattan street grid rebuilt in code so mock routes land on actual streets, a glowing trail that grows as a simulated run progresses over 3D buildings, a pace chart and splits, and a lifetime heatmap.
 - `ember_journal` - Ember Journal: shake for a reflective question, answer it, tag the mood, and watch the entry fly into your journal.
+- `fit_journey` - FitJourney: a city-fitness app with a logo that builds itself, a pin-shaped portal into split-flap onboarding, odometer goal stats, and a live route that draws itself around the lake before a runner follows it.
