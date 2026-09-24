@@ -389,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   Color(0x333E5C9E),
                                   Color(0x996A8FCB),
                                 ],
-                                stops: [0.0, 0.3, 0.7, 1.0],
+                                stops: [0.0, 0.1, 0.35, 0.75, 1.0],
                               ),
                               rimWidth: 1.4,
                               radius: 27.5,

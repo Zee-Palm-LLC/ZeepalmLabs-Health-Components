@@ -265,24 +265,26 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
         child: SingleChildScrollView(
           controller: _scroll,
           physics: const BouncingScrollPhysics(),
-          child: SizedBox(
-            height: 852 + CanvasScope.of(context).slack.clamp(0.0, double.infinity) + 12,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const Positioned(
-                  left: 0,
-                  top: 0,
-                  width: 393,
-                  height: 338,
-                  child: IgnorePointer(child: SizedBox.expand()),
-                ),
-                _titleRow(),
-                _rating(),
-                _description(),
-                _statCards(),
-                _highlights(),
-              ],
+          child: Builder(
+            builder: (context) => SizedBox(
+              height: 852 + CanvasScope.of(context).slack.clamp(0.0, double.infinity) + 12,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  const Positioned(
+                    left: 0,
+                    top: 0,
+                    width: 393,
+                    height: 338,
+                    child: IgnorePointer(child: SizedBox.expand()),
+                  ),
+                  _titleRow(),
+                  _rating(),
+                  _description(),
+                  _statCards(),
+                  _highlights(),
+                ],
+              ),
             ),
           ),
         ),
@@ -360,7 +362,13 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
                           fill: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [Color(0xFF1455CD), Color(0xFF1253DA), Color(0xFF1E44BC), Color(0xFF0D38BD), Color(0xFF1331BA)],
+                            colors: [
+                              Color(0xFF1455CD),
+                              Color(0xFF1253DA),
+                              Color(0xFF1E44BC),
+                              Color(0xFF0D38BD),
+                              Color(0xFF1331BA),
+                            ],
                           ),
                           rim: LinearGradient(colors: [Color(0xFFD6E6FF), Color(0xFFF2F8FF), Color(0xFFD6E6FF)]),
                           rimWidth: 1.8,
@@ -495,7 +503,13 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
                     fill: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Color(0xFF011D4E), Color(0xFF011B4B), Color(0xFF001945), Color(0xFF011948), Color(0xFF001745)],
+                      colors: [
+                        Color(0xFF011D4E),
+                        Color(0xFF011B4B),
+                        Color(0xFF001945),
+                        Color(0xFF011948),
+                        Color(0xFF001745),
+                      ],
                     ),
                     rim: LinearGradient(
                       begin: Alignment.topCenter,
@@ -627,7 +641,13 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
                                     fill: LinearGradient(
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
-                                      colors: [Color(0xFF010B2D), Color(0xFF000F2C), Color(0xFF010D29), Color(0xFF000E2D), Color(0xFF011341)],
+                                      colors: [
+                                        Color(0xFF010B2D),
+                                        Color(0xFF000F2C),
+                                        Color(0xFF010D29),
+                                        Color(0xFF000E2D),
+                                        Color(0xFF011341),
+                                      ],
                                     ),
                                     rim: LinearGradient(
                                       begin: Alignment.topCenter,
@@ -1000,26 +1020,4 @@ class _RipplePainter extends CustomPainter {
         Paint()
           ..strokeWidth = 1.1
           ..strokeCap = StrokeCap.round
-          ..color = Colors.white.withValues(alpha: a),
-      );
-    }
-    final fall = Rect.fromLTWH(342, 228, 30, 34);
-    final shimmer = (s * 1.4) % 1.0;
-    canvas.save();
-    canvas.clipRect(fall);
-    for (var i = 0; i < 4; i++) {
-      final y = fall.top + ((shimmer + i / 4) % 1.0) * fall.height;
-      canvas.drawLine(
-        Offset(fall.left, y),
-        Offset(fall.right, y + 2),
-        Paint()
-          ..strokeWidth = 1.2
-          ..color = Colors.white.withValues(alpha: 0.25 * p),
-      );
-    }
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(_RipplePainter old) => old.s != s || old.p != p;
-}
+          ..color = Colors.
