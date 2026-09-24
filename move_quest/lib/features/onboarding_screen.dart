@@ -83,6 +83,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                   Positioned.fill(
                     child: Depth(
                       depth: -4,
+                      cover: const Size(393, 852),
                       child: Image.asset(
                         Scenes.path,
                         fit: BoxFit.fill,
@@ -175,47 +176,51 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
       top: cy - 30,
       width: pillRight - pillLeft + 34,
       height: 60,
-      child: AnimatedBuilder(
-        animation: t,
-        builder: (context, child) {
-          final k = t.value;
-          final fly = span(k, 0, 0.6, const Cubic(0.3, 0.0, 0.2, 1.0));
-          final target = slot.center;
-          final ctrl = Offset(lerp(origin.dx, target.dx, 0.2), math.min(origin.dy, target.dy) - 90);
-          final p = _bezier(origin, ctrl, target, fly) - target;
-          final pop = spring(span(k, 0.35, 1, Curves.linear), bounce: 0.55, freq: 2.4);
-          return Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned(
-                left: 30,
-                top: 30 - 22.5,
-                width: pillRight - pillLeft,
-                height: 45,
-                child: Transform(
-                  alignment: Alignment.centerLeft,
-                  transform: Matrix4.identity()..scaleByDouble(math.max(0.001, pop), 1, 1, 1),
-                  child: Opacity(opacity: span(k, 0.4, 0.6, Curves.linear), child: _pill(picked)),
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => _toggle(a),
+        child: AnimatedBuilder(
+          animation: t,
+          builder: (context, child) {
+            final k = t.value;
+            final fly = span(k, 0, 0.6, const Cubic(0.3, 0.0, 0.2, 1.0));
+            final target = slot.center;
+            final ctrl = Offset(lerp(origin.dx, target.dx, 0.2), math.min(origin.dy, target.dy) - 90);
+            final p = _bezier(origin, ctrl, target, fly) - target;
+            final pop = spring(span(k, 0.35, 1, Curves.linear), bounce: 0.55, freq: 2.4);
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(
+                  left: 30,
+                  top: 30 - 22.5,
+                  width: pillRight - pillLeft,
+                  height: 45,
+                  child: Transform(
+                    alignment: Alignment.centerLeft,
+                    transform: Matrix4.identity()..scaleByDouble(math.max(0.001, pop), 1, 1, 1),
+                    child: Opacity(opacity: span(k, 0.4, 0.6, Curves.linear), child: _pill(picked)),
+                  ),
                 ),
-              ),
-              TextAt(
-                x: slot.right - pillLeft + 30 + 9 + (1 - pop) * 16,
-                baseline: a.baseline - cy + 30,
-                width: 120,
-                style: style,
-                child: Opacity(opacity: span(k, 0.55, 0.8, Curves.linear), child: Label(a.label, style)),
-              ),
-              Positioned(
-                left: slot.left - pillLeft + 30 + p.dx,
-                top: slot.top - cy + 30 + p.dy,
-                width: slot.width,
-                height: slot.height,
-                child: _disc(a, k, fly, picked),
-              ),
-              if (k > 0.55 && k < 1) _landRing(slot, pillLeft, cy, span(k, 0.55, 1, Curves.easeOut)),
-            ],
-          );
-        },
+                TextAt(
+                  x: slot.right - pillLeft + 30 + 9 + (1 - pop) * 16,
+                  baseline: a.baseline - cy + 30,
+                  width: 120,
+                  style: style,
+                  child: Opacity(opacity: span(k, 0.55, 0.8, Curves.linear), child: Label(a.label, style)),
+                ),
+                Positioned(
+                  left: slot.left - pillLeft + 30 + p.dx,
+                  top: slot.top - cy + 30 + p.dy,
+                  width: slot.width,
+                  height: slot.height,
+                  child: _disc(a, k, fly, picked),
+                ),
+                if (k > 0.55 && k < 1) _landRing(slot, pillLeft, cy, span(k, 0.55, 1, Curves.easeOut)),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -281,6 +286,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                       ),
                     ),
                   child!,
+                  Positioned(
+                    right: -3,
+                    top: -3,
+                    width: 18,
+                    height: 18,
+                    child: Opacity(
+                      opacity: flip.clamp(0.0, 1.0),
+                      child: Transform.scale(
+                        scale: spring(flip.clamp(0.0, 1.0), bounce: 0.6),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: const LinearGradient(colors: [Hue.aqua, Hue.cyan]),
+                            border: Border.all(color: Colors.white, width: 1.4),
+                            boxShadow: const [BoxShadow(color: Color(0xAA4FD8FF), blurRadius: 8)],
+                          ),
+                          child: Center(child: PhIcon(PhosphorBold.check, size: 11, color: Hue.navy)),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -305,7 +331,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                 fill: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Color(0xE8025697), Color(0xE8006BA6), Color(0xE8005C9A), Color(0xE80166A3), Color(0xE8024E95)],
+                  colors: [
+                    Color(0xE8025697),
+                    Color(0xE8006BA6),
+                    Color(0xE8005C9A),
+                    Color(0xE80166A3),
+                    Color(0xE8024E95),
+                  ],
                   stops: [0.0, 0.2, 0.5, 0.8, 1.0],
                 ),
                 rim: LinearGradient(
@@ -316,34 +348,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                 rimWidth: 1.3,
                 radius: 22.5,
                 glow: Glow(Color(0x6640C8FF), blur: 6, width: 3),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 12,
-            top: 12.5,
-            width: 20,
-            height: 20,
-            child: Opacity(
-              opacity: lit.clamp(0.0, 1.0),
-              child: Transform.scale(
-                scale: spring(lit, bounce: 0.6),
-                child: DecoratedBox(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(colors: [Hue.aqua, Hue.cyan]),
-                    boxShadow: [BoxShadow(color: Color(0xAA4FD8FF), blurRadius: 10)],
-                  ),
-                  child: Center(
-                    child: GlyphIcon(
-                      Glyph.check,
-                      size: 15,
-                      stroke: 2.6,
-                      color: Hue.navy,
-                      progress: lit.clamp(0.0, 1.0),
-                    ),
-                  ),
-                ),
               ),
             ),
           ),
@@ -417,7 +421,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
             const TextSpan(
               children: [
                 TextSpan(text: 'Move'),
-                TextSpan(text: 'Quest', style: TextStyle(color: Color(0xFF7FDDF5))),
+                TextSpan(
+                  text: 'Quest',
+                  style: TextStyle(color: Color(0xFF7FDDF5)),
+                ),
                 TextSpan(text: ' build your journey.'),
               ],
             ),
@@ -498,9 +505,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                 children: [
                   TextAt(x: 170 - 25.5, baseline: 791.7 - 756.2, style: style, child: Label('Next', style)),
                   Positioned(
-                    left: 226.7 - 25.5 - 9.5 + 2.4 * math.max(0, wave(s, 1.2)),
-                    top: 785.4 - 756.2 - 9.5,
-                    child: const GlyphIcon(Glyph.arrow, size: 19, stroke: 2.3, color: Colors.white),
+                    left: 226.7 - 25.5 - 10.5 + 2.4 * math.max(0, wave(s, 1.2)),
+                    top: 785.4 - 756.2 - 10.5,
+                    child: const PhIcon(PhosphorBold.arrowRight, size: 21, color: Colors.white),
                   ),
                 ],
               ),

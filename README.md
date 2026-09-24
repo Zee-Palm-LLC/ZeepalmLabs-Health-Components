@@ -20,3 +20,4 @@ A collection of Flutter projects, each in its own folder.
 - `trailglow` - Night-running concept on a real Mapbox map: a Manhattan street grid rebuilt in code so mock routes land on actual streets, a glowing trail that grows as a simulated run progresses over 3D buildings, a pace chart and splits, and a lifetime heatmap.
 - `ember_journal` - Ember Journal: shake for a reflective question, answer it, tag the mood, and watch the entry fly into your journal.
 - `fit_journey` - FitJourney: a city-fitness app with a logo that builds itself, a pin-shaped portal into split-flap onboarding, odometer goal stats, and a live route that draws itself around the lake before a runner follows it.
+- `move_quest` - MoveQuest: a fitness adventure with a hex-portal splash, activity discs thrown from the runner's hand, a living quest map with falling landmark badges and energy paths, and a quest card that expands into a parallax route detail.

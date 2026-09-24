@@ -343,12 +343,8 @@ class _FlagPainter extends CustomPainter {
   bool shouldRepaint(_FlagPainter old) => old.s != s || old.unfurl != unfurl || old.image != image;
 }
 
-ColorFilter _flat(Color c, [double alpha = 1]) => ColorFilter.matrix([
-  0, 0, 0, 0, c.r * 255,
-  0, 0, 0, 0, c.g * 255,
-  0, 0, 0, 0, c.b * 255,
-  0, 0, 0, alpha, 0,
-]);
+ColorFilter _flat(Color c, [double alpha = 1]) =>
+    ColorFilter.matrix([0, 0, 0, 0, c.r * 255, 0, 0, 0, 0, c.g * 255, 0, 0, 0, 0, c.b * 255, 0, 0, 0, alpha, 0]);
 
 class Energize extends StatelessWidget {
   const Energize({

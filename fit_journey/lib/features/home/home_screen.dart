@@ -7,13 +7,13 @@ import '../../core/assets.dart';
 import '../../core/canvas.dart';
 import '../../core/motion.dart';
 import '../../core/palette.dart';
+import '../../core/phosphor.dart';
 import '../../core/type.dart';
 import '../../widgets/icon_orb.dart';
 import 'goal_card.dart';
 import 'nav_bar.dart';
 import 'quick_actions.dart';
 import 'route_card.dart';
-import '../../core/phosphor.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.onOpenRoute, this.entrance, this.routeOpen = false});
@@ -274,7 +274,7 @@ class HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
       _clipRise('Good Morning,', 90.2, 72.8 + lift, font(14.2, 600, color: const Color(0xFF6B7684)), greet),
-      _clipRise('Ayesha', 90.3, 95.7 + lift, nameStyle, name),
+      _clipRise('John', 90.3, 95.7 + lift, nameStyle, name),
       Positioned(
         left: 90.3 + nameWidth + 4,
         top: 89.6 - 11 + lift,

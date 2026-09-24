@@ -30,3 +30,15 @@ flutter:
           weight: 600
         - asset: assets/fonts/Cabin-Bold.ttf
           weight: 700
+        - asset: assets/fonts/Cabin-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+    - family: PhosphorFill
+      fonts:
+        - asset: assets/fonts/Phosphor-Fill.ttf
+    - family: PhosphorRegular
+      fonts:
+        - asset: assets/fonts/Phosphor-Regular.ttf
+    - family: PhosphorBold
+      fonts:
+        - asset: assets/fonts/Phosphor-Bold.ttf

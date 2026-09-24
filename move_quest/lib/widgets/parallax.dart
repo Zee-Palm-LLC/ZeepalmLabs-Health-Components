@@ -79,11 +79,12 @@ class _TiltFieldState extends State<TiltField> with SingleTickerProviderStateMix
 }
 
 class Depth extends StatelessWidget {
-  const Depth({super.key, required this.depth, required this.child, this.idle = 0.35});
+  const Depth({super.key, required this.depth, required this.child, this.idle = 0.35, this.cover});
 
   final double depth;
   final Widget child;
   final double idle;
+  final Size? cover;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +94,13 @@ class Depth extends StatelessWidget {
       builder: (context, s, child) {
         final drift = Offset(math.sin(s * 0.37) * idle, math.sin(s * 0.29) * idle * 0.6);
         final o = (tilt.value + drift) * depth;
-        return Transform.translate(offset: o, child: child);
+        final area = cover;
+        if (area == null) return Transform.translate(offset: o, child: child);
+        final grow = 1.0 + 2 * math.max(o.dx.abs() / area.width, o.dy.abs() / area.height);
+        final m = Matrix4.identity()
+          ..translateByDouble(o.dx, o.dy, 0, 1)
+          ..scaleByDouble(grow, grow, 1, 1);
+        return Transform(alignment: Alignment.center, transform: m, child: child);
       },
     );
   }

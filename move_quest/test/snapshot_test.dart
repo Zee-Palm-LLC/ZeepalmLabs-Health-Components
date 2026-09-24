@@ -55,7 +55,10 @@ Future<void> mount(WidgetTester tester, Widget home) async {
   await tester.pumpWidget(
     RepaintBoundary(
       key: const ValueKey('shot'),
-      child: MediaQuery.fromView(view: tester.view, child: MoveQuestApp(home: home)),
+      child: MediaQuery.fromView(
+        view: tester.view,
+        child: MoveQuestApp(home: home),
+      ),
     ),
   );
   await warm(tester);
@@ -109,6 +112,11 @@ void main() {
     await shoot(tester, 'home_mid');
     await run(tester, 90);
     await shoot(tester, 'home');
+    await tester.tap(find.text('Progress'));
+    await run(tester, 7);
+    await shoot(tester, 'nav_moving');
+    await run(tester, 30);
+    await shoot(tester, 'nav_progress');
     Clock.frozen = false;
     debugDisableShadows = true;
   });

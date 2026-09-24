@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -110,12 +109,13 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
             clipBehavior: Clip.none,
             children: [
               Positioned(
-                left: -8,
-                top: -8,
-                width: 409,
-                height: 486,
+                left: 0,
+                top: 0,
+                width: 393,
+                height: 470,
                 child: Depth(
                   depth: -6,
+                  cover: const Size(393, 470),
                   child: AnimatedBuilder(
                     animation: _intro,
                     builder: (context, child) {
@@ -199,7 +199,7 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
             t,
             0,
             () => Navigator.of(context).maybePop(),
-            const GlyphIcon(Glyph.back, size: 26, stroke: 2.8),
+            const PhIcon(PhosphorBold.caretLeft, size: 26),
           ),
           _circle(310.5, 88.5, 24.5, t, 0.1, () {
             HapticFeedback.lightImpact();
@@ -212,7 +212,7 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
             t,
             0.2,
             () => HapticFeedback.lightImpact(),
-            const GlyphIcon(Glyph.share, size: 24, stroke: 2.2),
+            const PhIcon(PhosphorBold.export, size: 25),
           ),
         ],
       ),
@@ -295,7 +295,7 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
   Widget _titleRow() {
     final t = _phase(0.2, 0.55);
     final title = typo(
-      25.7,
+      26.1,
       weight: FontWeight.w700,
       color: const Color(0xFFFBFEFE),
       shadows: const [Shadow(color: Color(0x88000A30), blurRadius: 8)],
@@ -329,7 +329,7 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
           ),
           TextAt(
             x: 72.4,
-            baseline: 397.4,
+            baseline: 397.3,
             style: title,
             child: Hero(
               tag: 'quest-title',
@@ -385,7 +385,7 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
                             top: 382 - 376,
                             width: 16,
                             height: 16,
-                            child: const GlyphIcon(Glyph.crown, size: 16, color: Color(0xFFE8F2FF)),
+                            child: const PhIcon(PhosphorFill.crown, size: 16, color: Color(0xFFE8F2FF)),
                           ),
                           TextAt(
                             x: 331.6 - 306.3,
@@ -409,7 +409,7 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
 
   Widget _rating() {
     final t = _phase(0.3, 0.7);
-    final style = typo(15.8, weight: FontWeight.w500, color: const Color(0xFFE7EEFC));
+    final style = typo(16.5, weight: FontWeight.w500, color: const Color(0xFFE7EEFC));
     const xs = [80.3, 102.5, 124.2, 146.3];
     return Positioned.fill(
       child: AnimatedBuilder(
@@ -427,16 +427,13 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
                   height: 22,
                   child: Transform.rotate(
                     angle: (1 - k) * -math.pi,
-                    child: Transform.scale(
-                      scale: k,
-                      child: const CustomPaint(painter: _StarPainter()),
-                    ),
+                    child: Transform.scale(scale: k, child: const _Star()),
                   ),
                 );
               }(),
             TextAt(
               x: 165.3,
-              baseline: 430,
+              baseline: 430.3,
               style: style,
               width: 100,
               child: Opacity(opacity: span(t.value, 0.4, 0.8, Curves.linear), child: Label('4.8 (124)', style)),
@@ -448,11 +445,11 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
   }
 
   Widget _description() {
-    final style = typo(15.95, weight: FontWeight.w500, color: const Color(0xFFD5E0F9));
+    final style = typo(16.15, weight: FontWeight.w500, color: const Color(0xFFD5E0F9));
     const lines = [
-      ('A beautiful and peaceful loop around the river', 470.2),
-      ('with lush greenery, benches and scenic views.', 492.3),
-      ('Perfect for beginners and casual walkers.', 508.67),
+      ('A beautiful and peaceful loop around the river', 462.3),
+      ('with lush greenery, benches and scenic views.', 483.2),
+      ('Perfect for beginners and casual walkers.', 503.7),
     ];
     return Positioned.fill(
       child: Stack(
@@ -477,19 +474,15 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
   }
 
   Widget _statCards() {
+    const top = 525.5;
     const cards = [
-      (16.8, 142.6, Art.routePin, '2.4 km', 'Distance', 62.0, 187.0),
-      (142.6, 261.6, Art.routeClock, '30 min', 'Est. Time', 187.0, 186.7),
-      (261.6, 380.0, Art.routeFlame, '~180 kcal', 'Calories', 301.0, 300.3),
+      (15.5, 141.0, Art.routePin, '2.4 km', 'Distance', 62.0, 18.3),
+      (142.5, 261.0, Art.routeClock, '30 min', 'Est. Time', 187.0, 17.1),
+      (262.5, 380.5, Art.routeFlame, '~180 kcal', 'Calories', 301.0, 17.2),
     ];
-    final value = typo(17.9, weight: FontWeight.w700, color: const Color(0xFFF6FAFE));
-    final caption = typo(12.4, weight: FontWeight.w500, color: const Color(0xFFD9E7FE));
+    final caption = typo(12.9, weight: FontWeight.w500, color: const Color(0xFFD9E7FE));
     final t = _phase(0.45, 0.85);
-    return Positioned(
-      left: 16.8,
-      top: 527.5,
-      width: 380 - 16.8,
-      height: 82,
+    return Positioned.fill(
       child: AnimatedBuilder(
         animation: t,
         builder: (context, _) {
@@ -497,74 +490,44 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
           return Stack(
             clipBehavior: Clip.none,
             children: [
-              const Positioned.fill(
-                child: Glass(
-                  style: GlassStyle(
-                    fill: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFF011D4E),
-                        Color(0xFF011B4B),
-                        Color(0xFF001945),
-                        Color(0xFF011948),
-                        Color(0xFF001745),
-                      ],
-                    ),
-                    rim: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Color(0xFF2C82C8), Color(0x55185598), Color(0xFF2C6FC0)],
-                    ),
-                    rimWidth: 1.2,
-                    radius: 16,
-                  ),
-                ),
-              ),
               for (var i = 0; i < cards.length; i++)
                 () {
-                  final (l, r, icon, v, label, x, cx) = cards[i];
+                  final (l, r, icon, v, label, x, size) = cards[i];
+                  final value = typo(size, weight: FontWeight.w700, color: const Color(0xFFF6FAFE));
                   final k = spring(((unfold - i * 0.14) / 0.6).clamp(0.0, 1.0), bounce: 0.35, freq: 2.2);
                   return Positioned(
-                    left: l - 16.8,
-                    top: 0,
+                    left: l,
+                    top: top,
                     width: r - l,
-                    height: 82,
+                    height: 86,
                     child: Transform(
-                      alignment: Alignment.centerLeft,
+                      alignment: Alignment.bottomCenter,
                       transform: Matrix4.identity()
                         ..setEntry(3, 2, 0.002)
-                        ..rotateY((1 - k) * -1.5),
+                        ..rotateX((1 - k) * 1.5),
                       child: Opacity(
                         opacity: span(unfold - i * 0.14, 0, 0.2, Curves.linear),
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
-                            if (i > 0)
-                              Positioned(
-                                left: 0,
-                                top: 14,
-                                bottom: 14,
-                                width: 1,
-                                child: const ColoredBox(color: Color(0x33386CB8)),
-                              ),
+                            const Positioned.fill(child: CustomPaint(painter: _StatCard())),
                             Positioned(
                               left: icon.left - l,
-                              top: icon.top - 527.5,
+                              top: icon.top - top,
                               width: icon.width,
                               height: icon.height,
                               child: icon.image(),
                             ),
                             TextAt(
                               x: x - l,
-                              baseline: 566 - 527.5,
+                              baseline: 566 - top,
                               style: value,
                               width: 110,
                               child: Odometer(text: v, style: value, progress: _phase(0.55 + i * 0.05, 0.95)),
                             ),
                             TextAt(
                               x: x - l,
-                              baseline: 588 - 527.5,
+                              baseline: 588 - top,
                               style: caption,
                               width: 110,
                               child: Label(label, caption),
@@ -583,8 +546,8 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
   }
 
   Widget _highlights() {
-    final heading = typo(16.8, weight: FontWeight.w700, color: const Color(0xFFF8FBFE));
-    final label = typo(11.7, weight: FontWeight.w500, color: const Color(0xFFE6EDFD));
+    final heading = typo(16.9, weight: FontWeight.w700, color: const Color(0xFFF8FBFE));
+    final label = typo(14.4, weight: FontWeight.w500, color: const Color(0xFFE6EDFD));
     const items = [
       (Art.highlightScenic, 'Scenic', 'Views', 54.8, 18.0, 92.5),
       (Art.highlightWater, 'Water', 'Fountain', 155.2, 117.0, 193.5),
@@ -598,7 +561,7 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
         children: [
           TextAt(
             x: 19.6,
-            baseline: 648.5,
+            baseline: 644,
             style: heading,
             child: GlyphReveal(
               text: 'Route Highlights',
@@ -614,9 +577,9 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
               final k = _phase(0.58 + i * 0.07, 0.86 + i * 0.035);
               return Positioned(
                 left: l,
-                top: 649,
+                top: 656,
                 width: r - l,
-                height: 115,
+                height: 101,
                 child: AnimatedBuilder(
                   animation: k,
                   builder: (context, _) {
@@ -661,26 +624,26 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
                               ),
                               Positioned(
                                 left: icon.left - l,
-                                top: icon.top - 649,
+                                top: icon.top - 656,
                                 width: icon.width,
                                 height: icon.height,
                                 child: icon.image(),
                               ),
                               TextAt(
                                 x: cx - l,
-                                baseline: 733 - 649,
+                                baseline: 727.6 - 656,
                                 anchor: 0.5,
                                 style: label,
                                 width: r - l + 20,
-                                child: Label(a, label),
+                                child: Transform.scale(scaleX: 0.8, scaleY: 1, child: Label(a, label)),
                               ),
                               TextAt(
                                 x: cx - l,
-                                baseline: 749.3 - 649,
+                                baseline: 743.1 - 656,
                                 anchor: 0.5,
                                 style: label,
                                 width: r - l + 20,
-                                child: Label(b, label),
+                                child: Transform.scale(scaleX: 0.8, scaleY: 1, child: Label(b, label)),
                               ),
                             ],
                           ),
@@ -699,7 +662,7 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
   Widget _startButton() {
     final t = _phase(0.6, 1.0);
     final style = typo(
-      18.3,
+      18.8,
       weight: FontWeight.w700,
       color: Colors.white,
       shadows: const [Shadow(color: Color(0x55000A40), blurRadius: 4)],
@@ -769,12 +732,16 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
                       height: 22,
                       child: Opacity(
                         opacity: 1 - span(burst, 0.3, 0.45, Curves.linear) + span(burst, 0.8, 1, Curves.linear),
-                        child: const CustomPaint(painter: _Play()),
+                        child: const PhIcon(
+                          PhosphorFill.play,
+                          size: 22,
+                          shadows: [Shadow(color: Color(0x55001040), blurRadius: 3)],
+                        ),
                       ),
                     ),
                     TextAt(
                       x: 172.7 - 31.5,
-                      baseline: 808.3 - 770,
+                      baseline: 806.3 - 770,
                       style: style,
                       width: 160,
                       child: Label(burst > 0.35 && burst < 0.95 ? 'Quest Started!' : 'Start Quest', style),
@@ -792,6 +759,52 @@ class _RouteScreenState extends State<RouteScreen> with TickerProviderStateMixin
       ),
     );
   }
+}
+
+class _StatCard extends CustomPainter {
+  const _StatCard();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final body = RRect.fromRectAndRadius(rect, const Radius.circular(15));
+    canvas.drawRRect(
+      body,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF02225A), Color(0xFF011B4B), Color(0xFF011948), Color(0xFF011A4A), Color(0xFF02225A)],
+          stops: [0.0, 0.2, 0.5, 0.8, 1.0],
+        ).createShader(rect),
+    );
+    canvas.drawRRect(
+      body.deflate(0.6),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2
+        ..shader = const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF3A6FB8), Color(0x66234C8C), Color(0x66234C8C), Color(0xFF3A6FB8)],
+          stops: [0.0, 0.3, 0.7, 1.0],
+        ).createShader(rect),
+    );
+    final streak = Paint()
+      ..shader = LinearGradient(
+        colors: [
+          const Color(0xFF44C8FF).withValues(alpha: 0),
+          const Color(0xFF6FDCFF),
+          const Color(0xFF44C8FF).withValues(alpha: 0),
+        ],
+      ).createShader(Rect.fromLTWH(size.width * 0.28, 0, size.width * 0.44, 2))
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.2);
+    canvas.drawRect(Rect.fromLTWH(size.width * 0.28, 0, size.width * 0.44, 1.6), streak);
+    canvas.drawRect(Rect.fromLTWH(size.width * 0.28, size.height - 1.6, size.width * 0.44, 1.6), streak);
+  }
+
+  @override
+  bool shouldRepaint(_StatCard old) => false;
 }
 
 class _Hue extends GradientTransform {
@@ -823,44 +836,21 @@ class _Heart extends StatelessWidget {
             if (liked && t < 1) CustomPaint(size: const Size(44, 44), painter: _HeartBurst(t)),
             Transform.scale(
               scale: pop,
-              child: CustomPaint(size: const Size(24, 24), painter: _HeartPainter(t)),
+              child: Stack(
+                children: [
+                  Opacity(opacity: 1 - t.clamp(0.0, 1.0), child: const PhIcon(PhosphorBold.heart, size: 25)),
+                  Opacity(
+                    opacity: t.clamp(0.0, 1.0),
+                    child: const PhIcon(PhosphorFill.heart, size: 25, color: Color(0xFFFF4F7B)),
+                  ),
+                ],
+              ),
             ),
           ],
         );
       },
     );
   }
-}
-
-class _HeartPainter extends CustomPainter {
-  _HeartPainter(this.fill);
-
-  final double fill;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.save();
-    canvas.scale(size.width / 24);
-    final path = GlyphPainter.pathOf(Glyph.heart);
-    if (fill > 0) {
-      canvas.save();
-      canvas.clipPath(path);
-      canvas.drawCircle(const Offset(12, 13), 14 * fill, Paint()..color = const Color(0xFFFF4F7B));
-      canvas.restore();
-    }
-    canvas.drawPath(
-      path,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.2
-        ..strokeJoin = StrokeJoin.round
-        ..color = Color.lerp(Colors.white, const Color(0xFFFF8FA8), fill)!,
-    );
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(_HeartPainter old) => old.fill != fill;
 }
 
 class _HeartBurst extends CustomPainter {
@@ -887,61 +877,21 @@ class _HeartBurst extends CustomPainter {
   bool shouldRepaint(_HeartBurst old) => old.t != t;
 }
 
-class _StarPainter extends CustomPainter {
-  const _StarPainter();
+class _Star extends StatelessWidget {
+  const _Star();
 
   @override
-  void paint(Canvas canvas, Size size) {
-    canvas.save();
-    canvas.scale(size.width / 24);
-    final path = GlyphPainter.pathOf(Glyph.star);
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = const Color(0xFFFFB21C).withValues(alpha: 0.55)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.5),
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      blendMode: BlendMode.srcIn,
+      shaderCallback: (rect) => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFFFFE680), Color(0xFFFFC21E), Color(0xFFF59A0C)],
+      ).createShader(rect),
+      child: const PhIcon(PhosphorFill.star, size: 22, shadows: [Shadow(color: Color(0x8CFFB21C), blurRadius: 5)]),
     );
-    canvas.drawPath(
-      path,
-      Paint()
-        ..shader = ui.Gradient.linear(
-          const Offset(12, 1),
-          const Offset(12, 23),
-          [const Color(0xFFFFE680), const Color(0xFFFFC21E), const Color(0xFFF59A0C)],
-          const [0, 0.5, 1],
-        ),
-    );
-    canvas.restore();
   }
-
-  @override
-  bool shouldRepaint(_StarPainter old) => false;
-}
-
-class _Play extends CustomPainter {
-  const _Play();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final p = Path()
-      ..moveTo(1.6, 2)
-      ..quadraticBezierTo(1.6, 0, 3.4, 1)
-      ..lineTo(size.width - 1.2, size.height / 2 - 1.1)
-      ..quadraticBezierTo(size.width, size.height / 2, size.width - 1.2, size.height / 2 + 1.1)
-      ..lineTo(3.4, size.height - 1)
-      ..quadraticBezierTo(1.6, size.height, 1.6, size.height - 2)
-      ..close();
-    canvas.drawPath(
-      p,
-      Paint()
-        ..color = const Color(0x55001040)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2),
-    );
-    canvas.drawPath(p, Paint()..color = Colors.white);
-  }
-
-  @override
-  bool shouldRepaint(_Play old) => false;
 }
 
 class _Burst extends CustomPainter {
@@ -1020,4 +970,26 @@ class _RipplePainter extends CustomPainter {
         Paint()
           ..strokeWidth = 1.1
           ..strokeCap = StrokeCap.round
-          ..color = Colors.
+          ..color = Colors.white.withValues(alpha: a),
+      );
+    }
+    final fall = Rect.fromLTWH(342, 228, 30, 34);
+    final shimmer = (s * 1.4) % 1.0;
+    canvas.save();
+    canvas.clipRect(fall);
+    for (var i = 0; i < 4; i++) {
+      final y = fall.top + ((shimmer + i / 4) % 1.0) * fall.height;
+      canvas.drawLine(
+        Offset(fall.left, y),
+        Offset(fall.right, y + 2),
+        Paint()
+          ..strokeWidth = 1.2
+          ..color = Colors.white.withValues(alpha: 0.25 * p),
+      );
+    }
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(_RipplePainter old) => old.s != s || old.p != p;
+}

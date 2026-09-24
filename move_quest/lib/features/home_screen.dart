@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../core/canvas.dart';
+import '../core/glyphs.dart';
 import '../core/motion.dart';
 import '../core/palette.dart';
 import '../core/sprites.dart';
@@ -90,6 +91,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           },
           child: Depth(
             depth: -4,
+            cover: const Size(393, 852),
             child: Image.asset(
               Scenes.map,
               fit: BoxFit.fill,
@@ -101,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
       Positioned.fill(
-        child: IgnorePointer(child: _Energy(progress: _phase(0.4, 0.8))),
+        child: IgnorePointer(child: _Energy(progress: _phase(0.3, 0.7))),
       ),
       Positioned.fill(
         child: Depth(depth: 2, child: _Pad(progress: _phase(0.25, 0.55))),
@@ -110,9 +112,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: Depth(depth: 2, child: Breathe(period: 3.8, amount: 0.01, bob: 0.0, child: Art.homeHero.image())),
       ),
       Motes(area: const Rect.fromLTWH(100, 380, 110, 140), seed: 21, count: 12, size: 1.8),
-      _badge(Art.badgeGym, 0.36, 0.0),
-      _badge(Art.badgePark, 0.44, 0.33),
-      _badge(Art.badgeWater, 0.52, 0.66),
+      _badge(Art.badgeGym, 0.2, 0.0),
+      _badge(Art.badgePark, 0.27, 0.33),
+      _badge(Art.badgeWater, 0.34, 0.66),
     ];
   }
 
@@ -255,7 +257,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         fill: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [Color(0xF2082A64), Color(0xF2031E4D), Color(0xF2062252), Color(0xF2011D46), Color(0xF2001A44)],
+                          colors: [
+                            Color(0xF2082A64),
+                            Color(0xF2031E4D),
+                            Color(0xF2062252),
+                            Color(0xF2011D46),
+                            Color(0xF2001A44),
+                          ],
                           stops: [0.0, 0.25, 0.5, 0.75, 1.0],
                         ),
                         rim: LinearGradient(
@@ -309,7 +317,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   scale: 0.8,
                   child: Transform.scale(
                     scale: spring(span(k, 0.5, 1, Curves.linear), bounce: 0.6),
-                    child: const CustomPaint(painter: _PlusPainter()),
+                    child: const CustomPaint(
+                      painter: _PlusPainter(),
+                      child: Center(
+                        child: PhIcon(
+                          PhosphorBold.plus,
+                          size: 15,
+                          color: Color(0xFFEFFFFD),
+                          shadows: [Shadow(color: Color(0x888FFFF4), blurRadius: 3)],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -335,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               final (l, t, r, b, icon, v, label, vBase, lBase, vSize, lSize) = pills[i];
               final value = typo(vSize, weight: FontWeight.w700, color: const Color(0xFFF8FEFE));
               final caption = typo(lSize, weight: FontWeight.w500, color: const Color(0xFFC6D2F2));
-              final swing = _phase(0.18 + i * 0.07, 0.56 + i * 0.07);
+              final swing = _phase(0.06 + i * 0.05, 0.42 + i * 0.05);
               return Positioned(
                 left: l,
                 top: t,
@@ -409,7 +427,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           baseline: vBase - t,
                           style: value,
                           width: 90,
-                          child: Odometer(text: v, style: value, progress: _phase(0.3 + i * 0.07, 0.8 + i * 0.05)),
+                          child: Odometer(text: v, style: value, progress: _phase(0.2 + i * 0.06, 0.7 + i * 0.05)),
                         ),
                         TextAt(
                           x: 73.6 - l,
@@ -442,8 +460,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _level() {
-    final t = _phase(0.24, 0.62);
-    final fill = _phase(0.55, 0.95);
+    final t = _phase(0.1, 0.46);
+    final fill = _phase(0.4, 0.9);
     final title = typo(15.6, weight: FontWeight.w600, color: const Color(0xFFF5FEFE));
     return Positioned.fill(
       child: Stack(
@@ -473,7 +491,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           fill: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [Color(0xF2021E36), Color(0xF2062841), Color(0xF202273F), Color(0xF2003556), Color(0xF2093753)],
+                            colors: [
+                              Color(0xF2021E36),
+                              Color(0xF2062841),
+                              Color(0xF202273F),
+                              Color(0xF2003556),
+                              Color(0xF2093753),
+                            ],
                             stops: [0.0, 0.2, 0.5, 0.7, 1.0],
                           ),
                           rim: LinearGradient(
@@ -556,7 +580,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _questCard() {
-    final t = _phase(0.45, 0.85);
+    final t = _phase(0.14, 0.52);
     final small = typo(14.9, weight: FontWeight.w500, color: const Color(0xFFDEF2FC));
     final big = typo(20, weight: FontWeight.w700, color: const Color(0xFFF9FEFE));
     final chip = typo(15.4, weight: FontWeight.w500, color: const Color(0xFFE9F0FD));
@@ -659,7 +683,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   const TextSpan(
                     children: [
                       TextSpan(text: "Today's "),
-                      TextSpan(text: 'Quest', style: TextStyle(color: Color(0xFF8FE3F5))),
+                      TextSpan(
+                        text: 'Quest',
+                        style: TextStyle(color: Color(0xFF8FE3F5)),
+                      ),
                     ],
                   ),
                   style: small,
@@ -744,7 +771,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 top: 694.5 - 678.5,
                 width: 17,
                 height: 21,
-                child: const CustomPaint(painter: _PlayPainter(Color(0xFF151B3C))),
+                child: const PhIcon(PhosphorFill.play, size: 20, color: Color(0xFF151B3C)),
               ),
               TextAt(
                 x: 165.4 - 33.5,
@@ -761,7 +788,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _nav() {
-    return Positioned(left: 0, top: 764, width: 393, height: 100, child: QuestNavBar(entrance: _phase(0.35, 0.85)));
+    return Positioned(
+      left: 0,
+      top: QuestNavBar.top,
+      width: 393,
+      height: 60,
+      child: QuestNavBar(entrance: _phase(0.1, 0.62)),
+    );
   }
 }
 
@@ -1030,43 +1063,8 @@ class _PlusPainter extends CustomPainter {
           stops: [0.0, 0.7, 1.0],
         ).createShader(Rect.fromCircle(center: c, radius: 9.8)),
     );
-    final glow = Paint()
-      ..strokeWidth = 4.4
-      ..strokeCap = StrokeCap.round
-      ..color = const Color(0xFF8FFFF4).withValues(alpha: 0.45)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
-    final line = Paint()
-      ..strokeWidth = 2.6
-      ..strokeCap = StrokeCap.round
-      ..color = const Color(0xFFEFFFFD);
-    for (final p in [glow, line]) {
-      canvas.drawLine(c + const Offset(-6.2, 0), c + const Offset(6.2, 0), p);
-      canvas.drawLine(c + const Offset(0, -6.6), c + const Offset(0, 6.6), p);
-    }
   }
 
   @override
   bool shouldRepaint(_PlusPainter old) => false;
-}
-
-class _PlayPainter extends CustomPainter {
-  const _PlayPainter(this.color);
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final p = Path()
-      ..moveTo(1.5, 1.8)
-      ..quadraticBezierTo(1.5, 0, 3.2, 0.9)
-      ..lineTo(size.width - 1.2, size.height / 2 - 1)
-      ..quadraticBezierTo(size.width, size.height / 2, size.width - 1.2, size.height / 2 + 1)
-      ..lineTo(3.2, size.height - 0.9)
-      ..quadraticBezierTo(1.5, size.height, 1.5, size.height - 1.8)
-      ..close();
-    canvas.drawPath(p, Paint()..color = color);
-  }
-
-  @override
-  bool shouldRepaint(_PlayPainter old) => old.color != color;
 }

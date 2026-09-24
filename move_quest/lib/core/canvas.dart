@@ -113,9 +113,10 @@ class Floor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scope = CanvasScope.of(context);
+    final lift = scope.bottom > 34 ? scope.bottom - 34 : 0.0;
     return Positioned(
       left: 0,
-      top: scope.slack,
+      top: scope.slack - lift,
       width: CanvasScope.width,
       height: CanvasScope.reference,
       child: Stack(clipBehavior: Clip.none, children: children),

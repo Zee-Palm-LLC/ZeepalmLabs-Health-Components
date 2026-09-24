@@ -88,8 +88,9 @@ class Tick extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final clock = ClockScope.of(context);
+    final live = TickerMode.valuesOf(context).enabled;
     return ListenableBuilder(
-      listenable: clock,
+      listenable: live ? clock : const AlwaysStoppedAnimation(0),
       builder: (context, child) => builder(context, clock.seconds, child),
       child: child,
     );

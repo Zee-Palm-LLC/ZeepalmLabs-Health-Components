@@ -11,11 +11,13 @@ TextStyle typo(
   double spacing = 0,
   double height = 1.0,
   List<Shadow>? shadows,
+  bool italic = false,
 }) {
   return TextStyle(
     fontFamily: cabin,
     fontSize: size,
     fontWeight: weight,
+    fontStyle: italic ? FontStyle.italic : FontStyle.normal,
     color: color,
     letterSpacing: spacing,
     height: height,

@@ -88,6 +88,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         },
         child: Depth(
           depth: -5,
+          cover: const Size(393, 852),
           child: Image.asset(
             Scenes.splash,
             fit: BoxFit.fill,
@@ -174,8 +175,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   Widget _tagline() {
     final style = typo(
-      21,
+      22.0,
       weight: FontWeight.w600,
+      italic: true,
       color: const Color(0xFFECFEFE),
       shadows: [
         const Shadow(color: Color(0xCC04124A), blurRadius: 8),
@@ -191,7 +193,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
           children: [
             TextAt(
               x: 198.2,
-              baseline: 257.7,
+              baseline: 258.7,
               anchor: 0.5,
               style: style,
               child: GlyphReveal(
@@ -211,9 +213,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   static final _tapStyle = typo(22.4, weight: FontWeight.w700, color: const Color(0xFFF8FDFE));
 
   Widget _button() {
-    final trace = _phase(0.52, 0.76, Curves.easeInOut);
-    final bloom = _phase(0.7, 0.86, Curves.easeOut);
-    final label = _phase(0.76, 0.96);
+    final trace = _phase(0.34, 0.6, Curves.easeInOut);
+    final bloom = _phase(0.52, 0.7, Curves.easeOut);
+    final label = _phase(0.6, 0.82);
     const style = NeonStyle(
       fill: LinearGradient(
         begin: Alignment.topCenter,
@@ -266,11 +268,11 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     child: Opacity(opacity: label.value, child: Label('Tap to Begin', _tapStyle)),
                   ),
                   Positioned(
-                    left: 285.8 - 68.2 - 11.25 + 2.6 * math.max(0, wave(s, 1.3)) * label.value,
-                    top: 698.8 - 668.7 - 11.25,
+                    left: 285.8 - 68.2 - 12.4 + 2.6 * math.max(0, wave(s, 1.3)) * label.value,
+                    top: 698.8 - 668.7 - 12.4,
                     child: Opacity(
                       opacity: label.value,
-                      child: const GlyphIcon(Glyph.arrow, size: 22.5, stroke: 2.6, color: Color(0xFFF4FCFF)),
+                      child: const PhIcon(PhosphorBold.arrowRight, size: 24.8, color: Color(0xFFF4FCFF)),
                     ),
                   ),
                 ],
@@ -283,7 +285,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   }
 
   Widget _indicator() {
-    final t = _phase(0.8, 0.96);
+    final t = _phase(0.66, 0.86);
     return Positioned(
       left: 156.5,
       top: 750,
@@ -297,7 +299,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   }
 
   Widget _footer() {
-    final t = _phase(0.84, 1.0);
+    final t = _phase(0.72, 0.94);
     final style = typo(
       15,
       weight: FontWeight.w500,
@@ -337,20 +339,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   top: 0,
                   width: 18.5,
                   height: 10,
-                  child: Opacity(
-                    opacity: k,
-                    child: const CustomPaint(painter: _FooterArrow(right: true)),
-                  ),
+                  child: Opacity(opacity: k, child: const _FooterArrow(right: true)),
                 ),
                 Positioned(
                   left: 319.4 + 20 * (1 - k) - pulse,
                   top: 0,
                   width: 18.5,
                   height: 10,
-                  child: Opacity(
-                    opacity: k,
-                    child: const CustomPaint(painter: _FooterArrow(right: false)),
-                  ),
+                  child: Opacity(opacity: k, child: const _FooterArrow(right: false)),
                 ),
               ],
             );
@@ -426,46 +422,26 @@ class _IndicatorPainter extends CustomPainter {
   bool shouldRepaint(_IndicatorPainter old) => old.t != t || old.s != s;
 }
 
-class _FooterArrow extends CustomPainter {
+class _FooterArrow extends StatelessWidget {
   const _FooterArrow({required this.right});
 
   final bool right;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    canvas.save();
-    if (!right) {
-      canvas.translate(size.width, 0);
-      canvas.scale(-1, 1);
-    }
-    final p = Path()
-      ..moveTo(1.5, 5)
-      ..lineTo(16.6, 5)
-      ..moveTo(13.4, 1.9)
-      ..lineTo(16.6, 5)
-      ..lineTo(13.4, 8.1);
-    canvas.drawPath(
-      p,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 4
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round
-        ..color = const Color(0xFF2FD2FF).withValues(alpha: 0.45)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+  Widget build(BuildContext context) {
+    return OverflowBox(
+      maxWidth: 30,
+      maxHeight: 30,
+      child: Transform(
+        alignment: Alignment.center,
+        transform: Matrix4.identity()..scaleByDouble(right ? 1 : -1, 0.46, 1, 1),
+        child: const PhIcon(
+          PhosphorBold.arrowRight,
+          size: 25,
+          color: Color(0xFF5BE6FA),
+          shadows: [Shadow(color: Color(0xAA2FD2FF), blurRadius: 5)],
+        ),
+      ),
     );
-    canvas.drawPath(
-      p,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.1
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round
-        ..color = const Color(0xFF5BE6FA),
-    );
-    canvas.restore();
   }
-
-  @override
-  bool shouldRepaint(_FooterArrow old) => old.right != right;
 }
