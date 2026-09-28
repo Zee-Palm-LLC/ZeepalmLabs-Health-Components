@@ -1,0 +1,400 @@
+{
+  "name": "Coach Pipeline 07 - Monday Coach Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "848e7e82-3312-4683-a981-d9ef5fb02481",
+      "name": "Monday 8am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0cd106aa-1127-49a2-a403-93615d337cc0",
+              "name": "businessName",
+              "value": "Forge Coaching",
+              "type": "string"
+            },
+            {
+              "id": "31a2977d-b997-40ad-ab27-5ed54b234249",
+              "name": "coachName",
+              "value": "Alex",
+              "type": "string"
+            },
+            {
+              "id": "3b84cc32-4653-4592-acab-d48109aba0ba",
+              "name": "coachEmail",
+              "value": "coach@example.com",
+              "type": "string"
+            },
+            {
+              "id": "72b455cf-bcec-4e7d-aa76-3927e96f7a12",
+              "name": "programName",
+              "value": "12-Week Transformation",
+              "type": "string"
+            },
+            {
+              "id": "046baa36-ca5c-437e-aed1-aa91e86e8072",
+              "name": "programPrice",
+              "value": "$249",
+              "type": "string"
+            },
+            {
+              "id": "9799906b-43d7-416d-a480-2abc59c679b3",
+              "name": "bookingUrl",
+              "value": "https://cal.com/your-handle/consult",
+              "type": "string"
+            },
+            {
+              "id": "b3392905-d572-4f70-aef7-511528f6db3a",
+              "name": "checkinFormUrl",
+              "value": "https://YOUR-INSTANCE.app.n8n.cloud/form/weekly-checkin",
+              "type": "string"
+            },
+            {
+              "id": "cc446a43-3b70-4077-a944-50d78f0ee304",
+              "name": "sheetId",
+              "value": "PASTE_GOOGLE_SHEET_ID",
+              "type": "string"
+            },
+            {
+              "id": "bf6fdf66-0b3b-4217-a3eb-392e846f516b",
+              "name": "telegramChatId",
+              "value": "PASTE_TELEGRAM_CHAT_ID",
+              "type": "string"
+            },
+            {
+              "id": "798ab349-5fbb-4246-a8b2-3073334a4cb4",
+              "name": "timezone",
+              "value": "America/New_York",
+              "type": "string"
+            },
+            {
+              "id": "deddf319-124f-45b7-a846-872dd0934a4c",
+              "name": "claudeModel",
+              "value": "claude-opus-5",
+              "type": "string"
+            },
+            {
+              "id": "ef3ae6e9-08fe-4dbc-a822-fbeb9b7f1873",
+              "name": "autoReplyClients",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "56f3a1f1-ca0c-475f-a597-0e9bc978933b",
+              "name": "missedCheckinDays",
+              "value": 10,
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "83f7c620-4440-4e84-ae20-dc8f59bd5c2c",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Config').first().json.sheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "a9cf008e-52a4-43c1-ab4c-a1d52b7602b3",
+      "name": "All Leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        700,
+        300
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Config').first().json.sheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Clients",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "e5905084-ecf1-4a38-ac92-71ce77dc9b72",
+      "name": "All Clients",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        940,
+        300
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Config').first().json.sheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "CheckIns",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "59cd73fe-0500-44c9-a560-253426bd5fff",
+      "name": "All Check-ins",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1180,
+        300
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const lc = (v) => String(v ?? '').trim().toLowerCase();\nconst firstName = (name) => String(name || '').trim().split(/\\s+/)[0] || 'there';\n\nconst claudeRequest = (cfg, system, user, schema, effort) => ({\n  model: cfg.claudeModel,\n  max_tokens: 8000,\n  fallbacks: 'default',\n  system,\n  messages: [{ role: 'user', content: user }],\n  output_config: { effort: effort || 'medium', format: { type: 'json_schema', schema } },\n});\n\nconst toDT = (v) => {\n  if (v === null || v === undefined || v === '') return null;\n  if (typeof v === 'number') return DateTime.fromMillis(Math.round((v - 25569) * 86400000), { zone: 'utc' });\n  const s = String(v).trim();\n  let d = DateTime.fromISO(s);\n  if (!d.isValid) d = DateTime.fromJSDate(new Date(s));\n  return d.isValid ? d : null;\n};\nconst daysSince = (v) => {\n  const d = toDT(v);\n  return d ? DateTime.now().diff(d, 'days').days : null;\n};\n\nconst cfg = $('Config').first().json;\nconst within = (v, days) => {\n  const d = daysSince(v);\n  return d !== null && d <= days;\n};\nconst count = (arr, fn) => arr.filter(fn).length;\nconst list = (arr, fmt) => (arr.length ? arr.slice(0, 25).map((x) => `- ${fmt(x)}`) : ['- none']);\nconst avg = (nums) => (nums.length ? Math.round(nums.reduce((a, b) => a + b, 0) / nums.length) : null);\n\nconst leads = $('All Leads').all().map((i) => i.json).filter((r) => r.email);\nconst clients = $('All Clients').all().map((i) => i.json).filter((r) => r.email);\nconst checkins = $('All Check-ins').all().map((i) => i.json).filter((r) => r.email);\n\nconst newLeads = leads.filter((l) => within(l.created_at, 7));\nconst active = clients.filter((c) => lc(c.status) === 'active');\nconst newClients = clients.filter((c) => within(c.start_date, 7));\nconst weekCheckins = checkins.filter((c) => within(c.submitted_at, 7));\nconst expected = active.filter((c) => !within(c.start_date, 5));\nconst checkedIn = new Set(weekCheckins.map((c) => lc(c.email)));\nconst missing = expected.filter((c) => !checkedIn.has(lc(c.email)));\nconst flagged = weekCheckins.filter((c) => ['amber', 'red'].includes(lc(c.risk_level)));\nconst adherence = weekCheckins.map((c) => Number(c.adherence_score)).filter(Number.isFinite);\n\nconst stats = {\n  new_leads: newLeads.length,\n  hot: count(newLeads, (l) => lc(l.tier) === 'hot'),\n  warm: count(newLeads, (l) => lc(l.tier) === 'warm'),\n  cold: count(newLeads, (l) => lc(l.tier) === 'cold'),\n  consults_booked_open: count(leads, (l) => lc(l.status) === 'booked'),\n  new_clients: newClients.length,\n  active_clients: active.length,\n  checkins_received: weekCheckins.length,\n  checkins_expected: expected.length,\n  average_adherence: avg(adherence),\n  red: count(weekCheckins, (c) => lc(c.risk_level) === 'red'),\n  amber: count(weekCheckins, (c) => lc(c.risk_level) === 'amber'),\n};\n\nconst system = [\n  `You write the Monday morning digest for ${cfg.coachName}, who runs ${cfg.businessName}, a 1:1 online fitness coaching business.`,\n  '',\n  'Use only the numbers and names provided; never invent data. Plain text, under 350 words, skimmable in one minute. Structure:',\n  '1. One-line headline for the week.',\n  '2. Numbers: leads (hot/warm/cold), consults booked, new clients, check-in rate, average adherence.',\n  '3. Who needs attention today: each amber/red client and each client who missed their check-in, with one suggested action each.',\n  '4. Patterns: common struggles across clients and what that suggests for programming.',\n  '5. Wins worth celebrating (first names only).',\n  '6. One content idea for social media based on this week\\'s most common struggle, with a one-sentence hook.',\n].join('\\n');\n\nconst user = [\n  `Week ending ${DateTime.now().setZone(cfg.timezone).toFormat('d LLLL yyyy')}`,\n  '',\n  'Stats:',\n  JSON.stringify(stats, null, 2),\n  '',\n  'Amber/red check-ins:',\n  ...list(flagged, (c) => `${c.name || c.email}: ${lc(c.risk_level)}, adherence ${c.adherence_score}, reasons: ${c.risk_reasons || '-'}, notes: ${c.coach_notes || '-'}`),\n  '',\n  'Missed check-in this week:',\n  ...list(missing, (c) => `${c.name || c.email}, last check-in ${c.last_checkin_at ? String(c.last_checkin_at).slice(0, 10) : 'never'}`),\n  '',\n  'Struggles reported:',\n  ...list(weekCheckins.filter((c) => c.struggles), (c) => c.struggles),\n  '',\n  'Wins reported:',\n  ...list(weekCheckins.filter((c) => c.wins), (c) => `${firstName(c.name)}: ${c.wins}`),\n  '',\n  'New leads:',\n  ...list(newLeads, (l) => `${l.name || l.email}: ${l.tier || '?'} (${l.fit_score || '?'}), ${l.goal || '?'}, status ${l.status || '?'}`),\n].join('\\n');\n\nconst schema = {\n  type: 'object',\n  additionalProperties: false,\n  required: ['subject', 'body'],\n  properties: { subject: { type: 'string' }, body: { type: 'string' } },\n};\n\nreturn [{ json: { request: claudeRequest(cfg, system, user, schema, 'medium'), stats }, pairedItem: { item: 0 } }];\n"
+      },
+      "id": "8ec4ffa9-c158-4cea-a357-e4d322166c4d",
+      "name": "Build Digest Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anthropicApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "anthropic-beta",
+              "value": "server-side-fallback-2026-07-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.request) }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "64e0a512-12c1-45fc-a138-038c9e073837",
+      "name": "Claude: Write Digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1660,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "const parseClaude = (res) => {\n  if (res.stop_reason === 'refusal') throw new Error('Claude declined this request: ' + JSON.stringify(res.stop_details || {}));\n  if (res.stop_reason === 'max_tokens') throw new Error('Claude ran out of tokens; raise max_tokens in the matching Build node');\n  const block = (res.content || []).find((b) => b.type === 'text');\n  if (!block) throw new Error('Claude returned no text block: ' + JSON.stringify(res).slice(0, 500));\n  return JSON.parse(block.text);\n};\n\nconst ai = parseClaude($input.first().json);\nreturn [{ json: { subject: ai.subject, body: ai.body }, pairedItem: { item: 0 } }];\n"
+      },
+      "id": "ac3d7030-0c7f-484d-aee2-872b53fba8e4",
+      "name": "Parse Digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Config').first().json.coachEmail }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "={{ $('Config').first().json.coachName }} - {{ $('Config').first().json.businessName }}",
+          "replyTo": "={{ $('Config').first().json.coachEmail }}"
+        }
+      },
+      "id": "9d2b9ced-b80c-43ca-a486-a1e55b093076",
+      "name": "Email Coach",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2140,
+        300
+      ],
+      "webhookId": "ed0bee3d-260c-4083-ab75-a7a491d39fb5"
+    },
+    {
+      "parameters": {
+        "content": "## 07 · Monday coach digest\nEvery Monday at 8am the coach gets one email: lead funnel numbers, check-in rate, average adherence, who needs attention today, common struggles, wins and a content idea based on what clients struggled with.",
+        "height": 220,
+        "width": 520,
+        "color": 4
+      },
+      "id": "6bc625d8-c687-4235-a143-55ff49a974f9",
+      "name": "Note: Digest",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        180,
+        -120
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Monday 8am": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "All Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All Leads": {
+      "main": [
+        [
+          {
+            "node": "All Clients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All Clients": {
+      "main": [
+        [
+          {
+            "node": "All Check-ins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All Check-ins": {
+      "main": [
+        [
+          {
+            "node": "Build Digest Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Digest Prompt": {
+      "main": [
+        [
+          {
+            "node": "Claude: Write Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude: Write Digest": {
+      "main": [
+        [
+          {
+            "node": "Parse Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Digest": {
+      "main": [
+        [
+          {
+            "node": "Email Coach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
