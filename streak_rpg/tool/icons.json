@@ -1,0 +1,18 @@
+[
+  {"screen": 3, "raw": true, "name": "avatar", "box": [19, 55, 89, 125], "mode": "key", "soft": [0, 1], "circle": [54, 90, 31.5]},
+  {"screen": 3, "raw": true, "name": "shield_gold", "box": [30, 144, 98, 222]},
+  {"screen": 3, "raw": true, "name": "fire", "box": [312, 66, 350, 110], "mode": "key", "soft": [34, 64]},
+  {"screen": 3, "raw": true, "name": "ic_workouts", "box": [31, 397, 63, 429], "mode": "key"},
+  {"screen": 3, "raw": true, "name": "ic_timer", "box": [31, 464, 63, 496], "mode": "key"},
+  {"screen": 3, "raw": true, "name": "ic_calories", "box": [31, 531, 63, 563], "mode": "key"},
+  {"screen": 3, "raw": true, "name": "nav_home", "box": [38, 686, 78, 724], "mode": "key"},
+  {"screen": 4, "raw": true, "name": "shield_purple", "box": [52, 94, 122, 174]},
+  {"screen": 4, "raw": true, "name": "chest_small", "box": [330, 112, 390, 162]},
+  {"screen": 4, "raw": true, "name": "ic_bolt", "box": [80, 338, 122, 388], "mode": "key"},
+  {"screen": 4, "raw": true, "name": "ic_sets", "box": [256, 344, 292, 382], "mode": "key"},
+  {"screen": 4, "raw": true, "name": "ic_flame", "box": [446, 342, 480, 384], "mode": "key"},
+  {"screen": 5, "raw": true, "name": "ic_water", "box": [254, 188, 314, 242]},
+  {"screen": 5, "raw": true, "name": "ic_shoe", "box": [254, 262, 314, 314], "mode": "key", "soft": [26, 55], "largest": true},
+  {"screen": 5, "raw": true, "name": "ic_dumbbell", "box": [252, 336, 316, 388], "mode": "key", "soft": [26, 55], "largest": true},
+  {"screen": 5, "raw": true, "name": "trophy", "box": [243, 436, 285, 471], "mode": "key"}
+]

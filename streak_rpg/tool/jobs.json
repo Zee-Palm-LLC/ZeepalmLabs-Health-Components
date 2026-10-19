@@ -1,0 +1,12 @@
+[
+  {"screen": 1, "name": "logo", "box": [85, 30, 327, 194], "largest": true, "t": [0.35, 0.8]},
+  {"screen": 1, "name": "hero_splash", "box": [14, 290, 402, 784.3], "largest": true},
+  {"screen": 2, "name": "hero_pushup", "box": [0, 318, 402, 700], "largest": true},
+  {"screen": 2, "name": "icon_dumbbell", "box": [56, 274, 121, 330], "mode": "key", "soft": [30, 60], "largest": true},
+  {"screen": 2, "name": "icon_arrow", "box": [292, 260, 340, 312]},
+  {"screen": 2, "name": "icon_star", "box": [320, 340, 377, 396]},
+  {"screen": 3, "name": "hero_home", "box": [168, 232, 314, 542], "largest": true},
+  {"screen": 3, "name": "gift", "box": [320, 516, 392, 588], "largest": true},
+  {"screen": 4, "name": "hero_workout", "box": [130, 176, 456, 326], "largest": true},
+  {"screen": 5, "name": "chest_pedestal", "box": [20, 140, 236, 428], "largest": true}
+]

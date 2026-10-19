@@ -1,0 +1,38 @@
+name: orbit
+description: "Orbit - move, grow and build your own little world."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flame: ^1.38.2
+  flutter:
+    sdk: flutter
+  flutter_3d_controller: ^2.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/art/
+    - assets/plates/
+    - assets/game/
+    - assets/models/
+  shaders:
+    - shaders/planet.frag
+  fonts:
+    - family: Baloo
+      fonts:
+        - asset: assets/fonts/Baloo2-Variable.ttf
+    - family: PhosphorFill
+      fonts:
+        - asset: assets/fonts/Phosphor-Fill.ttf
+    - family: PhosphorBold
+      fonts:
+        - asset: assets/fonts/Phosphor-Bold.ttf
