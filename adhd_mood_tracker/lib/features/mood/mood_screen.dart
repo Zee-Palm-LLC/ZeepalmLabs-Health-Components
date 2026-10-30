@@ -604,6 +604,7 @@ class _NoteSheetState extends State<_NoteSheet> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     minimumSize: const Size(0, 52),
                     textStyle: const TextStyle(
+                      fontFamily: 'Poppins',
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
@@ -621,6 +622,7 @@ class _NoteSheetState extends State<_NoteSheet> {
                       foregroundColor: kSubmitInk,
                       shape: const StadiumBorder(),
                       textStyle: const TextStyle(
+                        fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),

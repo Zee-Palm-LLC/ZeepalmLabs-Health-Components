@@ -35,14 +35,6 @@ flutter run
 - My day: the chat blurs back, the calendar sheet springs up and carries Momo onto its top edge. Months slide in a diagonal cascade, the selection pill stretches between days, totals roll, gauge bars fill one by one, and the meals of the selected day pop in. Momo reacts to empty and full days.
 - Ask: the question flies up from the composer into a bubble, Momo thinks (eyes up, brow raised) while the composer glows, then talks while the answer card expands and counts up.
 
-## Reel
-
-The reel (`momo_reel.mp4`, kept in Downloads) is a 30-second, 1080x1920 showcase at 30 fps with a soundtrack. `test/reel/reel_test.dart` renders it frame by frame from the real app, driving scripted taps and typing through every screen inside a phone frame (`test/reel/reel_stage.dart`). The beats are: meet Momo, snap, count, my day, ask, then a lockup where Momo drops in and waves.
-
-- Render frames: `flutter test test/reel/reel_test.dart --dart-define=REEL_DIR=<folder> --timeout none`. Add `--dart-define=REEL_EVERY=15` for a quick probe.
-- Soundtrack: `tool/reel_audio.py <out.wav>` synthesizes the music bed and sound effects with numpy. They are timed to the same timeline: taps, shutter, photo whoosh and landing, reveal chimes, key ticks and the closing chord.
-- Encode the frames at 30 fps together with the wav, then loudness-normalize to -14 LUFS.
-
 ## Tests
 
 `flutter test` runs the full flow (menu, camera, flight, picking, calendar, question, start over) at 360x640, 360x740, 393x852, 402x874, 412x915 and 430x932 with different insets, and fails on any exception.

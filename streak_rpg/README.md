@@ -51,17 +51,3 @@ Each area has a game-style guided tour that plays on the first visit. "Training 
 ## Tools
 
 `tool/plates.py` (clean screens and background plates), `tool/cut.py` with `tool/jobs.json` and `tool/icons.json` (segmentation), and `tool/export.py` (trimmed webp assets with their pt rects) rebuild the art from the upscaled screens. Set `STREAK_ROOT` to the folder that holds the screens.
-
-## Social reels
-
-`test/reel` renders two 1080 x 1920 vertical reels frame by frame. Each one has a phone mockup, kinetic captions, tap markers, a camera that punches in on key moments and follows the tutorial spotlight, and a logo lockup. The app reel is 32 s and the tutorial reel is 34.5 s.
-
-```
-flutter test test/reel -j 2 --dart-define=REEL_DIR=<frames>
-python tool/reel_audio.py app app.wav
-python tool/reel_audio.py tutorial tutorial.wav
-python tool/reel_mux.py <frames>/app app.wav StreakRPG_App_Showcase.mp4
-python tool/reel_mux.py <frames>/tutorial tutorial.wav StreakRPG_Tutorial_Showcase.mp4
-```
-
-`reel_audio.py` synthesizes an original soundtrack (no samples) with sound effects locked to each reel's taps, bursts, warps and level-ups. `reel_mux.py` encodes H.264 with AAC audio normalized to -14 LUFS. Add `--dart-define=REEL_EVERY=30` to render a quick one-frame-per-second preview.
