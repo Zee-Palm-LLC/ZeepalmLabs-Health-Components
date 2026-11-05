@@ -24,10 +24,6 @@ flutter run
 - Profile: decorations fly in and float, the red accents pulse, and a halo turns around the avatar. The stats count up. The premium card swings in with a sheen, and its gold coin flips and twinkles. Menu rows stagger in and wiggle when tapped, and the gear spins.
 - Shell: tab switches fade through, the selected nav icon jelly-bounces, and the FAB rotates into a radial quick-action menu that sits above the nav bar and its veil.
 
-## Reel
-
-`reel/pocket_chef_reel.mp4` is a 30 s, 1080x1920 showcase at 30 fps with a music bed. It is rendered frame by frame from the real app by `test/reel/reel_test.dart`, which drives scripted taps and drags through every screen inside a phone frame (`test/reel/reel_stage.dart`). To render the frames again, run `flutter test test/reel/reel_test.dart --dart-define=REEL_DIR=<folder> --timeout none`, then encode them with ffmpeg at 30 fps.
-
 ## Tests
 
 `flutter test` runs the layout test (every screen at 360x640, 360x740, 393x852, 412x915 and 430x932, with various insets). To write rendered frames to a folder for side-by-side checks, run `flutter test test/snapshot_test.dart --dart-define=SNAP_DIR=<folder>`.
